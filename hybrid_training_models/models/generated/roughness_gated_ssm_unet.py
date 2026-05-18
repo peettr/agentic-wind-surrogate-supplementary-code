@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -139,3 +139,5 @@ class roughness_gated_ssm_unet(nn.Module):
             out_valid = out_valid.expand(-1, self.out_channels, -1, -1)
 
         return y.masked_fill(~out_valid, float("nan"))
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 19,
+  "slot": 9,
+  "arch_name": "unet_v2_baseline",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 34610193,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "5.0",
+  "metrics": {
+    "r2_median": "0.6722797139071602",
+    "r2_global": "0.6868580821330494",
+    "mae_median": "0.0939304158091545",
+    "mae_mean": "0.0815072276714173"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

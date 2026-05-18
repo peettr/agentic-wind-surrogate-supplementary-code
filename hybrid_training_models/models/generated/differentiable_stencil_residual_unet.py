@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -123,3 +123,5 @@ class differentiable_stencil_residual_unet(nn.Module):
             valid_out = valid[:, :1].expand(-1, self.out_channels, -1, -1)
 
         return y.masked_fill(~valid_out, float("nan"))
+
+

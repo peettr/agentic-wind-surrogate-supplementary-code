@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r010_full_unet_v3_nc32_lr0.0005_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "unet_v3",
   "arch_kwargs": {
     "n_c": 32,
@@ -22,3 +22,5 @@
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10
 }
+
+

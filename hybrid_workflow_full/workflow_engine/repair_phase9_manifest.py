@@ -1,4 +1,4 @@
-"""Repair Phase9 attempt manifest for the PASS-overwritten-by-AUTO_FAIL bug.
+﻿"""Repair Phase9 attempt manifest for the PASS-overwritten-by-AUTO_FAIL bug.
 
 This script:
 1. Creates a timestamped backup of attempt_manifest.json
@@ -21,7 +21,7 @@ blocking future work. Historical controller_decision.json files can be left
 as-is since they represent the decision made at the time (with the bug).
 
 If you want to also correct controller_decision.json per_run entries, that's a
-separate step — see the dry-run report for which round artifacts are affected.
+separate step â€” see the dry-run report for which round artifacts are affected.
 """
 from __future__ import annotations
 
@@ -179,3 +179,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+

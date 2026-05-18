@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\cnn_deeponet_lowrank.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\cnn_deeponet_lowrank.py",
   "model_source_kind": "generated",
   "model_sha256": "d7609a24c4780d3f7293234a0e6ffeb676ef5e22b61827da0ca880c9c102c6ab",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r002_full_cnn_deeponet_lowrank_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r002_full_cnn_deeponet_lowrank_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

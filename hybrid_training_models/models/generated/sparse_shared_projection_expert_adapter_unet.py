@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -107,3 +107,5 @@ class sparse_shared_projection_expert_adapter_unet(nn.Module):
         output = self.head(h)
         output = torch.where(valid[:, :1], output, torch.full_like(output, float("nan")))
         return output
+
+

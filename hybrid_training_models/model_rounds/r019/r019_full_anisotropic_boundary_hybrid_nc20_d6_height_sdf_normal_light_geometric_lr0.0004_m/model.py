@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -137,3 +137,5 @@ class anisotropic_boundary_hybrid(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand_as(y)
 
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

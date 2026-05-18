@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -118,3 +118,5 @@ class cross_scale_operator_token_unet(nn.Module):
         valid = valid.expand(-1, y.shape[1], -1, -1)
         y = torch.where(valid, y, torch.full_like(y, float("nan")))
         return y
+
+

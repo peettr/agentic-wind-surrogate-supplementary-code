@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 
 
@@ -82,3 +82,5 @@ class p5_res_unet(nn.Module):
         x = self.out_conv(x)
         x = x * output_mask
         return x
+
+

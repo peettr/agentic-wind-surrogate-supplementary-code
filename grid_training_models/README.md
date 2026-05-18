@@ -1,9 +1,10 @@
 ﻿# Grid Training and Models
 
-This folder contains the final Grid campaign subset only: the last 20 complete 10-candidate rounds, for 200 model files total.
+This folder contains the final 200 Grid candidates, organized as 20 rounds with 10 model folders per round.
 
-The retained source directories are `v5_controller_auto10_006` through `v5_controller_auto10_008` and `v5_controller_auto11_001` through `v5_controller_auto11_017`. Later partial directories were intentionally excluded because they did not contain 10 candidates per round.
+`generated_models/` was removed to avoid duplicating the same files. The release source of truth is `model_rounds/`; each candidate folder contains `model.py` and `config.json`.
 
-- `generated_models/`: retained source model directories.
-- `model_rounds/`: the same final Grid candidates reorganized by release round.
-- `model_rounds_manifest.csv`: round-level inventory.
+orthogonal exploratory sweep exploratory artifacts and earlier controller/source-dump directories are not included.
+
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -73,3 +73,5 @@ class unet_v3_geomtok(nn.Module):
             valid_out = valid_out[:, :1].expand(-1, h.shape[1], -1, -1)
 
         return torch.where(valid_out, h, torch.full_like(h, float("nan")))
+
+

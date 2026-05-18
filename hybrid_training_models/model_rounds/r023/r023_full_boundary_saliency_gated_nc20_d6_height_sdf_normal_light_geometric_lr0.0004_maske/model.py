@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -136,3 +136,5 @@ class boundary_saliency_gated(nn.Module):
         valid_out = valid if valid.shape[1] == output.shape[1] else valid.all(dim=1, keepdim=True)
         output = output.masked_fill(~valid_out, float("nan"))
         return output
+
+

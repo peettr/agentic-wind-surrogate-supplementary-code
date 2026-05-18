@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -131,3 +131,5 @@ class incremental_mode_gate_afno_unet(nn.Module):
                 valid = valid.all(dim=1, keepdim=True).expand(-1, output.shape[1], -1, -1)
 
         return torch.where(valid, output, torch.full_like(output, float("nan")))
+
+

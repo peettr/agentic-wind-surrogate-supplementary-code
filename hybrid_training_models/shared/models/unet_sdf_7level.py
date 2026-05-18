@@ -1,4 +1,4 @@
-"""unet_sdf_7level.py — 7-level UNet with SDF-augmented 3-channel input.
+﻿"""unet_sdf_7level.py â€” 7-level UNet with SDF-augmented 3-channel input.
 
 Architecture: identical depth/width to the auto_v2 baseline (7 levels, ~125M params)
 but accepts 3 input channels (building_height + SDF + boundary_normal_angle)
@@ -104,6 +104,9 @@ class UNetSDF(BaseSurrogate):
         return self.outc(x)
 
 
-# Alias for Auto V6 script_path loading by registry arch_name.
+# Alias for Hybrid script_path loading by registry arch_name.
 unet_sdf_7level = UNetSDF
+
+
+
 

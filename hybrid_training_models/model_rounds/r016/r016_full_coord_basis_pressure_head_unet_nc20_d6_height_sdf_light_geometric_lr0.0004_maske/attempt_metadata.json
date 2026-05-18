@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\coord_basis_pressure_head_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\coord_basis_pressure_head_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "ffe53a493fc63f3c013cd1c6c9abfd0a724813a81c47073c4ac1e400916bb91f",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r016_full_coord_basis_pressure_head_unet_nc20_d6_height_sdf_light_geometric_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r016_full_coord_basis_pressure_head_unet_nc20_d6_height_sdf_light_geometric_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

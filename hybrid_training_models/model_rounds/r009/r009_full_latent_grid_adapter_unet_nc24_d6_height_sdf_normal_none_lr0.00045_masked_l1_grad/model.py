@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -125,3 +125,5 @@ class latent_grid_adapter_unet(nn.Module):
         x = x.clone()
         x[~valid] = float("nan")
         return x
+
+

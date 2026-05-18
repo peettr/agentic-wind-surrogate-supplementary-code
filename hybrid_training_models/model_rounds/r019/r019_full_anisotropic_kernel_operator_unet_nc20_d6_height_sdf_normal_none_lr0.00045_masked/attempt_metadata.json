@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\anisotropic_kernel_operator_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\anisotropic_kernel_operator_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "6b33bf845f2272caf02bb1c06c791d1542e9d09468148f2467155a648cfa3515",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r019_full_anisotropic_kernel_operator_unet_nc20_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r019_full_anisotropic_kernel_operator_unet_nc20_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2/model.py"
 }
+
+

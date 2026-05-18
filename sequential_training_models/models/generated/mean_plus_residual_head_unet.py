@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -116,3 +116,5 @@ class mean_plus_residual_head_unet(nn.Module):
         output = torch.where(valid_output, output, torch.full_like(output, float("nan")))
 
         return output
+
+

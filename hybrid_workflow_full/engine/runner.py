@@ -1,4 +1,4 @@
-"""Phase-based runner for auto_v3 campaigns.
+﻿"""Phase-based runner for baseline_source campaigns.
 
 Each invocation executes **one phase step**, saves state, and exits.
 An external watchdog (cron / Scheduled Task / wrapper script) triggers
@@ -6,9 +6,9 @@ repeated invocations until the campaign finishes.
 
 Phase machine::
 
-    init → baseline_submit → baseline_collect →
-    search_propose → search_submit → search_collect →
-    [search_propose → ... (loop)] →
+    init â†’ baseline_submit â†’ baseline_collect â†’
+    search_propose â†’ search_submit â†’ search_collect â†’
+    [search_propose â†’ ... (loop)] â†’
     finalize
 
 Why phase-based instead of a long-running loop?
@@ -16,7 +16,7 @@ Why phase-based instead of a long-running loop?
   A long-running Python process would block entirely.
 - Phase-based execution decouples each step: if one hangs or crashes,
   the watchdog simply re-triggers and the runner picks up where it left off.
-- This matches v1's proven approach (Scheduled Task → runner → one step → exit).
+- This matches v1's proven approach (Scheduled Task â†’ runner â†’ one step â†’ exit).
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ from shared.eval_module import compute_eval_hash, compute_split_hash
 from strategies.base_planner import BasePlanner
 
 
-LOGGER = logging.getLogger("auto_v3.runner")
+LOGGER = logging.getLogger("baseline_source.runner")
 
 FAILURE_RATE_ABORT = 0.5
 
@@ -149,7 +149,7 @@ def _write_campaign_status(
     planner: BasePlanner,
     strategy: str,
 ) -> None:
-    """Write campaign_status.json — human-readable intermediate report."""
+    """Write campaign_status.json â€” human-readable intermediate report."""
     ok = [
         r for r in history
         if r.status == "ok" and r.val_r2_median is not None
@@ -209,7 +209,7 @@ def _write_round_report(
     round_number: int,
     strategy: str,
 ) -> None:
-    """Write round_report.json — per-round intermediate."""
+    """Write round_report.json â€” per-round intermediate."""
     report = RoundReport(
         campaign_id=state.campaign_id,
         strategy=strategy,
@@ -327,7 +327,7 @@ def run_step(
         state_mgr.write_manifest(state, cfg_hash, eval_hash, split_hash)
 
         if history:
-            # Already have results from a previous run — skip baseline.
+            # Already have results from a previous run â€” skip baseline.
             LOGGER.info("History exists (%d entries), skipping baseline.", len(history))
             _save(state, next_phase="search_propose")
             return "search_propose"
@@ -356,7 +356,7 @@ def run_step(
         handle_info = state.planner_state.get("baseline_handles", [])
         handles = executor.reconstruct_handles(handle_info, campaign_dir)
         if not handles:
-            LOGGER.error("No baseline handles found in state — cannot collect.")
+            LOGGER.error("No baseline handles found in state â€” cannot collect.")
             _save(state, next_phase="finalize")
             return None
 
@@ -366,7 +366,7 @@ def run_step(
         n_fail = sum(1 for r in results if r.status != "ok")
         if results and n_fail / len(results) > FAILURE_RATE_ABORT:
             LOGGER.error(
-                "Baseline failure rate %.0f%% — aborting.",
+                "Baseline failure rate %.0f%% â€” aborting.",
                 100 * n_fail / len(results),
             )
             for r in results:
@@ -412,9 +412,9 @@ def run_step(
 
         proposals = planner.propose_experiments(history, baseline)
         if not proposals:
-            # Planner needs more results or is waiting — skip this cycle.
+            # Planner needs more results or is waiting â€” skip this cycle.
             LOGGER.info("No proposals this cycle. Will retry on next trigger.")
-            # Don't change phase — stay in search_propose for next invocation.
+            # Don't change phase â€” stay in search_propose for next invocation.
             _save(state, next_phase="search_propose")
             return "search_propose"
 
@@ -428,7 +428,7 @@ def run_step(
     if phase == "search_submit":
         proposal_data = state.planner_state.get("pending_proposals", [])
         if not proposal_data:
-            LOGGER.warning("No pending proposals — back to propose.")
+            LOGGER.warning("No pending proposals â€” back to propose.")
             _save(state, next_phase="search_propose")
             return "search_propose"
 
@@ -455,7 +455,7 @@ def run_step(
 
         handles = executor.reconstruct_handles(handle_info, campaign_dir)
         if not handles:
-            LOGGER.error("No search handles found — back to propose.")
+            LOGGER.error("No search handles found â€” back to propose.")
             _save(state, next_phase="search_propose")
             return "search_propose"
 
@@ -465,7 +465,7 @@ def run_step(
         n_fail = sum(1 for r in batch if r.status != "ok")
         if batch and n_fail / len(batch) > FAILURE_RATE_ABORT:
             LOGGER.error(
-                "Failure rate %.0f%% in batch — aborting campaign.",
+                "Failure rate %.0f%% in batch â€” aborting campaign.",
                 100 * n_fail / len(batch),
             )
             state.failure_count += n_fail
@@ -521,14 +521,14 @@ def run_step(
                 snapshot=_snapshot_from_result(champion),
             )
             LOGGER.info(
-                "Champion: %s (val R² median = %.4f)",
+                "Champion: %s (val RÂ² median = %.4f)",
                 champion.experiment_id, champion.val_r2_median,
             )
         _write_campaign_status(campaign_dir, state, history, planner, strategy)
         _save(state, next_phase=None)
         return None
 
-    # Unknown phase — reset.
+    # Unknown phase â€” reset.
     LOGGER.warning("Unknown phase '%s', resetting to init.", phase)
     _save(state, next_phase="init")
     return "init"
@@ -587,3 +587,6 @@ def run_campaign_loop(
 run_campaign = run_campaign_loop
 
 __all__ = ["run_step", "run_campaign", "run_campaign_loop"]
+
+
+

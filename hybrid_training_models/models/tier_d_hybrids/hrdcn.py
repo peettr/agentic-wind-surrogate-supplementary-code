@@ -1,4 +1,4 @@
-"""HRDCN — HRNet multi-resolution streams + Deformable Convolution.
+﻿"""HRDCN â€” HRNet multi-resolution streams + Deformable Convolution.
 
 Combines HRNet's parallel multi-resolution processing with DCN's adaptive
 receptive field. The deformable convolutions allow the network to focus on
@@ -137,3 +137,6 @@ class HRDCN(BaseSurrogate):
             fused.append(stream)
         x = self.fuse(torch.cat(fused, dim=1))
         return F.interpolate(self.decoder(x), size=(orig_h, orig_w), mode="bilinear", align_corners=False)
+
+
+

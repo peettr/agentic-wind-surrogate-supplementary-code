@@ -1,6 +1,6 @@
-"""V4-only structured knowledge artifacts for planner/reviewer.
+﻿"""Sequential-only structured knowledge artifacts for planner/reviewer.
 
-All artifacts generated here are derived only from the current V4 campaign state,
+All artifacts generated here are derived only from the current Sequential campaign state,
 results, reviews, and manifests.  V3 performance data must never enter these
 files.
 """
@@ -261,7 +261,7 @@ def build_experiment_knowledge(campaign_dir: Path, state: dict[str, Any], round_
                 "arch_name": r.get("arch_name"),
                 "failure_class": r.get("failure_class"),
                 "evidence_run_ids": [r.get("exp_id")],
-                "planner_implication": "Treat as V4-only failure evidence for future resource/model planning.",
+                "planner_implication": "Treat as Sequential-only failure evidence for future resource/model planning.",
             }
             for i, r in enumerate(round_full)
             if r.get("failure_class") not in {None, "PASS"}
@@ -273,7 +273,7 @@ def build_experiment_knowledge(campaign_dir: Path, state: dict[str, Any], round_
             "id": f"P{round_num:03d}-01",
             "pattern": f"Best completed full result this round: {best.get('arch_name')}",
             "evidence_run_ids": [best.get("exp_id")],
-            "planner_implication": "Use as V4-only current strong pattern or control candidate.",
+            "planner_implication": "Use as Sequential-only current strong pattern or control candidate.",
         }]
 
     knowledge = {
@@ -361,3 +361,6 @@ def rebuild_knowledge(campaign_dir: Path, state: dict[str, Any] | None = None) -
     registry = _load_prior_hypothesis_registry(campaign_dir)
     build_recent_knowledge_bundle(campaign_dir)
     return build_knowledge_summary(campaign_dir, rows, registry)
+
+
+

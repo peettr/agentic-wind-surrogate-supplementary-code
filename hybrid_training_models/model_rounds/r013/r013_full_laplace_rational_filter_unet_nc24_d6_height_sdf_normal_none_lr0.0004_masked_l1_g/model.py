@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -123,3 +123,5 @@ class laplace_rational_filter_unet(nn.Module):
         output = output.clone()
         output[~valid] = float("nan")
         return output
+
+

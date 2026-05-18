@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -128,3 +128,5 @@ class fourier_split_residual_head_unet(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand(-1, y.shape[1], -1, -1)
 
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

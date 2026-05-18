@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -140,3 +140,5 @@ class haloed_local_fourier_unet(nn.Module):
 
         y = torch.where(valid_out, y, torch.full_like(y, float("nan")))
         return y
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -114,3 +114,5 @@ class sparse_residual_refinement_unet(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand_as(out)
 
         return torch.where(valid, out, torch.full_like(out, float("nan")))
+
+

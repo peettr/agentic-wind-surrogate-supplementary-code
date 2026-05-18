@@ -1,4 +1,4 @@
-﻿"""Auto V6 Explorer â€” AI-driven experiment exploration.
+﻿"""Hybrid Explorer â€” AI-driven experiment exploration.
 
 Core modules:
   - explorer.py: ExperimentConfig, ExperimentResult, data loading
@@ -24,4 +24,7 @@ __all__ = [
 from .codegen import generate_model, generate_batch, load_specs
 
 from .reviewer import review_round, build_review_context, RoundReview
+
+
+
 

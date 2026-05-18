@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -115,3 +115,5 @@ class coord_basis_pressure_head_unet(nn.Module):
         out = out.clone()
         out[~valid.expand_as(out)] = float("nan")
         return out
+
+

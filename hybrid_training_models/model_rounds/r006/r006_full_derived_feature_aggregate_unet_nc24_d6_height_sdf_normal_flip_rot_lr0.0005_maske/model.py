@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -125,3 +125,5 @@ class derived_feature_aggregate_unet(nn.Module):
 
         y = torch.where(valid_out, y, torch.full_like(y, float("nan")))
         return y
+
+

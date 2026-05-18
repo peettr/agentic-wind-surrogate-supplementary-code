@@ -1,6 +1,6 @@
-﻿"""Shared utilities for V4 workflow modules.
+﻿"""Shared utilities for Sequential workflow modules.
 
-V4 differences from V1:
+Sequential differences from V1:
 - Campaign directory (not flat workspace)
 - Multi-experiment per round (batch of ~12 configs)
 - Smoke test + AI fix loop before full runs
@@ -12,7 +12,7 @@ from pathlib import Path
 
 # â”€â”€ Paths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 WORKSPACE = Path(__file__).resolve().parent.parent.parent
-AUTO_V6_ROOT = WORKSPACE / "auto_v6"
+hybrid_ROOT = WORKSPACE / "hybrid"
 
 # CRC
 SSH_CONTROL = "<SSH_CONTROL_PATH>"
@@ -47,7 +47,7 @@ RESOURCE_PROBE_SAFE_CONFIG = {
     "candidate_semantics": (
         "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. "
         "batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not "
-        "an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+        "an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     ),
 }
 
@@ -152,7 +152,7 @@ def resource_feasibility_guard(cfg: dict) -> dict:
     severity = "allow"
     probe_required = False
 
-    # Auto V6 ordinary candidates are locked to batch_size=16. Automatic lower
+    # Hybrid ordinary candidates are locked to batch_size=16. Automatic lower
     # batches are allowed only at batch_size=8 for explicit resource_probe or
     # OOM/resource-guard repair evidence. batch_size<8 is a manual-only
     # resource-probe path and must never be entered by autonomous workflow.
@@ -168,7 +168,7 @@ def resource_feasibility_guard(cfg: dict) -> dict:
         else:
             severity = "block"
             reasons.append(
-                f"batch_size={batch_size}<8 violates Auto V6 automatic batch8 floor; "
+                f"batch_size={batch_size}<8 violates Hybrid automatic batch8 floor; "
                 "resource_probe/OOM repair may not auto-reduce below 8 without manual_resource_probe_approved=True"
             )
     elif batch_size != 16:
@@ -184,7 +184,7 @@ def resource_feasibility_guard(cfg: dict) -> dict:
             severity = "block"
             probe_required = True
             reasons.append(
-                f"batch_size={batch_size} violates ordinary Auto V6 batch_size=16 lock and automatic batch8 repair floor; "
+                f"batch_size={batch_size} violates ordinary Hybrid batch_size=16 lock and automatic batch8 repair floor; "
                 "ordinary candidates must use 16 and automatic repairs may only use 8"
             )
 
@@ -325,4 +325,7 @@ def experiment_id(cfg: dict) -> str:
 
 def history_path(campaign_dir: Path) -> Path:
     return campaign_dir / "history.jsonl"
+
+
+
 

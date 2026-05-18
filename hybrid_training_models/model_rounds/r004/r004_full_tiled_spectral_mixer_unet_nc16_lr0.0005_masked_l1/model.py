@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -147,3 +147,5 @@ class tiled_spectral_mixer_unet(nn.Module):
         output = y.clone()
         output[nan_mask] = float("nan")
         return output
+
+

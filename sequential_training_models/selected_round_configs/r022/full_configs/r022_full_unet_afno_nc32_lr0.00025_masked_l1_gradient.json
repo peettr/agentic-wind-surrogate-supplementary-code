@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r022_full_unet_afno_nc32_lr0.00025_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "unet_afno",
   "arch_kwargs": {
     "n_c": 32,
@@ -21,6 +21,8 @@
   "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r022_full_unet_afno_nc32_lr0.00025_masked_l1_gradient",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\models\\generated\\unet_afno.py",
+  "script_path": "<LOCAL_WORKSPACE>\\sequential\\models\\generated\\unet_afno.py",
   "model_source_kind": "generated"
 }
+
+

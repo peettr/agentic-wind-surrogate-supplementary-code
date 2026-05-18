@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -131,3 +131,5 @@ class fourier_lowrank_decoder_adapter_unet(nn.Module):
 
         output = torch.where(valid, output, torch.full_like(output, float("nan")))
         return output
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -132,3 +132,5 @@ class encoder_mamba_residual_unet(nn.Module):
 
         y = y.masked_fill(~valid, float("nan"))
         return y
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 12,
+  "slot": 2,
+  "arch_name": "hrnet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 20138689,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "3.0",
+  "metrics": {
+    "r2_median": "0.635827863483917",
+    "r2_global": "0.6614869964584409",
+    "mae_median": "0.0958553105592727",
+    "mae_mean": "0.0845694197849793"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

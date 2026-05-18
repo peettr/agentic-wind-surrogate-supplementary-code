@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -101,3 +101,5 @@ class multigrid_spectral_unet(nn.Module):
             out_valid = out_valid.any(dim=1, keepdim=True).expand(-1, y.shape[1], -1, -1)
 
         return torch.where(out_valid, y, torch.full_like(y, float("nan")))
+
+

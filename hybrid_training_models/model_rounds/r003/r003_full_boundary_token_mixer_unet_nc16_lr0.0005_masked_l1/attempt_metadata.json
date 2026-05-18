@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_token_mixer_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\boundary_token_mixer_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "a48849e02a9da1b1f6838439329a24b679dd16a2cd297792fd4c796550c69bc6",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r003_full_boundary_token_mixer_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r003_full_boundary_token_mixer_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

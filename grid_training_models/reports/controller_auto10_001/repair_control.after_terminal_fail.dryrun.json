@@ -1,6 +1,0 @@
-{
-  "campaign": "v5_controller_auto10_001_smoke20",
-  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
-  "stage": "smoke20",
-  "runs": []
-}

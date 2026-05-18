@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r011_full_fno_encoder_decoder_nc24_lr0.0005_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "fno_encoder_decoder",
   "arch_kwargs": {
     "n_c": 24,
@@ -22,3 +22,5 @@
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10
 }
+
+

@@ -1,4 +1,4 @@
-﻿"""V4 Campaign Runner â€” State machine with smoke test loop.
+﻿"""Sequential Campaign Runner â€” State machine with smoke test loop.
 
 Phases:
   propose â†’ codegen â†’ submit(20ep) â†’ monitor(30min) â†’ collect â†’ smoke_classify
@@ -48,8 +48,8 @@ from schema_guards import validate_experiment_schema
 GENERATED_DIR = Path(__file__).resolve().parent.parent / "models" / "generated"
 SHARED_MODELS_DIR = Path(__file__).resolve().parent.parent / "shared" / "models"
 
-LOG_PATH = WORKSPACE / "auto_v6" / "workflow_runner.log"
-LOCK_PATH = WORKSPACE / "auto_v6" / "workflow_runner.lock"
+LOG_PATH = WORKSPACE / "hybrid" / "workflow_runner.log"
+LOCK_PATH = WORKSPACE / "hybrid" / "workflow_runner.lock"
 LOG_MAX_BYTES = 512 * 1024
 H100_RETRY_WAIT_TIMEOUT_MIN = 180
 MONITOR_RETRY_MAX_PER_TICK = 2
@@ -164,19 +164,19 @@ def run_worker(script_name: str, campaign_dir: Path) -> tuple[bool, str]:
     """Run a workflow worker script with locked-file protection."""
     script_path = Path(__file__).parent / script_name
     env = os.environ.copy()
-    env["V6_CAMPAIGN_DIR"] = str(campaign_dir)
+    env["HYBRID_CAMPAIGN_DIR"] = str(campaign_dir)
     if script_name == "workflow_planner.py":
-        env.setdefault("AUTO_V6_WEB_QUERY_LIMIT", "6")
-        env.setdefault("AUTO_V6_WEB_QUERY_TIMEOUT_S", "120")
-        env.setdefault("AUTO_V6_WEB_REUSE_SOURCES", "1")
+        env.setdefault("hybrid_WEB_QUERY_LIMIT", "6")
+        env.setdefault("hybrid_WEB_QUERY_TIMEOUT_S", "120")
+        env.setdefault("hybrid_WEB_REUSE_SOURCES", "1")
     before = _snapshot_locked_files()
     before_hashes = _locked_file_hashes(before)
     try:
         try:
-            worker_timeout = int(env.get("AUTO_V6_WORKER_TIMEOUT_S") or (5400 if script_name == "workflow_planner.py" else 1800))
+            worker_timeout = int(env.get("hybrid_WORKER_TIMEOUT_S") or (5400 if script_name == "workflow_planner.py" else 1800))
         except (TypeError, ValueError):
             worker_timeout = 5400 if script_name == "workflow_planner.py" else 1800
-        worker_python = env.get("AUTO_V6_WORKER_PYTHON") or sys.executable
+        worker_python = env.get("hybrid_WORKER_PYTHON") or sys.executable
         r = subprocess.run(
             [worker_python, str(script_path)],
             capture_output=True, text=True, encoding="utf-8",
@@ -601,7 +601,7 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
                 "tag": tag,
                 "policy": (
                     "Blocked before runner submit; capacity_rationale cannot waive resource feasibility guard. "
-                    "Ordinary Auto V6 candidates must use batch_size=16. Automatic lower batch sizes are allowed "
+                    "Ordinary Hybrid candidates must use batch_size=16. Automatic lower batch sizes are allowed "
                     "only at batch_size=8 for explicit resource_probe/OOM-repair/resource_guard safe-config paths and are "
                     "feasibility evidence, not ordinary leaderboard candidates unless rerun/normalized; batch_size<8 requires manual_resource_probe_approved=True."
                 ),
@@ -647,7 +647,7 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
         remote_results = f"{exc_layout.runs_dir(exc.campaign_id)}/{exp_id}"
         train_cfg = {
             "experiment_id": exp_id,
-            "strategy": f"v6_{tag}",
+            "strategy": f"hybrid_{tag}",
             "arch_name": arch_name,
             "arch_kwargs": {
                 "n_c": cfg.get("n_c", 16),
@@ -769,7 +769,7 @@ def _build_train_cfg_for_attempt(
 ) -> dict:
     train_cfg = {
         "experiment_id": exp_id,
-        "strategy": "v6_smoke" if epochs == SMOKE_EPOCHS else "v6_full",
+        "strategy": "hybrid_smoke" if epochs == SMOKE_EPOCHS else "hybrid_full",
         "arch_name": arch_name,
         "arch_kwargs": {
             "n_c": cfg.get("n_c", 16),
@@ -1804,7 +1804,7 @@ HANDLER_MAP = {
 
 def main() -> None:
     import argparse
-    parser = argparse.ArgumentParser(description="V4 Campaign Runner")
+    parser = argparse.ArgumentParser(description="Sequential Campaign Runner")
     parser.add_argument("--campaign-dir", required=True)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
@@ -1898,3 +1898,6 @@ if __name__ == "__main__":
     except Exception:
         pass
     main()
+
+
+

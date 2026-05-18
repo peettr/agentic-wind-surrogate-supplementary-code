@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 2,
+  "slot": 6,
+  "arch_name": "quadmamba",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 132194421,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "1.0",
+  "metrics": {
+    "r2_median": "0.696234744663454",
+    "r2_global": "0.6751996960281275",
+    "mae_median": "0.0863259881734848",
+    "mae_mean": "0.0793004592203281"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Build and optionally execute the Auto V5 repair stage.
+﻿#!/usr/bin/env python3
+"""Build and optionally execute the Grid repair stage.
 
 The mandated repair sequence is Claude repair -> Codex review+patch -> Claude
 final review+patch. By default this module is dry-run friendly: it writes the
@@ -15,7 +15,7 @@ from typing import Any
 
 
 def build_repair_context(context: dict[str, Any]) -> str:
-    lines: list[str] = ["# Auto V5 Repair Context", ""]
+    lines: list[str] = ["# Grid Repair Context", ""]
     scalar_keys = [
         "base_run_id",
         "run_id",
@@ -76,7 +76,7 @@ def build_repair_context(context: dict[str, Any]) -> str:
 def build_repair_plan(context: dict[str, Any], *, repair_id: str, output_dir: Path) -> dict[str, Any]:
     context_path = output_dir / repair_id / "context.md"
     prompt = (
-        f"Read {context_path} and perform the requested Auto V5 repair/review stage. "
+        f"Read {context_path} and perform the requested Grid repair/review stage. "
         "Within the current hard constraints and allowed change paths, autonomously revise allowed change paths as needed; "
         "do not ask for approval for changes inside allowed change paths. Preserve experiment contracts."
     )
@@ -135,3 +135,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

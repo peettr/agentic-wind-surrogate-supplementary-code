@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\coord_field_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\coord_field_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "87ac6deb6a831c11d16bd6344a1d26881b8a9ee1ed427860362ff3e24037c39b",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r001_full_coord_field_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r001_full_coord_field_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

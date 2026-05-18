@@ -1,4 +1,4 @@
-﻿"""Deterministic Auto V6/V5 controller.
+﻿"""Deterministic Hybrid/V5 controller.
 
 Runs after collect and before reviewer. It updates per-run attempt manifest,
 classifies collected evidence, checks retry/repair/total limits, and emits a
@@ -161,11 +161,14 @@ def decide(campaign_dir: Path) -> dict:
 
 
 def main() -> None:
-    campaign_dir = Path(os.environ.get("V6_CAMPAIGN_DIR", "."))
+    campaign_dir = Path(os.environ.get("HYBRID_CAMPAIGN_DIR", "."))
     decision = decide(campaign_dir)
     print(json.dumps({"ok": True, "round_action": decision["round_action"], "next_phase": decision["next_phase"], "counts": decision["counts"]}, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
     main()
+
+
+
 

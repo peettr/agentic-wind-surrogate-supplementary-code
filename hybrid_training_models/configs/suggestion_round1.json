@@ -1,4 +1,4 @@
-{
+﻿{
   "round_num": 1,
   "strategy": "sdf_transfer",
   "rationale": "V3 showed SDF 3ch input gives +0.044 R on UNet (0.680 to 0.724). Apply the same input to the top 9 height-only models. Expected best: DilatedUNet+SDF R~0.735-0.745.",
@@ -175,3 +175,5 @@
     }
   ]
 }
+
+

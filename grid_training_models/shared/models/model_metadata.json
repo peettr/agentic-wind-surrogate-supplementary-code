@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "arch_name": "unet_v2_baseline",
     "source_file": "shared/models/unet_v2_baseline.py",
@@ -494,3 +494,5 @@
     "notes": "Tier C/D screen, parameter adjustment noted"
   }
 ]
+
+

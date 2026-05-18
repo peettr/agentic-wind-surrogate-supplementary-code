@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -129,3 +129,5 @@ class squeeze_axial_detail_unet(nn.Module):
         y = y.clone()
         y[~valid_out] = float("nan")
         return y
+
+

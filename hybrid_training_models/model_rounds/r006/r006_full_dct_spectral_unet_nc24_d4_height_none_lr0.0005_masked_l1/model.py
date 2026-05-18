@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -121,3 +121,5 @@ class dct_spectral_unet(nn.Module):
             valid = valid.any(dim=1, keepdim=True).expand(-1, out.shape[1], -1, -1)
 
         return torch.where(valid, out, torch.full_like(out, float("nan")))
+
+

@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\unet_v3_geomtok.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\unet_v3_geomtok.py",
   "model_source_kind": "generated",
   "model_sha256": "3309838682bf40ea549a2613388cdf7111210e2c161cb8f5a320ba737ae9e31d",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r004_full_unet_v3_geomtok_nc24_lr0.0005_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r004_full_unet_v3_geomtok_nc24_lr0.0005_masked_l1_gradient/model.py"
 }
+
+

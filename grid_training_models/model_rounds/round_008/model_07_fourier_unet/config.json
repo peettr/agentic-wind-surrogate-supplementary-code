@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 8,
+  "slot": 7,
+  "arch_name": "fourier_unet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 34201393,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "2.0",
+  "metrics": {
+    "r2_median": "0.6753120910726094",
+    "r2_global": "0.6835759933207046",
+    "mae_median": "0.0882400199770927",
+    "mae_mean": "0.0788750500841574"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

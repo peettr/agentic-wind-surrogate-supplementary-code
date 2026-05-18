@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -85,3 +85,5 @@ class hyperinr_residual_head_unet(nn.Module):
             valid = valid[:, :1].expand(-1, out.shape[1], -1, -1)
         out = torch.where(valid, out, torch.full_like(out, float("nan")))
         return out
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 5,
+  "slot": 4,
+  "arch_name": "cnn_deeponet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 1680577,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "10.0",
+  "metrics": {
+    "r2_median": "-3.323431164343231",
+    "r2_global": "-2.778598377516048",
+    "mae_median": "0.3609486222267151",
+    "mae_mean": "0.3754266077821905"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

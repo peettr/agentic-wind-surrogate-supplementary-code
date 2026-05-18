@@ -1,4 +1,4 @@
-"""SE/CBAM Attention UNet — channel + spatial attention on skip connections.
+﻿"""SE/CBAM Attention UNet â€” channel + spatial attention on skip connections.
 
 Combines Squeeze-and-Excitation (SE) channel attention with optional spatial
 attention from CBAM. Lightweight addition to standard UNet.
@@ -141,3 +141,6 @@ class CBAMUNet(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

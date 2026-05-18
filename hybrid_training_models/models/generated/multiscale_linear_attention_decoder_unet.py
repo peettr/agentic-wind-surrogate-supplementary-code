@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -130,3 +130,5 @@ class multiscale_linear_attention_decoder_unet(nn.Module):
         y = y.clone()
         y[~valid] = float("nan")
         return y
+
+

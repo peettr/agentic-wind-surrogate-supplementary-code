@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -142,3 +142,5 @@ class noncausal_neighbor_ssm_unet(nn.Module):
 
         y = torch.where(valid_out, y, torch.full_like(y, float("nan")))
         return y
+
+

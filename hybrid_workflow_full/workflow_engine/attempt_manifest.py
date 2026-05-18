@@ -1,4 +1,4 @@
-﻿"""Attempt manifest for Auto V6/V5 controller logic.
+﻿"""Attempt manifest for Hybrid/V5 controller logic.
 
 The manifest is per campaign and per semantic base run. It is the source of
 truth for attempts, retries, repairs, limits, and terminal status. The runner
@@ -194,4 +194,7 @@ def manifest_summary(manifest: dict[str, Any]) -> dict[str, int]:
         st = r.get("status", "UNKNOWN")
         counts[st] = counts.get(st, 0) + 1
     return counts
+
+
+
 

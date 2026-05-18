@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -138,3 +138,5 @@ class beno_film(nn.Module):
 
         out = torch.where(valid_out, out, torch.full_like(out, float("nan")))
         return out
+
+

@@ -1,4 +1,4 @@
-"""FourierUNet — UNet with Fourier upsampling in decoder.
+﻿"""FourierUNet â€” UNet with Fourier upsampling in decoder.
 
 Replaces standard ConvTranspose2d upsampling with Fourier-based upsampling
 that preserves frequency content. Encoder is standard convolution, decoder
@@ -128,3 +128,6 @@ class FourierUNet(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

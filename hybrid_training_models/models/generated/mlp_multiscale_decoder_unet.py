@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -98,3 +98,5 @@ class mlp_multiscale_decoder_unet(nn.Module):
             valid_out = valid_out[:, :1].expand(-1, self.out_channels, -1, -1)
 
         return torch.where(valid_out, out, torch.full_like(out, float("nan")))
+
+

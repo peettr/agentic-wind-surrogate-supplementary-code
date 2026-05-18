@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -148,3 +148,5 @@ class local_enhanced_selective_scan_unet(nn.Module):
             valid_out = valid
 
         return torch.where(valid_out, y, torch.full_like(y, float("nan")))
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -150,3 +150,5 @@ class attn_ssm_neighbor_unet(nn.Module):
         output = y.clone()
         output[~valid] = float("nan")
         return output
+
+

@@ -1,4 +1,4 @@
-"""NAFNet — Nonlinear Activation Free Network for dense regression.
+﻿"""NAFNet â€” Nonlinear Activation Free Network for dense regression.
 
 Uses SimpleGate (element-wise channel gating) and Simple Channel Attention (SCA)
 instead of traditional nonlinear activations. Achieves SOTA on image restoration
@@ -44,7 +44,7 @@ class NAFBlock(nn.Module):
     """NAFNet residual block: SimpleGate + SCA, no nonlinear activation.
 
     Architecture (per block):
-      x → 1x1 expand(2x) → SimpleGate → SCA → 1x1 project → + x
+      x â†’ 1x1 expand(2x) â†’ SimpleGate â†’ SCA â†’ 1x1 project â†’ + x
       with LayerNorm-like normalization via GroupNorm.
     """
 
@@ -183,3 +183,6 @@ class NAFNet(BaseSurrogate):
             x = self.dec_blocks[k](x)
 
         return self.output_proj(x)
+
+
+

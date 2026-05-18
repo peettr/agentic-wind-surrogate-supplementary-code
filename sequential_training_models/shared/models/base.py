@@ -1,4 +1,4 @@
-"""Abstract base class for every surrogate architecture.
+﻿"""Abstract base class for every surrogate architecture.
 
 The I/O contract is part of the Appendix-A locked parameters. Every architecture
 registered with ModelRegistry must subclass :class:`BaseSurrogate` and accept the
@@ -40,3 +40,6 @@ class BaseSurrogate(nn.Module, ABC):
             raise ValueError(
                 f"Output shape mismatch: expected (B, 1, 640, 640), got {tuple(y.shape)}"
             )
+
+
+

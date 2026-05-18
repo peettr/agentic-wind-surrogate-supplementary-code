@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -90,3 +90,5 @@ class coarse_to_fine_ladder_unet(nn.Module):
         out = out.clone()
         out[~valid] = float("nan")
         return out
+
+

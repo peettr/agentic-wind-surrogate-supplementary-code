@@ -1,4 +1,4 @@
-"""U-NO — U-Shaped Neural Operator for 2D dense regression.
+﻿"""U-NO â€” U-Shaped Neural Operator for 2D dense regression.
 
 Combines the multi-resolution structure of U-Net with spectral convolution
 layers from FNO. Applies Fourier modes at each resolution level, enabling
@@ -140,3 +140,6 @@ class UNO(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_layers[k](x)
         return self.output_proj(x)
+
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -140,3 +140,5 @@ class multiscale_linear_attention_skip_mixer_unet(nn.Module):
             valid_out = valid
         out = torch.where(valid_out, out, torch.full_like(out, float("nan")))
         return out
+
+

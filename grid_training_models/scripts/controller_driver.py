@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Safe outer driver for Auto V5 controller orchestration.
+﻿#!/usr/bin/env python3
+"""Safe outer driver for Grid controller orchestration.
 
 The driver composes existing monitor, promotion, launcher, and retry helpers. It
 is intentionally safe by default: it writes local control/plan artifacts, but it
@@ -202,9 +202,9 @@ def validate_benchmark_control_smoke_gate(control: dict[str, Any]) -> None:
     """Reject benchmark controls that source curated configs directly.
 
     Benchmark200 is a performance screen, not the first runtime gate. Standard
-    Auto V5 flow must be curated/source configs -> smoke20 -> monitor/retry/repair
+    Grid flow must be curated/source configs -> smoke20 -> monitor/retry/repair
     -> promotion merge -> benchmark200. Therefore every benchmark run should
-    source a smoke campaign/run, not `v5_ai_curated_001` or another non-smoke
+    source a smoke campaign/run, not `grid_curated_001` or another non-smoke
     campaign directly.
     """
     if str(control.get("stage") or "") != "benchmark200":
@@ -718,3 +718,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

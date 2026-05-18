@@ -1,4 +1,4 @@
-﻿"""Lightweight local validation for Auto V6 web-scout planner prompts.
+﻿"""Lightweight local validation for Hybrid web-scout planner prompts.
 
 Does not call external APIs or run the planner. Intended for quick checks after
 editing workflow_planner.py.
@@ -142,17 +142,17 @@ def main() -> None:
     if len(set(weighted_meta.get("selected_tiers") or [])) < 4:
         _fail(f"weighted routine selection should preserve 4-tier coverage; got {weighted_meta}")
 
-    old_disable = os.environ.get("AUTO_V6_WEB_DISABLE_COOLDOWN")
-    os.environ["AUTO_V6_WEB_DISABLE_COOLDOWN"] = "1"
+    old_disable = os.environ.get("hybrid_WEB_DISABLE_COOLDOWN")
+    os.environ["hybrid_WEB_DISABLE_COOLDOWN"] = "1"
     try:
         _, disabled_meta = planner.select_web_source_queries(saturated_context, mode="routine")
     finally:
         if old_disable is None:
-            os.environ.pop("AUTO_V6_WEB_DISABLE_COOLDOWN", None)
+            os.environ.pop("hybrid_WEB_DISABLE_COOLDOWN", None)
         else:
-            os.environ["AUTO_V6_WEB_DISABLE_COOLDOWN"] = old_disable
+            os.environ["hybrid_WEB_DISABLE_COOLDOWN"] = old_disable
     if disabled_meta.get("cooldown_clusters"):
-        _fail(f"AUTO_V6_WEB_DISABLE_COOLDOWN=1 should disable cooldown; got {disabled_meta}")
+        _fail(f"hybrid_WEB_DISABLE_COOLDOWN=1 should disable cooldown; got {disabled_meta}")
 
     required_rationale_keys = {
         "topic_cluster",
@@ -184,7 +184,7 @@ def main() -> None:
         "feasibility_under_locked_contract",
         "paired_comparison",
         "ablation_removes_mechanism",
-        "minimal_implementation_in_auto_v6",
+        "minimal_implementation_in_hybrid",
         "source_url",
         "not commands",
     ]:
@@ -257,11 +257,11 @@ def main() -> None:
         "homepage_like_url",
         "suspicious_non_paper_source",
         "select_web_source_queries",
-        "AUTO_V6_WEB_QUERY_MODE",
-        "AUTO_V6_WEB_QUERY_LIMIT",
-        "AUTO_V6_WEB_REUSE_SOURCES",
-        "AUTO_V6_WEB_DISABLE_COOLDOWN",
-        "AUTO_V6_WEB_QUERY_TIMEOUT_S",
+        "hybrid_WEB_QUERY_MODE",
+        "hybrid_WEB_QUERY_LIMIT",
+        "hybrid_WEB_REUSE_SOURCES",
+        "hybrid_WEB_DISABLE_COOLDOWN",
+        "hybrid_WEB_QUERY_TIMEOUT_S",
         "reliability_filter",
         "web_query_yield.json",
         "adversarial_queries",
@@ -277,4 +277,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+
 

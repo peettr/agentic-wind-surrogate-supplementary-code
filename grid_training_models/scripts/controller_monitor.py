@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Local monitor-only orchestrator for Auto V5 controller campaigns.
+﻿#!/usr/bin/env python3
+"""Local monitor-only orchestrator for Grid controller campaigns.
 
 This script is intentionally side-effect limited. It is designed to run from the
 local WSL/Hermes workspace as the controller state source of truth. In
@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.auto_v5_controller import (
+from scripts.grid_controller import (
     ACTION_AUTO_FAIL,
     ACTION_RECORD_RESULT,
     ACTION_REPAIR,
@@ -149,7 +149,7 @@ def _seed_state(control: dict[str, Any], launch_plan: dict[str, Any], previous_s
     campaign = str(control.get("campaign") or launch_plan.get("campaign") or previous_state.get("campaign") or "")
     remote_root = str(control.get("remote_root") or launch_plan.get("remote_root") or previous_state.get("remote_root") or "")
     stage = str(control.get("stage") or launch_plan.get("stage") or previous_state.get("stage") or "")
-    log_root = str(control.get("log_root") or previous_state.get("log_root") or f"/users/lhu1/condor_v5_logs/{campaign}")
+    log_root = str(control.get("log_root") or previous_state.get("log_root") or f"/users/lhu1/condor_grid_logs/{campaign}")
     state = dict(previous_state)
     state.update({
         "campaign": campaign,
@@ -537,7 +537,7 @@ def poll_remote_evidence(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Local Auto V5 monitor-only controller orchestrator; CRC access is opt-in via --live-crc")
+    parser = argparse.ArgumentParser(description="Local Grid monitor-only controller orchestrator; CRC access is opt-in via --live-crc")
     parser.add_argument("--control", required=True, type=Path)
     parser.add_argument("--launch-plan", type=Path)
     parser.add_argument("--state", required=True, type=Path)
@@ -567,7 +567,7 @@ def main(argv: list[str] | None = None) -> int:
             run_ids = _run_ids(control, launch_plan)
             campaign = str(control.get("campaign") or launch_plan.get("campaign") or "")
             remote_root = str(control.get("remote_root") or launch_plan.get("remote_root") or "")
-            log_root = str(control.get("log_root") or f"/users/lhu1/condor_v5_logs/{campaign}")
+            log_root = str(control.get("log_root") or f"/users/lhu1/condor_grid_logs/{campaign}")
             plan_rows = _runs_by_id(launch_plan)
             cluster_ids = []
             for run_id in run_ids:
@@ -606,3 +606,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

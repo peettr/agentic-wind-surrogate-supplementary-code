@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -119,3 +119,5 @@ class dual_branch_boundary_film_unet(nn.Module):
             out_valid = out_valid.expand(-1, out.shape[1], -1, -1)
         out = out.masked_fill(~out_valid, float("nan"))
         return out
+
+

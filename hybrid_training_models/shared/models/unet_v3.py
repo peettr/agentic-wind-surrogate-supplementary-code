@@ -1,4 +1,4 @@
-"""Parameterized UNet supporting 5, 6, or 7 encoder levels.
+﻿"""Parameterized UNet supporting 5, 6, or 7 encoder levels.
 
 Derived from v2's ``unet_lu_7level.py``. ``ConvBlock``, ``_pad_cat``, and the
 ``Conv2d(1x1) -> ReLU`` output head are kept byte-identical to v2. Depth is the
@@ -43,7 +43,7 @@ def _pad_cat(x: torch.Tensor, skip: torch.Tensor) -> torch.Tensor:
 
 
 class UNet(BaseSurrogate):
-    """Parameterized encoder–decoder UNet.
+    """Parameterized encoderâ€“decoder UNet.
 
     Args:
         depth: number of encoder stages (5, 6 or 7). Each stage halves resolution.
@@ -78,11 +78,11 @@ class UNet(BaseSurrogate):
             self.up_blocks.append(
                 nn.ConvTranspose2d(prev, ch, 3, stride=2, padding=1, output_padding=1)
             )
-            # After _pad_cat we concatenate the skip (same channel count) → 2*ch.
+            # After _pad_cat we concatenate the skip (same channel count) â†’ 2*ch.
             self.dec_blocks.append(ConvBlock(2 * ch, ch))
             prev = ch
 
-        # Output head — v2 exact: 1x1 conv followed by ReLU (non-negative wind speed).
+        # Output head â€” v2 exact: 1x1 conv followed by ReLU (non-negative wind speed).
         self.out_conv = nn.Sequential(
             nn.Conv2d(n_c, 1, kernel_size=1),
             nn.ReLU(inplace=True),
@@ -111,6 +111,9 @@ if __name__ == "__main__":
         print(f"depth={d}: params={n_params:,}  out={tuple(y.shape)}")
 
 
-# Alias for Auto V6 script_path loading by registry arch_name.
+# Alias for Hybrid script_path loading by registry arch_name.
 unet_v3 = UNet
+
+
+
 

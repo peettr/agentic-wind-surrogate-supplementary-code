@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\anisotropic_boundary_hybrid_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\anisotropic_boundary_hybrid_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "443074493d73c5da1f87ec0b276fa2d03482b684ab66d220be0a0d661c9ecdfe",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r013_full_anisotropic_boundary_hybrid_unet_nc20_d6_height_sdf_none_lr0.0004_masked_l1_gradient_retry2/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r013_full_anisotropic_boundary_hybrid_unet_nc20_d6_height_sdf_none_lr0.0004_masked_l1_gradient_retry2/model.py"
 }
+
+

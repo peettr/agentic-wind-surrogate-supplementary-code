@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r018_full_quadmamba_nc32_lr0.00035_masked_huber",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "quadmamba",
   "arch_kwargs": {
     "n_c": 32,
@@ -21,6 +21,8 @@
   "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r018_full_quadmamba_nc32_lr0.00035_masked_huber",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\shared\\models\\quadmamba.py",
+  "script_path": "<LOCAL_WORKSPACE>\\sequential\\shared\\models\\quadmamba.py",
   "model_source_kind": "reference_copy"
 }
+
+

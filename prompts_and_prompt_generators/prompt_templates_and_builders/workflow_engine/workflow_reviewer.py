@@ -1,4 +1,4 @@
-﻿"""V4 Workflow Reviewer â€” Dual-model analysis for smoke and full runs.
+﻿"""Sequential Workflow Reviewer â€” Dual-model analysis for smoke and full runs.
 
 Two modes:
 1. smoke_classify: diagnose failures, produce fix plan (Sonnet + Codex)
@@ -30,7 +30,7 @@ from workflow_knowledge import build_experiment_knowledge
 
 CLAUDE_BIN_FULL = shutil.which("claude") or shutil.which("claude.exe") or "claude"
 CODEX_BIN_FULL = shutil.which("codex") or "codex"
-CODEX_MODEL = os.environ.get("AUTO_V6_REVIEW_CODEX_MODEL", "gpt-5.5")
+CODEX_MODEL = os.environ.get("hybrid_REVIEW_CODEX_MODEL", "gpt-5.5")
 
 
 def run_cmd(cmd: list[str], timeout: int = 900, stdin_text: str | None = None,
@@ -63,16 +63,16 @@ def build_post_codegen_prompt(state: dict, manifest: dict, target_archs: list[st
         })
 
     train_contract = (
-        "Important V4 loading contract: TrainConfig may include script_path. "
-        "auto_v6/shared/train.py must prefer script_path over shared MODEL_REGISTRY "
+        "Important Sequential loading contract: TrainConfig may include script_path. "
+        "hybrid/shared/train.py must prefer script_path over shared MODEL_REGISTRY "
         "when script_path is present, so generated/fixed files are actually used. "
         "A generated file must be self-contained: all helper classes/functions it references must be defined in that file. "
         "Each model class must be named exactly arch_name and accept __init__(in_channels=1, out_channels=1, n_c=..., depth=...)."
     )
     return (
-        "You are performing post-codegen review for Auto V6 neural surrogate models.\n"
-        "You MAY directly edit files under auto_v6/models/generated only.\n"
-        "Do not edit locked infrastructure: auto_v6/shared/train.py, losses.py, eval_module.py, data loader, data files, or templates.\n\n"
+        "You are performing post-codegen review for Hybrid neural surrogate models.\n"
+        "You MAY directly edit files under hybrid/models/generated only.\n"
+        "Do not edit locked infrastructure: hybrid/shared/train.py, losses.py, eval_module.py, data loader, data files, or templates.\n\n"
         f"{train_contract}\n\n"
         "Review goals:\n"
         "1. Fix undefined symbols and missing helper classes.\n"
@@ -282,7 +282,7 @@ def _safe_config_patch(failure: dict, fix: dict) -> dict:
             patch["n_c"] = 16
 
     if any(k in text for k in ("oom", "out of memory", "memory", "batch")):
-        # Automatic OOM/config repair may reduce batch_size only to the Auto V6
+        # Automatic OOM/config repair may reduce batch_size only to the Hybrid
         # floor of 8.  batch_size<8 is reserved for explicit manual_resource_probe_approved
         # feasibility probes and must not be suggested/submitted by autonomous repair.
         if cur_batch > 8:
@@ -343,7 +343,7 @@ def _schema_config_patch(failure: dict, fix: dict) -> dict:
     params = _model_init_params(str(arch_name))
     patch: dict = {"arch_kwargs_remove": [bad_kw], "arch_kwargs_set": {}}
 
-    # Common V4 convention: n_c is the search-space channel width.  Some
+    # Common Sequential convention: n_c is the search-space channel width.  Some
     # imported architectures call the same concept width, hidden_channels, etc.
     if bad_kw == "n_c":
         candidates = [
@@ -482,7 +482,7 @@ def _is_full_completed(record: dict) -> bool:
 
 
 def _campaign_dir_from_env() -> Path:
-    return Path(os.environ.get("V6_CAMPAIGN_DIR", PROJECT_ROOT / "campaigns" / "auto_v6"))
+    return Path(os.environ.get("HYBRID_CAMPAIGN_DIR", PROJECT_ROOT / "campaigns" / "hybrid"))
 
 
 def _record_exp_id(record: dict) -> str:
@@ -682,7 +682,7 @@ def build_hypothesis_status_table(state: dict, history: list[dict], max_items: i
             sources.append((f"history[-80:][{idx}].round_review", item["round_review"]))
         elif isinstance(item.get("knowledge_update"), dict) or any(k in item for k in ("hypothesis_resolution_log", "recommended_hypotheses")):
             sources.append((f"history[-80:][{idx}]", item))
-    campaign_dir = Path(os.environ.get("V6_CAMPAIGN_DIR", PROJECT_ROOT / "campaigns" / "auto_v6"))
+    campaign_dir = Path(os.environ.get("HYBRID_CAMPAIGN_DIR", PROJECT_ROOT / "campaigns" / "hybrid"))
     artifacts_dir = campaign_dir / "artifacts"
     if artifacts_dir.exists():
         review_paths = sorted(artifacts_dir.glob("r*/round_review.json"))[-5:]
@@ -743,7 +743,7 @@ def build_full_review_prompt(state: dict, history: list[dict], full_results: lis
     review_context_bundle = build_full_review_context_bundle(state, history, full_results)
 
     return (
-        "You are a cross-round scientific auditor for Auto V6 NAS. "
+        "You are a cross-round scientific auditor for Hybrid NAS. "
         "First audit the evidence tables and current-round full results; only after that give soft recommendations for the planner.\n"
         f"Round: {round_num}\n"
         f"Best R2_median ever from workflow_state: {best_r2:.4f}\n"
@@ -760,13 +760,13 @@ def build_full_review_prompt(state: dict, history: list[dict], full_results: lis
         "3. R2 trends across rounds (improving, stagnating, declining), using recent_rounds_summary and all_time_top_k.\n"
         "4. Specific recommendations for next round, explicitly marked soft/hard with evidence and next_test.\n"
         "5. Whether to continue searching or stop (action: continue|done).\n"
-        "6. Why the current V4 benchmark/current-best remains strong, citing V4 exp_ids.\n"
+        "6. Why the current Sequential benchmark/current-best remains strong, citing Sequential exp_ids.\n"
         "7. Which failures are resource, optimization, generalization, architecture-bias, code, or config/schema failures.\n"
         "8. Resolve prior hypotheses if possible: supported/refuted/inconclusive/continued using hypothesis_status_table.\n"
         "9. Mandatory cross-round audit: compare this round against recent best trend, historical best runs, near-config contrasts, family saturation, and smoke-vs-full bias. Distinguish evidence-backed conclusions from uncertain hypotheses.\n\n"
         "Review policy: audit conclusions are soft scientific evidence unless they identify a schema-invalid config, resource-infeasible config, locked train/data/eval contract violation, explicit user/controller rule violation, or another locked-contract breach. Your recommendations are SOFT evidence for the planner, not commands. Mark something hard only for those locked/resource/schema/controller cases. Do not hard-ban EMA, architecture families, input feature contracts, or loss choices solely because this round underperformed; instead record confidence, contradicting evidence, and ablation/diversity opportunities.\n"
         "Return JSON with the legacy fields plus a machine-readable knowledge_update block.\n"
-        "Use only V4/Auto V6 results in this prompt and provided history/context. Do not use or infer V3 performance.\n"
+        "Use only Sequential/Hybrid results in this prompt and provided history/context. Do not use or infer V3 performance.\n"
         "Failure_class enum: PASS, RESOURCE_OOM, RESOURCE_HELD, RESOURCE_EVICTED, CODEGEN_BUG, SCHEMA_MISMATCH, SHAPE_ERROR, OPTIMIZATION_UNSTABLE, OVERFIT, UNDERFIT, BENCHMARK_TIE, LOW_VALUE_VARIANT, AUTO_FAIL, UNKNOWN.\n\n"
         "Return JSON. Keep legacy fields, but prefer object-shaped recommendations when possible. String recommendations remain allowed for backward compatibility.\n"
         '{"action": "continue|done", "summary": "...", "top_performers": [{"exp_id": "...", "arch_name": "...", "val_r2_median": 0.0, "round": 0, "reason": "..."}], '
@@ -776,7 +776,7 @@ def build_full_review_prompt(state: dict, history: list[dict], full_results: lis
         '"knowledge_update": {"benchmark_survival_explanation": {"summary": "...", "cited_failed_attempts": [...]}, '
         '"failure_taxonomy": [{"id": "F...", "arch_name": "...", "failure_class": "...", "evidence_run_ids": [...], "planner_implication": "..."}], '
         '"positive_patterns": [{"id": "P...", "pattern": "...", "evidence_run_ids": [...], "planner_implication": "..."}], '
-        '"negative_patterns": [...], "recommended_hypotheses": [{"id": "H...", "claim": "...", "source": "V4-result-driven", "evidence_so_far": [...], "next_test": "..."}], '
+        '"negative_patterns": [...], "recommended_hypotheses": [{"id": "H...", "claim": "...", "source": "Sequential-result-driven", "evidence_so_far": [...], "next_test": "..."}], '
         '"hypothesis_resolution_log": [{"hypothesis_id": "H...", "outcome": "supported|refuted|inconclusive|continued", "evidence": [...], "reason": "..."}], '
         '"soft_advisories": [{"advisory": "...", "confidence": "low|medium|high", "evidence_run_ids": [...], "planner_use": "soft evidence only"}], '
         '"contradicted_patterns": [{"pattern": "...", "contradicting_evidence_run_ids": [...], "interpretation": "..."}], '
@@ -1165,7 +1165,7 @@ def extract_json_with_key(text: str, required_key: str) -> dict | None:
 # â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def main() -> None:
-    campaign_dir = Path(os.environ.get("V6_CAMPAIGN_DIR", "."))
+    campaign_dir = Path(os.environ.get("HYBRID_CAMPAIGN_DIR", "."))
     state = load_state(campaign_dir)
     round_num = state.get("round_num", 0)
     art_dir = round_artifact_dir(campaign_dir, round_num)
@@ -1397,3 +1397,6 @@ def rule_based_smoke_diagnosis(failures: list[dict]) -> dict:
 
 if __name__ == "__main__":
     main()
+
+
+

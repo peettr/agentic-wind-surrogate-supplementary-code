@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -124,3 +124,5 @@ class kan_fno_hybrid(nn.Module):
 
         y = torch.where(valid, y, torch.full_like(y, float("nan")))
         return y
+
+

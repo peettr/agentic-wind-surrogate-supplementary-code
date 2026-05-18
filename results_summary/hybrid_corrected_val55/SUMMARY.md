@@ -1,6 +1,6 @@
-﻿# Auto V6 1000ep posthoc corrected-val55 checkpoint sweep summary
+﻿# Hybrid 1000ep posthoc corrected-val55 checkpoint sweep summary
 
-Selection rule: for each seed/run, choose the checkpoint with the highest V4 `stratified_v1` corrected val55 median R?; report the corresponding holdout47 and total102 metrics.
+Selection rule: for each seed/run, choose the checkpoint with the highest Sequential `stratified_v1` corrected val55 median R?; report the corresponding holdout47 and total102 metrics.
 
 | Rank | Candidate | n | Mean val55 | Mean holdout47 | Mean total102 | Seed total102 values | Epochs |
 |---:|---|---:|---:|---:|---:|---|---|
@@ -11,3 +11,6 @@ Selection rule: for each seed/run, choose the checkpoint with the highest V4 `st
 | 5 | Top1 boundary_gated_multiscale R12 nc24 lr3e-4 | 3 | 0.7703 | 0.7764 | **0.7809** | s2=0.763349;s3=0.810833;s4=0.768462 | s2:ep1000;s3:ep650;s4:ep400 |
 | 6 | Top4 terrain_conditioned_local_attention R20 | 3 | 0.7803 | 0.7708 | **0.7789** | s2=0.760983;s3=0.798377;s4=0.777235 | s2:ep150;s3:ep500;s4:ep200 |
 | 7 | Top7 boundary_gated_multiscale R08 lr4e-4 | 3 | 0.7767 | 0.7653 | **0.7761** | s2=0.768992;s3=0.794172;s4=0.765106 | s2:ep450;s3:ep300;s4:ep700 |
+
+
+

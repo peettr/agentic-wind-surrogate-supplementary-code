@@ -1,4 +1,4 @@
-"""Research modes — preset configurations for different research tasks.
+﻿"""Research modes â€” preset configurations for different research tasks.
 
 Each mode defines:
 - prompt_template: how to build the per-AI prompt
@@ -12,7 +12,7 @@ from typing import Any
 
 
 # =====================================================================
-# Mode: model_scout — neural architecture search
+# Mode: model_scout â€” neural architecture search
 # =====================================================================
 MODEL_SCOUT: dict[str, Any] = {
     "name": "model_scout",
@@ -50,11 +50,11 @@ Return ONLY the JSON object, no prose outside it.""",
     ),
 
     "task_context": (
-        "Task: 2D spatial field prediction — regression from a building-height map to a "
+        "Task: 2D spatial field prediction â€” regression from a building-height map to a "
         "wind-speed field. Single GPU inference, urban microclimate scale.\n\n"
         "Input  : tensor of shape (B, 1, 640, 640), float.\n"
         "Output : tensor of shape (B, 1, 640, 640), float, non-negative (final ReLU).\n"
-        "Target contains NaN over building interiors — loss must be NaN-safe.\n"
+        "Target contains NaN over building interiors â€” loss must be NaN-safe.\n"
         "Single-GPU VRAM budget: 80 GB. Batch size 16."
     ),
 
@@ -62,7 +62,7 @@ Return ONLY the JSON object, no prose outside it.""",
         "IMPORTANT: Do not limit yourself to UNet variants. Paradigm-shifting "
         "architectures (e.g. neural operators, implicit representations, graph "
         "networks, diffusion-based models) are welcome even if unproven on this "
-        "exact task — we want to explore, not just incrementally improve the baseline."
+        "exact task â€” we want to explore, not just incrementally improve the baseline."
     ),
 
     "claude_summary_prompt": (
@@ -87,7 +87,7 @@ Return ONLY the JSON object, no prose outside it.""",
 
 
 # =====================================================================
-# Mode: literature — literature review on a topic
+# Mode: literature â€” literature review on a topic
 # =====================================================================
 LITERATURE: dict[str, Any] = {
     "name": "literature",
@@ -146,7 +146,7 @@ Return ONLY the JSON object, no prose outside it.""",
 
 
 # =====================================================================
-# Mode: sota_survey — SOTA method comparison
+# Mode: sota_survey â€” SOTA method comparison
 # =====================================================================
 SOTA_SURVEY: dict[str, Any] = {
     "name": "sota_survey",
@@ -199,7 +199,7 @@ Return ONLY the JSON object, no prose outside it.""",
 
 
 # =====================================================================
-# Mode: custom — free-form research
+# Mode: custom â€” free-form research
 # =====================================================================
 CUSTOM: dict[str, Any] = {
     "name": "custom",
@@ -241,3 +241,6 @@ def get_mode(name: str) -> dict[str, Any]:
 
 
 __all__ = ["MODES", "get_mode", "MODEL_SCOUT", "LITERATURE", "SOTA_SURVEY", "CUSTOM"]
+
+
+

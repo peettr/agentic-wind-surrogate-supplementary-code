@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -131,3 +131,5 @@ class nafnet(nn.Module):
             valid_out = valid_out[:, :1].expand_as(y)
 
         return torch.where(valid_out, y, torch.full_like(y, float("nan")))
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -140,3 +140,5 @@ class iterative_residual_polisher_unet(nn.Module):
 
         output = torch.where(valid_out, output, torch.full_like(output, float("nan")))
         return output
+
+

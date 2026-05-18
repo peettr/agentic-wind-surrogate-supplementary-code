@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -93,3 +93,5 @@ class cnn_deeponet_lowrank(nn.Module):
         out_valid = valid if valid.shape[1] == out.shape[1] else valid.all(dim=1, keepdim=True).expand_as(out)
         out = torch.where(out_valid, out, torch.full_like(out, float("nan")))
         return out
+
+

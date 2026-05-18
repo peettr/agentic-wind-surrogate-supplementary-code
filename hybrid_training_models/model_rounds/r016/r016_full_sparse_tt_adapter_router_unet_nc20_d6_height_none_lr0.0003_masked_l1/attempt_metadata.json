@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\sparse_tt_adapter_router_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\sparse_tt_adapter_router_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "49021ac7d247d82973a2917187b3a8f191fdd08385617447fdf6993bc6bbdfef",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r016_full_sparse_tt_adapter_router_unet_nc20_d6_height_none_lr0.0003_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r016_full_sparse_tt_adapter_router_unet_nc20_d6_height_none_lr0.0003_masked_l1/model.py"
 }
+
+

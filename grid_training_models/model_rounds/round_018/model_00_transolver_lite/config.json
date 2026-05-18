@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 18,
+  "slot": 0,
+  "arch_name": "transolver_lite",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 1023425,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "7.0",
+  "metrics": {
+    "r2_median": "-1.2383603098466995",
+    "r2_global": "-0.9080555601913434",
+    "mae_median": "0.2230260670185089",
+    "mae_mean": "0.2408213237469846"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

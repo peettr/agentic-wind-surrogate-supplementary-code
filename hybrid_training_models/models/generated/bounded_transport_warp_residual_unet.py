@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -115,3 +115,5 @@ class bounded_transport_warp_residual_unet(nn.Module):
 
         out = torch.where(valid, out, torch.full_like(out, float("nan")))
         return out
+
+

@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Rule-based Auto V5 run outcome classifier.
+﻿#!/usr/bin/env python3
+"""Rule-based Grid run outcome classifier.
 
 The classifier is intentionally deterministic. It converts collected evidence
 into a classification and next action. Ambiguous evidence returns
@@ -402,3 +402,6 @@ def collect_local_evidence(run_dir: Path, log_dir: Path, precheck_path: Path | N
             if evidence.get("shape_ok") is None and evidence["precheck"].get("shape_ok") is not None:
                 evidence["shape_ok"] = evidence["precheck"].get("shape_ok")
     return evidence
+
+
+

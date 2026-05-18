@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -133,3 +133,5 @@ class boundary_assimilated_spectral_residual(nn.Module):
         spatial_valid = valid.any(dim=1, keepdim=True)
         y = torch.where(spatial_valid, y, torch.full_like(y, float("nan")))
         return y
+
+

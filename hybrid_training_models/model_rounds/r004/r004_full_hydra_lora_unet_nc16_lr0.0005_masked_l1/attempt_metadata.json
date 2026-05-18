@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\hydra_lora_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\hydra_lora_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "acb84bec429c66a8b71d225c0d49badce32d8c7568636b9a1a0a7098d34868a7",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r004_full_hydra_lora_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r004_full_hydra_lora_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

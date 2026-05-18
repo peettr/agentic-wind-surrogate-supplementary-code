@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -123,3 +123,5 @@ class afno_differential_detail_unet(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand_as(y)
 
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

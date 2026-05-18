@@ -1,4 +1,4 @@
-"""MultiScaleConv — Multi-scale feature aggregation network.
+﻿"""MultiScaleConv â€” Multi-scale feature aggregation network.
 
 Processes input at multiple scales in parallel using different dilation rates,
 then fuses features with channel attention. Inspired by ASPP (Atrous Spatial
@@ -117,3 +117,6 @@ class MultiScaleConv(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

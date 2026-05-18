@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -127,3 +127,5 @@ class fno2d_lora(nn.Module):
             out_valid = out_valid.any(dim=1, keepdim=True).expand_as(y)
 
         return torch.where(out_valid, y, torch.full_like(y, float("nan")))
+
+

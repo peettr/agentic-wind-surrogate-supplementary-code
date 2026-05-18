@@ -1,4 +1,4 @@
-"""Prompt construction for Model Scout / Research Engine.
+﻿"""Prompt construction for Model Scout / Research Engine.
 
 Supports multiple modes via ``modes.py``. The main entry point is
 ``build_prompt_for()`` which assembles a prompt for one specific AI
@@ -52,7 +52,7 @@ def build_prompt_for(
         research_question:    the core question (used in literature/sota/custom modes).
         task_context:         background context for the research.
         baseline:             dict describing the current baseline (model_scout mode).
-        existing_models:      names already registered — the AI avoids these.
+        existing_models:      names already registered â€” the AI avoids these.
         n_proposals:          target number of results per AI.
         output_schema_override: custom output schema (overrides mode default).
     """
@@ -141,3 +141,6 @@ __all__ = [
     "PROMPT_DIRECTIONS",
     "AI_LABELS",
 ]
+
+
+

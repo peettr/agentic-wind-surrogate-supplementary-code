@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -126,3 +126,5 @@ class geometry_landmark_operator_token_unet(nn.Module):
 
         out = out.masked_fill(~out_valid, float("nan"))
         return out
+
+

@@ -1,4 +1,4 @@
-"""AttentionMamba — Attention gates + Mamba SSM hybrid.
+﻿"""AttentionMamba â€” Attention gates + Mamba SSM hybrid.
 
 Uses attention gates (from AG-UNet) in the encoder for focused skip connections,
 combined with Mamba SSM in the decoder for efficient sequential modeling.
@@ -135,3 +135,6 @@ class AttentionMamba(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

@@ -1,8 +1,8 @@
-# Sequential Training and Models
+﻿# Sequential Training and Models
 
-This folder contains Sequential training/evaluation code and models.
+This folder contains Sequential training/evaluation code and round-organized models.
 
-- `models/` and `shared/`: source model and training code.
-- `selected_round_configs/`: full training configurations by round.
-- `model_rounds/`: candidate models reorganized by round, with each experiment containing its own `model.py` and `config.json`.
-- `model_rounds_manifest.csv`: inventory of round-organized model files.
+The release source of truth for candidate files is `model_rounds/`. Each round contains one subfolder per candidate, and each candidate folder contains `model.py` and `config.json`. Retry duplicates were collapsed in favor of the non-retry configuration when both existed, and the unneeded removed_round round was removed.
+
+
+

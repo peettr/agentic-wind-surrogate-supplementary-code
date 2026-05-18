@@ -1,4 +1,4 @@
-"""Final validation: champion × 20 seeds × 1000 epochs + holdout eval.
+﻿"""Final validation: champion Ã— 20 seeds Ã— 1000 epochs + holdout eval.
 
 Runs **only** after an explicit ``--approve`` flag. Produces a Lu-comparable
 report in ``{campaign_dir}/final_validation/`` containing per-seed metrics
@@ -28,7 +28,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
-LOGGER = logging.getLogger("auto_v3.final")
+LOGGER = logging.getLogger("baseline_source.final")
 
 FINAL_SEEDS = list(range(1, 21))
 FINAL_EPOCHS = 1000
@@ -66,9 +66,9 @@ def load_champion(campaign_dir: Path) -> dict:
 
 
 def make_configs(champion: dict) -> list[ExperimentConfig]:
-    """Recreate champion configs for 20-seed × 1000-epoch final validation.
+    """Recreate champion configs for 20-seed Ã— 1000-epoch final validation.
 
-    Fix #9: preserve the champion's full ``arch_kwargs``/``loss_kwargs`` —
+    Fix #9: preserve the champion's full ``arch_kwargs``/``loss_kwargs`` â€”
     retraining with an empty variant would silently run the default
     constructor and lose generated / non-default-depth UNet variants /
     FNO width/modes / custom loss kwargs.
@@ -196,3 +196,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+

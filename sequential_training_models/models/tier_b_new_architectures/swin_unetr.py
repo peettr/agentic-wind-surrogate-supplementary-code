@@ -1,4 +1,4 @@
-"""Swin-UNETR: Swin Transformer encoder + UNet decoder.
+﻿"""Swin-UNETR: Swin Transformer encoder + UNet decoder.
 
 Reference: Hatamizadeh et al. 2022 "Swin UNETR: Swin Transformers for
 Semantics Segmentation of Brain Tumors in MRI Images"
@@ -166,7 +166,7 @@ class SwinTransformerBlock(nn.Module):
 
 
 class PatchMerging(nn.Module):
-    """Downsample by merging 2×2 patches (4× reduction in tokens, 2× in channels)."""
+    """Downsample by merging 2Ã—2 patches (4Ã— reduction in tokens, 2Ã— in channels)."""
 
     def __init__(self, dim: int):
         super().__init__()
@@ -227,7 +227,7 @@ class SwinUNETR(BaseSurrogate):
         window_size: attention window size.
         num_layers: list of Swin blocks per stage (len=4).
         num_heads: list of attention heads per stage (len=4).
-        training: dict of training extras — ignored.
+        training: dict of training extras â€” ignored.
     """
 
     def __init__(
@@ -244,7 +244,7 @@ class SwinUNETR(BaseSurrogate):
 
         dims = [embed_dim * (2 ** i) for i in range(4)]  # [48, 96, 192, 384] for Swin-T
 
-        # Patch embedding (stem): conv 4×4 stride 4
+        # Patch embedding (stem): conv 4Ã—4 stride 4
         self.patch_embed = nn.Sequential(
             nn.Conv2d(in_channels, dims[0], kernel_size=4, stride=4),
             _gn(dims[0]),
@@ -276,7 +276,7 @@ class SwinUNETR(BaseSurrogate):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Stem: 640 → 160
+        # Stem: 640 â†’ 160
         h = self.patch_embed(x)
 
         # Encoder
@@ -292,7 +292,7 @@ class SwinUNETR(BaseSurrogate):
             skip = skips[-(i + 2)]  # -2, -3, -4
             h = dec(h, skip)
 
-        # Head: 160 → 640
+        # Head: 160 â†’ 640
         out = self.head(h)
         if out.shape[2:] != x.shape[2:]:
             out = F.interpolate(out, size=x.shape[2:], mode="bilinear", align_corners=False)
@@ -312,3 +312,6 @@ if __name__ == "__main__":
             with torch.no_grad():
                 y = m(x)
             print(f"SwinUNETR embed={embed_dim} ws={ws} layers={nl}: params={n:,} ({n/1e6:.1f}M) out={tuple(y.shape)} min={y.min():.4f}")
+
+
+

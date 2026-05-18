@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Stage, materialize, and optionally submit controller-planned Auto V5 repair attempts.
+﻿#!/usr/bin/env python3
+"""Stage, materialize, and optionally submit controller-planned Grid repair attempts.
 
 This executor is separate from monitor-only orchestration. By default it writes a
 repair control file and does not submit Condor jobs, call AI tools, SSH, or edit
@@ -591,3 +591,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

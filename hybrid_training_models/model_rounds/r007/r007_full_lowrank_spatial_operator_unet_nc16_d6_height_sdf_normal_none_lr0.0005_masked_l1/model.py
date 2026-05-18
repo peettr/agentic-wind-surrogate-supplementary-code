@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -116,3 +116,5 @@ class lowrank_spatial_operator_unet(nn.Module):
         nan_fill = torch.full_like(out, float("nan"))
         out = torch.where(output_valid, out, nan_fill)
         return out
+
+

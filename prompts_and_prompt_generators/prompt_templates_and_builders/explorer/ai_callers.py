@@ -423,7 +423,7 @@ def call_glm(prompt: str, *, timeout: int = DEFAULT_TIMEOUT_S) -> dict[str, Any]
         return {"proposals": [], "status": "no_api_key", "scout": "glm"}
     out = _openai_like(
         prompt,
-        endpoint="https://api.z.ai/api/coding/paas/v4/chat/completions",
+        endpoint="https://api.z.ai/api/coding/paas/Sequential/chat/completions",
         api_key=key,
         model="glm-5.1",
         enable_web=True,
@@ -445,7 +445,7 @@ def call_deepseek(prompt: str, *, timeout: int = DEFAULT_TIMEOUT_S) -> dict[str,
         prompt,
         endpoint="https://api.deepseek.com/v1/chat/completions",
         api_key=key,
-        model=os.environ.get("AUTO_V6_DEEPSEEK_MODEL") or os.environ.get("DEEPSEEK_MODEL") or "deepseek-v4-pro",
+        model=os.environ.get("hybrid_DEEPSEEK_MODEL") or os.environ.get("DEEPSEEK_MODEL") or "deepseek-Sequential-pro",
         enable_web=False,
         timeout=timeout,
     )
@@ -460,7 +460,7 @@ def call_mimo(prompt: str, *, timeout: int = DEFAULT_TIMEOUT_S) -> dict[str, Any
         key = _load_key_from_openclaw("xiaomi")
     if not key:
         return {"proposals": [], "status": "no_api_key", "scout": "mimo"}
-    model = os.environ.get("AUTO_V6_MIMO_MODEL") or os.environ.get("MIMO_MODEL") or "mimo-v2.5-pro"
+    model = os.environ.get("hybrid_MIMO_MODEL") or os.environ.get("MIMO_MODEL") or "mimo-v2.5-pro"
     out = _openai_like(
         prompt,
         endpoint="https://token-plan-cn.xiaomimimo.com/v1/chat/completions",
@@ -513,7 +513,7 @@ def call_grok(prompt: str, *, timeout: int = DEFAULT_TIMEOUT_S) -> dict[str, Any
     if not key:
         return {"proposals": [], "status": "no_api_key", "scout": "grok"}
 
-    model = os.environ.get("AUTO_V6_GROK_MODEL") or os.environ.get("GROK_MODEL") or "grok-4.20-0309-reasoning"
+    model = os.environ.get("hybrid_GROK_MODEL") or os.environ.get("GROK_MODEL") or "grok-4.20-0309-reasoning"
     body: dict[str, Any] = {
         "model": model,
         "input": [
@@ -632,4 +632,7 @@ __all__ = [
     "call_mimo", "call_gemini", "call_grok", "call_deep_research",
     "CALLERS", "get_caller",
 ]
+
+
+
 

@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r023_full_unet_v2_baseline_nc48_lr0.00025_masked_huber",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "unet_v2_baseline",
   "arch_kwargs": {
     "n_c": 48,
@@ -21,6 +21,8 @@
   "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r023_full_unet_v2_baseline_nc48_lr0.00025_masked_huber",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\shared\\models\\unet_v2_baseline.py",
+  "script_path": "<LOCAL_WORKSPACE>\\sequential\\shared\\models\\unet_v2_baseline.py",
   "model_source_kind": "reference_copy"
 }
+
+

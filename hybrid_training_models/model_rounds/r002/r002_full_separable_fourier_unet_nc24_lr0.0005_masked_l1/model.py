@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -127,3 +127,5 @@ class separable_fourier_unet(nn.Module):
 
         output = output.masked_fill(output_invalid, float("nan"))
         return output
+
+

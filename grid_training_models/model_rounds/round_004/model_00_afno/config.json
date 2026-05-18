@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 4,
+  "slot": 0,
+  "arch_name": "afno",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 895425,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "8.0",
+  "metrics": {
+    "r2_median": "0.166527959783011",
+    "r2_global": "0.3561184916770893",
+    "mae_median": "0.1398027092218399",
+    "mae_mean": "0.1319798474962061"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

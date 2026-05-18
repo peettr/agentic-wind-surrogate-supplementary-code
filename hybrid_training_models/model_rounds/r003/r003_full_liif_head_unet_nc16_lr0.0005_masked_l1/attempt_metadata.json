@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\liif_head_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\liif_head_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "4b9108510eb625d4673130feadfb489f226ee51ec3f50cdfd710fae434fec474",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r003_full_liif_head_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r003_full_liif_head_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

@@ -1,6 +1,6 @@
-# Auto V6 Initial Knowledge Package Template
+﻿# Hybrid Initial Knowledge Package Template
 
-> Purpose: provide Auto V6 with experimental evidence from a separate session. Do not include any Phase9 result, ranking, report, hypothesis, or proposal rationale.
+> Purpose: provide Hybrid with experimental evidence from a separate session. Do not include any Phase9 result, ranking, report, hypothesis, or proposal rationale.
 
 ## 0. Provenance
 
@@ -10,7 +10,7 @@
 - Data source:
 - Split used:
 - Training/evaluation protocol:
-- Any known deviations from Auto V6 contract:
+- Any known deviations from Hybrid contract:
 
 ## 1. Executive summary
 
@@ -25,7 +25,7 @@ Recommended length: 5-10 bullets.
 - Holdout/test split size, if any:
 - Baseline model:
 - Baseline metric values:
-- Whether results are directly comparable to Auto V6:
+- Whether results are directly comparable to Hybrid:
 
 ## 3. Full model result table
 
@@ -47,9 +47,9 @@ For each architecture family or mechanism:
 - What seems to work:
 - What seems not to work:
 - Confidence level: high / medium / low
-- Suggested Auto V6 action: exploit / ablate / control / avoid / explore further
+- Suggested Hybrid action: exploit / ablate / control / avoid / explore further
 
-## 5. Hypotheses for Auto V6
+## 5. Hypotheses for Hybrid
 
 Each hypothesis should be actionable and testable.
 
@@ -57,14 +57,14 @@ Each hypothesis should be actionable and testable.
 
 - Claim:
 - Evidence from source session:
-- Proposed Auto V6 test:
+- Proposed Hybrid test:
 - Paired comparison / control:
 - Decision rule:
 - Expected success:
 - Expected failure interpretation:
 - Risk / resource expectation:
 
-## 6. Candidate seeds for Auto V6 planner
+## 6. Candidate seeds for Hybrid planner
 
 These are not mandatory configs, but planner guidance.
 
@@ -90,7 +90,7 @@ List configs or mechanisms that should not be repeated unless there is a specifi
 
 ## 9. Files to attach or copy
 
-List files that Auto V6 should read or copy.
+List files that Hybrid should read or copy.
 
 - result CSV/JSON:
 - model source files:
@@ -104,3 +104,6 @@ Confirm explicitly:
 
 - This package does not use Phase9 results, ranking, proposal rationale, reports, or hypothesis registry.
 - Any overlapping architecture names with Phase9 are included only because they appear in the separate source session, not because of Phase9 performance.
+
+
+

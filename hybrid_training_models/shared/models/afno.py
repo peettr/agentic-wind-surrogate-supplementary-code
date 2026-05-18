@@ -1,4 +1,4 @@
-"""AFNO — Adaptive Fourier Neural Operator for 2D dense regression.
+﻿"""AFNO â€” Adaptive Fourier Neural Operator for 2D dense regression.
 
 Improves on FNO by using adaptive spectral mixing with channel-wise attention
 and block-diagonal weight matrices in frequency domain. Better scalability
@@ -69,7 +69,7 @@ class AFNOLayer(nn.Module):
         x_ft = x_ft[:, :, :h_modes, :w_modes]  # (B, C, h_m, w_m)
         x_ft = x_ft.permute(0, 3, 2, 1).reshape(B, w_modes, h_modes, self.num_blocks, self.block_size)
 
-        # Two-layer spectral mixing: w1 → GELU → w2 (FIXED: was only using w1)
+        # Two-layer spectral mixing: w1 â†’ GELU â†’ w2 (FIXED: was only using w1)
         x_r = x_ft.real
         x_i = x_ft.imag
 
@@ -170,3 +170,6 @@ class AFNO(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return self.output_proj(x)
+
+
+

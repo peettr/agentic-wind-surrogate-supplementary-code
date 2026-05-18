@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r002_full_transolver_nc16_lr0.0005_masked_l1",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "transolver",
   "arch_kwargs": {
     "n_c": 16,
@@ -23,3 +23,5 @@
   "heartbeat_interval_epochs": 10,
   "script_path": "transolver.py"
 }
+
+

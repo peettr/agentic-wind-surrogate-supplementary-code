@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Deterministic dry-run controller for Auto V5 smoke retry/repair decisions."""
+﻿#!/usr/bin/env python3
+"""Deterministic dry-run controller for Grid smoke retry/repair decisions."""
 from __future__ import annotations
 
 import argparse
@@ -13,7 +13,7 @@ _REPO_ROOT = _SCRIPT_DIR.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.auto_v5_controller import get_base_entry, load_manifest, plan_next_step, save_manifest
+from scripts.grid_controller import get_base_entry, load_manifest, plan_next_step, save_manifest
 from scripts.classify_run_failure import classify_evidence
 
 
@@ -59,3 +59,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -129,3 +129,5 @@ class boundary_assimilated_spectral_residual_unet(nn.Module):
             y = y.masked_fill(~y_valid, float("nan"))
 
         return y
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -129,3 +129,5 @@ class boundary_alltoall_surface_mixer_unet(nn.Module):
         output = output.clone()
         output[~output_valid.expand_as(output)] = float("nan")
         return output
+
+

@@ -1,4 +1,4 @@
-﻿# V4 Locked Files â€” ä»Ž V3 å¤åˆ¶ï¼Œä¸å¯ä¿®æ”¹
+﻿# Sequential Locked Files â€” ä»Ž V3 å¤åˆ¶ï¼Œä¸å¯ä¿®æ”¹
 
 è¿™äº›æ–‡ä»¶æ˜¯ V3 è®­ç»ƒç®¡çº¿çš„ä¸€éƒ¨åˆ†ï¼ŒV4 çš„ codegen å’Œ workflow å¿…é¡»å…¼å®¹è¿™äº›æ–‡ä»¶çš„æŽ¥å£ã€‚
 
@@ -35,9 +35,9 @@ train.py æœŸæœ›çš„ `train_config.json` æ ¼å¼ï¼š
   "lr": 0.001,
   "batch_size": 16,
   "checkpoint_interval": 50,
-  "data_dir": "<HPC_PATH>/auto_v3/shared/data",
-  "results_dir": "<HPC_PATH>/auto_v6/campaigns/xxx/runs/exp_id",
-  "split_manifest_path": "<HPC_PATH>/auto_v3/shared/data/split_manifest.json",
+  "data_dir": "<HPC_PATH>/baseline_source/shared/data",
+  "results_dir": "<HPC_PATH>/hybrid/campaigns/xxx/runs/exp_id",
+  "split_manifest_path": "<HPC_PATH>/baseline_source/shared/data/split_manifest.json",
   "eval_splits": ["val"],
   "script_path": "optional codegen .py path"
 }
@@ -53,7 +53,7 @@ train.py çš„è¾“å‡ºï¼š
 
 - RÂ² å€¼ã€æŽ’åã€åˆ†çº§ï¼ˆTier A/B/C/Dï¼‰
 - ä»»ä½•å®žéªŒç»“è®ºï¼ˆ"FNO ä¸å¦‚ UNet" ç­‰ï¼‰
-- V4 å¿…é¡»ä»Žé›¶å‘çŽ°ä¸€åˆ‡
+- Sequential å¿…é¡»ä»Žé›¶å‘çŽ°ä¸€åˆ‡
 
 ## CRC æ“ä½œè§„åˆ™
 
@@ -63,4 +63,7 @@ train.py çš„è¾“å‡ºï¼š
 - GPU è®­ç»ƒç”¨ Condorï¼ŒCPU ä»»åŠ¡ç”¨ SGE qsub
 - wrapper è„šæœ¬å¿…é¡»å…ˆ `module load conda` + `conda activate graphwind`
 - `initialdir` å¿…é¡»æ˜¯é¡¹ç›®æ ¹ç›®å½•ï¼ˆ`train.py` çš„ import éœ€è¦ `shared/` åœ¨ Python è·¯å¾„ä¸Šï¼‰
+
+
+
 

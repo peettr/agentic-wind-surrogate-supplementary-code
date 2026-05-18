@@ -1,4 +1,4 @@
-"""2D-Mamba — True 2D state space model for spatial data.
+﻿"""2D-Mamba â€” True 2D state space model for spatial data.
 
 Scans the 2D spatial domain in 4 directional sweeps (row-left-to-right,
 row-right-to-left, column-top-to-bottom, column-bottom-to-top), merges
@@ -37,7 +37,7 @@ class SS2DDirection(nn.Module):
         self.d_state = d_state
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x: (B, L, C) — already flattened in scan direction
+        # x: (B, L, C) â€” already flattened in scan direction
         B_batch, L, C = x.shape
         x_in = self.proj_in(x)
 
@@ -200,3 +200,6 @@ class Mamba2D(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

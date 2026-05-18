@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\learned_height_warp_fourier_adapter_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\learned_height_warp_fourier_adapter_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "1840ce8717c1441b5cd64e8cd0d8dfa3dc17ef943550a7abd869ae1b3faae675",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r021_full_learned_height_warp_fourier_adapter_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r021_full_learned_height_warp_fourier_adapter_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

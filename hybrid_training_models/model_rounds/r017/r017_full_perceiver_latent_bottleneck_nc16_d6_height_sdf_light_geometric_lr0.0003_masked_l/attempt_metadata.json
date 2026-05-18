@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\perceiver_latent_bottleneck.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\perceiver_latent_bottleneck.py",
   "model_source_kind": "generated",
   "model_sha256": "49bba2fe05484b7bd051bceba35b51e22cace17ed61fefc1e70ff5d1d38ff84b",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r017_full_perceiver_latent_bottleneck_nc16_d6_height_sdf_light_geometric_lr0.0003_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r017_full_perceiver_latent_bottleneck_nc16_d6_height_sdf_light_geometric_lr0.0003_masked_l1/model.py"
 }
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -133,3 +133,5 @@ class texture_energy_modulated_ssm_unet(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand_as(y)
 
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

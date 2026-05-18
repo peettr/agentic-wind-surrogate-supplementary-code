@@ -1,4 +1,4 @@
-"""Process-wide ModelRegistry for auto_v3 surrogates.
+﻿"""Process-wide ModelRegistry for baseline_source surrogates.
 
 Built-in architectures are registered at import time. Codegen-produced models are
 added dynamically via :meth:`ModelRegistry.register_from_path` after preflight.
@@ -38,7 +38,7 @@ from .cnn_deeponet import CNNDeepONet
 
 
 class ModelRegistry:
-    """name → constructor mapping for surrogate architectures."""
+    """name â†’ constructor mapping for surrogate architectures."""
 
     def __init__(self) -> None:
         self._entries: dict[str, Callable[..., BaseSurrogate]] = {}
@@ -142,3 +142,6 @@ REGISTRY.register("residual_spectral", ResidualSpectralNet)
 
 
 __all__ = ["BaseSurrogate", "UNet", "FNO2d", "ModelRegistry", "REGISTRY"]
+
+
+

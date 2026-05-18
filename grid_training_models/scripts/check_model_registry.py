@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Check Auto V5 model registry coverage and optional lightweight readiness."""
+﻿#!/usr/bin/env python3
+"""Check Grid model registry coverage and optional lightweight readiness."""
 from __future__ import annotations
 
 import argparse
@@ -166,3 +166,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

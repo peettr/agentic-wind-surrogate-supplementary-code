@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -135,3 +135,5 @@ class mamba2d_global_mixer(nn.Module):
             valid = valid.any(dim=1, keepdim=True).expand_as(y)
 
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

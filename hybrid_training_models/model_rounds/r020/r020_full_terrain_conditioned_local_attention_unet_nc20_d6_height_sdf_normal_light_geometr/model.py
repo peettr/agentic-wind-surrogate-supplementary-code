@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -134,3 +134,5 @@ class terrain_conditioned_local_attention_unet(nn.Module):
 
         y = y.masked_fill(~valid, float("nan"))
         return y
+
+

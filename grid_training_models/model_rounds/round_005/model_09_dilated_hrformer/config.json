@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 5,
+  "slot": 9,
+  "arch_name": "dilated_hrformer",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 42474673,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "3.0",
+  "metrics": {
+    "r2_median": "0.6721458849137698",
+    "r2_global": "0.6591296102028492",
+    "mae_median": "0.096036858856678",
+    "mae_mean": "0.0832395371557636"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

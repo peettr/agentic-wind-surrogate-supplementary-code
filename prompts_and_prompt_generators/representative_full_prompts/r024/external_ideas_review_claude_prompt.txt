@@ -1,10 +1,10 @@
-You are Claude Opus doing local review for Auto V6 web-scouted external ideas.
+﻿You are Claude Opus doing local review for Hybrid web-scouted external ideas.
 Do not browse. Do not generate train configs. External ideas are mechanisms/context only; review and compress them into planner-safe material.
 Hard-filter any idea that cannot satisfy the locked contract: height-only, single-frame, 2D grid input/output, existing train/eval/data paths, no new labels/meshes/solvers/metrics, fixed seed/input_features.
 Use a 7-axis rubric with 0-5 subscores: novelty, feasibility, height_only_compatibility, parameter_efficiency, implementation_risk, paired_comparison_clarity, diversity_contribution. Preserve keep_score_0_5 compatibility as the overall keep score.
 Reject or down-rank ideas that require new data, mesh/point-cloud labels, expensive solvers, huge parameter growth, temporal sequences, added input channels, or vague name-only transfers.
 Return ONLY JSON: {"reviewed_ideas":[...], "rejected":[...], "topic_cluster_counts":{...}, "coverage_warning":"...", "missing_clusters_for_next_round":[...], "summary":"..."}.
-Each reviewed idea must include idea_id, title, keep_score_0_5, subscores, topic_cluster, source_task, query_tier, height_only_translation, ablation_removes_mechanism, implementation_risk, minimal_implementation_in_auto_v6, expected_parameter_efficiency, recommended_paired_comparison, planner_hint, source_urls.
+Each reviewed idea must include idea_id, title, keep_score_0_5, subscores, topic_cluster, source_task, query_tier, height_only_translation, ablation_removes_mechanism, implementation_risk, minimal_implementation_in_hybrid, expected_parameter_efficiency, recommended_paired_comparison, planner_hint, source_urls.
 
 LOCAL_REVIEW_CONTEXT_JSON:
 {
@@ -19,14 +19,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
     "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
     "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
-    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
-    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the grid_controller initial knowledge package.",
+    "initial_knowledge_policy": "Hybrid experimental priors may come only from the Grid/grid_controller initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
     "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
     "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
     "planner_split": "Use two tracks only with an adaptive explorer target of 4-6 per 12-experiment round, defaulting to 5. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value. This target is planning guidance, not a hard scientific rule.",
     "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
     "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
-    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "batch_size_policy": "Ordinary Hybrid candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
     "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
     "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
     "review_soft_policy": "Reviewer outputs, including round_review, cross_round_audit, cooldowns, soft_advisories, contradicted_patterns, and search_policy_notes, are soft evidence unless they identify a schema-invalid config, resource-infeasible config, locked train/data/eval contract violation, or explicit user/controller rule. Following a review requires evidence; departing from a review requires only concise rationale plus a valid paired comparison/decision rule. Do not hard-ban EMA, model family, input feature contract, or loss solely because a reviewer recommended against it.",
@@ -439,7 +439,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "uno"
   ],
   "novelty_index": {
-    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "policy": "Use this Sequential-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
     "seen_arch_names": [
       "adaptive_afno_unet",
       "afno_differential_detail_unet",
@@ -6002,7 +6002,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "reliability_score": 1.0,
         "reliability_flags": [],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6019,7 +6019,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "reliability_score": 1.0,
         "reliability_flags": [],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6036,7 +6036,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "reliability_score": 1.0,
         "reliability_flags": [],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6053,7 +6053,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "reliability_score": 1.0,
         "reliability_flags": [],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6086,7 +6086,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "hard_excluded_from_codex": false
       },
       {
-        "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+        "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
         "url": "https://www.researchgate.net/publication/TVI-Derain",
         "year": 2025,
         "topic_cluster": "dense_prediction_transformer",
@@ -6100,7 +6100,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
           "suspicious_non_paper_source"
         ],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6119,7 +6119,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
           "unrecognized_publication_domain"
         ],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6136,7 +6136,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "reliability_score": 1.0,
         "reliability_flags": [],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       },
@@ -6153,7 +6153,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "reliability_score": 1.0,
         "reliability_flags": [],
         "hard_excluded_from_codex": false,
-        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+        "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
         "cache_candidate": true,
         "reused_source": true
       }
@@ -6172,7 +6172,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
       "excluded_examples": [],
       "kept_weak_examples": [
         {
-          "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+          "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
           "url": "https://www.researchgate.net/publication/TVI-Derain",
           "flags": [
             "suspicious_non_paper_source"
@@ -6315,7 +6315,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "excluded_examples": [],
         "kept_weak_examples": [
           {
-            "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+            "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
             "url": "https://www.researchgate.net/publication/TVI-Derain",
             "flags": [
               "suspicious_non_paper_source"
@@ -6497,20 +6497,20 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "reuse_hints": {
       "enabled": true,
       "scanned_artifacts": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r021\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r020\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r019\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r018\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r017\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r016\\external_sources_gemini.json"
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r021\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r020\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r019\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r018\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r017\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r016\\external_sources_gemini.json"
       ],
       "cache_candidate_count": 5,
       "cluster_cache_candidate_count": 5,
       "by_query": {
         "airfoil building wind pressure field prediction neural operator 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "airfoil building wind pressure field prediction neural operator 2025",
           "topic_cluster": "cfd_pressure_surrogate",
           "source_count": 2,
@@ -6528,7 +6528,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6545,14 +6545,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "image restoration lightweight state space model U-Net dense prediction 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "image restoration lightweight state space model U-Net dense prediction 2025",
           "topic_cluster": "image_restoration",
           "source_count": 2,
@@ -6570,7 +6570,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6587,20 +6587,20 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "dense prediction transformer lightweight decoder adapter segmentation restoration 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
           "topic_cluster": "dense_prediction_transformer",
           "source_count": 2,
           "sources": [
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -6614,12 +6614,12 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -6633,14 +6633,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "climate downscaling super resolution dense field prediction neural network 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "climate downscaling super resolution dense field prediction neural network 2025",
           "topic_cluster": "climate_downscaling",
           "source_count": 2,
@@ -6660,7 +6660,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6679,14 +6679,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "implicit neural representation hypernetwork image to field prediction architecture": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
           "topic_cluster": "inr_hypernetwork",
           "source_count": 2,
@@ -6704,7 +6704,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6721,7 +6721,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
@@ -6730,7 +6730,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
       },
       "by_topic_cluster": {
         "cfd_pressure_surrogate": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "airfoil building wind pressure field prediction neural operator 2025",
           "topic_cluster": "cfd_pressure_surrogate",
           "source_count": 2,
@@ -6748,7 +6748,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6765,14 +6765,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "image_restoration": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "image restoration lightweight state space model U-Net dense prediction 2025",
           "topic_cluster": "image_restoration",
           "source_count": 2,
@@ -6790,7 +6790,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6807,20 +6807,20 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "dense_prediction_transformer": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
           "topic_cluster": "dense_prediction_transformer",
           "source_count": 2,
           "sources": [
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -6834,12 +6834,12 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -6853,14 +6853,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "climate_downscaling": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "climate downscaling super resolution dense field prediction neural network 2025",
           "topic_cluster": "climate_downscaling",
           "source_count": 2,
@@ -6880,7 +6880,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6899,14 +6899,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "inr_hypernetwork": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
           "topic_cluster": "inr_hypernetwork",
           "source_count": 2,
@@ -6924,7 +6924,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -6941,7 +6941,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
@@ -6995,7 +6995,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "image restoration lightweight state space model U-Net dense prediction 2025",
@@ -7010,7 +7010,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "novel peft test time adaptation neural field operator adapter 2025",
@@ -7034,7 +7034,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "climate downscaling super resolution dense field prediction neural network 2025",
@@ -7048,7 +7048,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "implicit neural representation hypernetwork image to field prediction architecture",
@@ -7063,7 +7063,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       }
     ],
     "selected_tier_counts": {
@@ -7411,7 +7411,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Use only the height tensor; derive soft boundary saliency, ridge/edge tokens, and token coordinates with fixed differentiable filters inside the network.",
         "feasibility_under_locked_contract": "Feasible: single-frame 2D height-to-grid output, no new labels, no mesh construction, no solver, no metric change.",
         "why_relevant_to_topology_pressure": "Pressure fields often depend on nonlocal boundary interactions and choke-like topology effects; a sparse boundary communication path can pass global shape context without widening the whole UNet.",
-        "minimal_implementation_in_auto_v6": "Add a boundary-token extractor, 2-4 layers of low-width token mixing, and FiLM/attention gates on decoder skips of an existing height-only UNet-style model.",
+        "minimal_implementation_in_hybrid": "Add a boundary-token extractor, 2-4 layers of low-width token mixing, and FiLM/attention gates on decoder skips of an existing height-only UNet-style model.",
         "expected_parameter_efficiency": "High: token count is small and the mixer can be much cheaper than dense global attention.",
         "paired_comparison": "Compare against anisotropic_boundary_hybrid-style boundary gating without all-to-all token communication.",
         "ablation_removes_mechanism": "Remove the token mixer and keep only local boundary saliency gates.",
@@ -7432,7 +7432,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Compute block masks, gradients, and local roughness from the height tensor inside the module; do not add SDF or wind-direction inputs.",
         "feasibility_under_locked_contract": "Feasible: pure PyTorch FFT on 2D feature maps, deterministic single-frame inference, no data or evaluation changes.",
         "why_relevant_to_topology_pressure": "Topology pressure can mix local obstacle effects with longer-range field harmonics; block Fourier adapters test whether local spectral context improves pressure propagation around geometry.",
-        "minimal_implementation_in_auto_v6": "Insert a small overlap-add spectral adapter at bottleneck and one mid-decoder scale, with learned low-mode complex weights and residual gating.",
+        "minimal_implementation_in_hybrid": "Insert a small overlap-add spectral adapter at bottleneck and one mid-decoder scale, with learned low-mode complex weights and residual gating.",
         "expected_parameter_efficiency": "Moderate to high: spectral weights are shared per channel group and avoid full-resolution attention.",
         "paired_comparison": "Compare against existing tiled_spectral_mixer or haloed_local_fourier variants but with explicit overlap weighting and boundary-conditioned gates.",
         "ablation_removes_mechanism": "Replace block FFT adapter with a depthwise convolution of matched channel count.",
@@ -7453,7 +7453,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Coordinates are fixed grid coordinates; local context comes only from encoded height and learned feature maps, not external geometry or mesh nodes.",
         "feasibility_under_locked_contract": "Feasible: outputs the same 2D grid and can be trained with existing losses; no arbitrary-resolution evaluation is required.",
         "why_relevant_to_topology_pressure": "Coordinate conditioning can represent smooth global trends and sharp local variations without increasing backbone width, useful for pressure fields tied to position and shape.",
-        "minimal_implementation_in_auto_v6": "Add a tiny MLP residual head over per-pixel decoder features plus normalized x/y/Fourier coordinates, evaluated densely as a 1x1-style module.",
+        "minimal_implementation_in_hybrid": "Add a tiny MLP residual head over per-pixel decoder features plus normalized x/y/Fourier coordinates, evaluated densely as a 1x1-style module.",
         "expected_parameter_efficiency": "High if the MLP is narrow and shared across all pixels.",
         "paired_comparison": "Compare against a standard 1x1 residual output head on the same backbone.",
         "ablation_removes_mechanism": "Remove coordinate/Fourier inputs and keep only feature-to-residual projection.",
@@ -7474,7 +7474,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Similarity keys are computed from height-encoded features only; no semantic model or external prior is used.",
         "feasibility_under_locked_contract": "Feasible if implemented as lightweight scan blocks over 2D feature maps with bounded channel count.",
         "why_relevant_to_topology_pressure": "Pressure patterns may recur across separated but geometrically similar height regions; neighbor state-space mixing can share context without full attention cost.",
-        "minimal_implementation_in_auto_v6": "Insert one compact noncausal scan block at bottleneck and one decoder scale, with top-k local/global neighbor aggregation limited to pooled tokens.",
+        "minimal_implementation_in_hybrid": "Insert one compact noncausal scan block at bottleneck and one decoder scale, with top-k local/global neighbor aggregation limited to pooled tokens.",
         "expected_parameter_efficiency": "Moderate: scan parameters are linear in channel width and cheaper than transformer attention.",
         "paired_comparison": "Compare against semantic_neighbor_key_ssm_unet or local_enhanced_selective_scan without noncausal neighbor retrieval.",
         "ablation_removes_mechanism": "Disable neighbor retrieval and keep only bidirectional scans.",
@@ -7495,7 +7495,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The smooth/detail split uses pooling, depthwise filters, and height-derived gradients from the input tensor only.",
         "feasibility_under_locked_contract": "Feasible: a deterministic decoder block for the existing 2D output grid with no extra targets.",
         "why_relevant_to_topology_pressure": "Pressure errors can be either broad bias or boundary-local detail loss; explicit base/detail fusion tests this decomposition without changing loss or data.",
-        "minimal_implementation_in_auto_v6": "Replace final decoder fusion with ACSM-like smoothing, TBRM-like high-pass depthwise convolutions, and a learned gate before the output head.",
+        "minimal_implementation_in_hybrid": "Replace final decoder fusion with ACSM-like smoothing, TBRM-like high-pass depthwise convolutions, and a learned gate before the output head.",
         "expected_parameter_efficiency": "High: mostly depthwise separable filters and small gates.",
         "paired_comparison": "Compare against sparse_residual_refinement_unet or iterative_residual_polisher-style heads with no explicit base/detail separation.",
         "ablation_removes_mechanism": "Fuse branches by simple addition and remove the high-pass texture-boundary branch.",
@@ -7516,7 +7516,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Attention queries, keys, and values are learned from height-only encoder features; no external tokens or labels.",
         "feasibility_under_locked_contract": "Feasible: local PyTorch module over existing feature maps, bounded memory via pooling and channel grouping.",
         "why_relevant_to_topology_pressure": "Topology pressure needs long-range shape context but full attention is expensive; linear attention can test global coupling at a small parameter and memory budget.",
-        "minimal_implementation_in_auto_v6": "Add a grouped linear attention skip mixer at two decoder resolutions, with depthwise multi-scale value branches and residual scaling initialized near zero.",
+        "minimal_implementation_in_hybrid": "Add a grouped linear attention skip mixer at two decoder resolutions, with depthwise multi-scale value branches and residual scaling initialized near zero.",
         "expected_parameter_efficiency": "High: grouped projections plus linear attention should be much lighter than Swin or full transformer blocks.",
         "paired_comparison": "Compare against terrain_conditioned_local_attention_unet with local attention only.",
         "ablation_removes_mechanism": "Replace linear attention with the same depthwise multi-scale convolution stack.",
@@ -7537,7 +7537,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The cascade conditions only on the height-derived encoder features and its own intermediate mean prediction.",
         "feasibility_under_locked_contract": "Feasible: no diffusion sampling, no stochastic outputs, no new metrics; just a two-head deterministic model trained with existing losses.",
         "why_relevant_to_topology_pressure": "Separating coarse pressure layout from local residual detail can reduce burden on a single decoder and improve boundary detail without wider backbone.",
-        "minimal_implementation_in_auto_v6": "Add a coarse mean output at mid-decoder scale, upsample it, concatenate it into a small residual refinement head, and sum mean plus residual for final output.",
+        "minimal_implementation_in_hybrid": "Add a coarse mean output at mid-decoder scale, upsample it, concatenate it into a small residual refinement head, and sum mean plus residual for final output.",
         "expected_parameter_efficiency": "Moderate to high: residual branch can be shallow and narrow because the mean head handles global structure.",
         "paired_comparison": "Compare against corrdiff_mean or mean_residual_corrector variants that lack height-gradient residual gating.",
         "ablation_removes_mechanism": "Remove the intermediate mean conditioning and train only the residual head as a normal output head.",
@@ -7558,7 +7558,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The coarse latent and corrections are generated from the height-only encoder; no low-resolution external climate input is introduced.",
         "feasibility_under_locked_contract": "Feasible: internal feature pyramid only, final output grid unchanged, existing training data and losses unchanged.",
         "why_relevant_to_topology_pressure": "Pressure fields may have a stable coarse topology plus localized high-resolution corrections; backprojection tests this hierarchy explicitly.",
-        "minimal_implementation_in_auto_v6": "Implement two lightweight backprojection cycles in the decoder using average pooling, bilinear upsampling, depthwise residual correction, and channel projection.",
+        "minimal_implementation_in_hybrid": "Implement two lightweight backprojection cycles in the decoder using average pooling, bilinear upsampling, depthwise residual correction, and channel projection.",
         "expected_parameter_efficiency": "High: reuses multi-scale features and avoids adding a full second decoder.",
         "paired_comparison": "Compare against coarse_to_fine_ladder_unet or planar_multigrid_vcycle-style models without explicit backprojection error feedback.",
         "ablation_removes_mechanism": "Remove the downsample-upsample error feedback and keep the same number of convolution layers.",
@@ -7579,7 +7579,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Spectral energy estimates come from current height-derived feature maps during training and inference; no external adaptation set or test-time optimization.",
         "feasibility_under_locked_contract": "Feasible: static trained adapters only, no PEFT procedure or data contract change.",
         "why_relevant_to_topology_pressure": "Pressure fields often have strong low-frequency structure with boundary-local high-frequency corrections; mode-adaptive capacity may improve spectral fidelity efficiently.",
-        "minimal_implementation_in_auto_v6": "Add a SpectralAdapter2D module using rFFT, grouped low/mid/high mode projections, inverse rFFT, and residual scaling.",
+        "minimal_implementation_in_hybrid": "Add a SpectralAdapter2D module using rFFT, grouped low/mid/high mode projections, inverse rFFT, and residual scaling.",
         "expected_parameter_efficiency": "High: capacity is concentrated in a few low-frequency bottlenecks rather than widening all convolutions.",
         "paired_comparison": "Compare against fno2d_lora or band_adaptive_spectral_adapter-style modules with uniform rank per band.",
         "ablation_removes_mechanism": "Use equal bottleneck rank for all spectral bands.",
@@ -7600,7 +7600,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Routing logits are produced from height-only features and local roughness or gradient summaries computed inside the model.",
         "feasibility_under_locked_contract": "Feasible if routing is trained normally and fixed at inference; no test-time search or adaptation is used.",
         "why_relevant_to_topology_pressure": "Different topology regions may need different inductive biases: smooth basin, sharp boundary, anisotropic channel, or global spectral coupling.",
-        "minimal_implementation_in_auto_v6": "Add a small mixture block in the decoder with 3-4 cheap primitive operators and softmax gates, initialized toward uniform residual mixing.",
+        "minimal_implementation_in_hybrid": "Add a small mixture block in the decoder with 3-4 cheap primitive operators and softmax gates, initialized toward uniform residual mixing.",
         "expected_parameter_efficiency": "Moderate: primitives are narrow and shared, but routing adds some overhead.",
         "paired_comparison": "Compare against dynamic_hybrid_operation_adapter_unet without explicit operator-splitting primitives.",
         "ablation_removes_mechanism": "Replace routed primitive mixture with a single depthwise separable convolution of matched parameters.",
@@ -7621,7 +7621,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The feature grid is produced from height only; coordinates are the fixed output grid and local offsets inside each feature cell.",
         "feasibility_under_locked_contract": "Feasible: evaluates only at the existing grid resolution and does not alter input or output contracts.",
         "why_relevant_to_topology_pressure": "Local implicit interpolation can sharpen boundary-adjacent pressure transitions and reduce decoder aliasing without increasing full-grid channels.",
-        "minimal_implementation_in_auto_v6": "Add feature unfolding plus a tiny shared MLP residual sampler after the decoder, evaluated vectorized over pixels.",
+        "minimal_implementation_in_hybrid": "Add feature unfolding plus a tiny shared MLP residual sampler after the decoder, evaluated vectorized over pixels.",
         "expected_parameter_efficiency": "High: one small MLP is shared across all spatial positions.",
         "paired_comparison": "Compare against unet_v3_pointrefine or local_implicit_image_function_unet-style heads without local ensemble/unfolding.",
         "ablation_removes_mechanism": "Remove relative coordinate offsets and local feature unfolding, leaving a 1x1 residual head.",
@@ -7642,7 +7642,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The hypernetwork condition is a global and multi-scale pooling summary of the height input only.",
         "feasibility_under_locked_contract": "Feasible if the generated head is small, deterministic, and outputs the same pressure grid; no distillation or external teacher is required.",
         "why_relevant_to_topology_pressure": "Different topologies may require different final pressure basis functions; a small generated head can adapt the output map without scaling the whole backbone.",
-        "minimal_implementation_in_auto_v6": "Add a low-rank hypernetwork that emits factorized weights for a 2-layer coordinate-feature residual MLP, with strict rank and channel caps.",
+        "minimal_implementation_in_hybrid": "Add a low-rank hypernetwork that emits factorized weights for a 2-layer coordinate-feature residual MLP, with strict rank and channel caps.",
         "expected_parameter_efficiency": "High if weights are factorized and only the final residual head is generated.",
         "paired_comparison": "Compare against hypernet_coord_lowrank_residual_unet where coordinate low-rank residuals are shared rather than sample-generated.",
         "ablation_removes_mechanism": "Use a learned static residual MLP with the same rank and no hypernetwork conditioning.",
@@ -7652,3 +7652,6 @@ LOCAL_REVIEW_CONTEXT_JSON:
     ]
   }
 }
+
+
+

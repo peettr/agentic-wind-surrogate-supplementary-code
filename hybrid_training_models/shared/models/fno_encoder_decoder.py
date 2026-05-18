@@ -1,4 +1,4 @@
-"""FNOEncoderDecoder — FNO encoder + UNet decoder hybrid.
+﻿"""FNOEncoderDecoder â€” FNO encoder + UNet decoder hybrid.
 
 Uses spectral convolution (FNO) layers in the encoder for global frequency
 feature extraction, and standard convolution in the decoder for precise
@@ -123,3 +123,6 @@ class FNOEncoderDecoder(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return self.output_proj(x)
+
+
+

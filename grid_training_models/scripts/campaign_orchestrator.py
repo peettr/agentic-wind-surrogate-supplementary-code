@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Campaign-level Auto V5 orchestrator plan builder.
+﻿#!/usr/bin/env python3
+"""Campaign-level Grid orchestrator plan builder.
 
 This layer owns deterministic campaign planning across smoke and benchmark stages.
 It is safe by default: plan-only, no CRC SSH, no Condor submit, no repair agent.
@@ -81,7 +81,7 @@ def _hp_reason(row: dict[str, Any]) -> str:
         parts.append(f"batch={row['batch_size']}")
     if row.get("reason"):
         parts.append(str(row["reason"]))
-    return "; ".join(parts) if parts else "deterministically selected Auto V5 candidate"
+    return "; ".join(parts) if parts else "deterministically selected Grid candidate"
 
 
 def _tier_for_arch(arch: str, row: dict[str, Any]) -> str:
@@ -187,8 +187,8 @@ def build_smoke_control_from_candidates(
         "campaign": campaign,
         "stage": "smoke20",
         "remote_root": remote_root,
-        "description": "Campaign-level Auto V5 orchestrator smoke control generated deterministically from architecture and HP candidates. Safe plan-only by default.",
-        "config_overrides": {"epochs": 20, "strategy": "v5_controller_auto10_smoke20_codegen"},
+        "description": "Campaign-level Grid orchestrator smoke control generated deterministically from architecture and HP candidates. Safe plan-only by default.",
+        "config_overrides": {"epochs": 20, "strategy": "grid_controller_smoke20_codegen"},
         "runs": runs,
     }
 
@@ -269,7 +269,7 @@ def build_benchmark_control_from_smoke_passes(
         "stage": "benchmark200",
         "remote_root": smoke_control.get("remote_root", DEFAULT_REMOTE_ROOT),
         "description": "Benchmark200 promotion control generated only after every smoke run passed controller monitoring.",
-        "config_overrides": {"epochs": 200, "batch_size": 16, "strategy": "v5_benchmark200_codegen"},
+        "config_overrides": {"epochs": 200, "batch_size": 16, "strategy": "grid_benchmark200_codegen"},
         "runs": runs,
     }
 
@@ -351,7 +351,7 @@ class BaseSurrogate(nn.Module, ABC):
 
     @abstractmethod
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass for Auto V5 generated training source-of-truth models."""
+        """Forward pass for Grid generated training source-of-truth models."""
 
     def check_shapes(self, x: torch.Tensor, y: torch.Tensor) -> None:
         if x.shape[1:] != (1, 640, 640):
@@ -446,7 +446,7 @@ def render_standalone_model_copy(*, arch_name: str, source_path: Path) -> str:
             "def __init__(self, depth: int = 7, n_c: int = 16, d_state: int = 16,\n                 n_ssm_blocks: int = 2) -> None:",
         )
     header = (
-        f'"""Generated standalone Auto V5 model for {arch_name}.\n\n'
+        f'"""Generated standalone Grid model for {arch_name}.\n\n'
         'This generated file is the training source of truth for this run.\n'
         'Runtime model construction is local to this file rather than registry delegation.\n'
         '"""\n'
@@ -458,7 +458,7 @@ def render_standalone_model_copy(*, arch_name: str, source_path: Path) -> str:
         standalone = re.sub(r"\n\nModel = [A-Za-z_][A-Za-z0-9_]*\s*$", "", standalone.rstrip(), count=1)
         model_body = (
             f"\n\n\nclass Model({model_class}):\n"
-            "    \"\"\"Training entrypoint for generated Auto V5 runs.\"\"\"\n\n"
+            "    \"\"\"Training entrypoint for generated Grid runs.\"\"\"\n\n"
             "    def __init__(self, in_channels: int = 1, out_channels: int = 1, **kwargs):\n"
             "        kwargs.pop('training', None)\n"
         )
@@ -540,7 +540,7 @@ def _candidate_from_source_config(path: Path, root: Path, *, model_dir: str) -> 
     }
 
 
-def load_default_candidates(root: Path, *, model_dir: str, source_campaign: str = "v5_ai_curated_001") -> list[dict[str, Any]]:
+def load_default_candidates(root: Path, *, model_dir: str, source_campaign: str = "grid_curated_001") -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     source_runs = root / "campaigns" / source_campaign / "runs"
     for path in sorted(source_runs.glob("*/train_config.json")):
@@ -556,13 +556,13 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--local-root", type=Path, default=_REPO_ROOT)
     p.add_argument("--output-dir", type=Path, required=True)
-    p.add_argument("--campaign", default="v5_controller_auto10_001_smoke20")
-    p.add_argument("--run-prefix", default="r_auto10")
+    p.add_argument("--campaign", default="grid_round_smoke20")
+    p.add_argument("--run-prefix", default="r_grid_controller")
     p.add_argument("--count", type=int, default=10)
     p.add_argument(
         "--source-campaign",
-        default="v5_ai_curated_001",
-        help="curated source campaign to sample candidates from, for example v5_ai_curated_002",
+        default="grid_curated_001",
+        help="curated source campaign to sample candidates from, for example grid_curated_002",
     )
     p.add_argument(
         "--include-hard-excluded-arches",
@@ -576,8 +576,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--live-crc", action="store_true", help="reserved explicit opt-in for live CRC monitoring")
     p.add_argument(
         "--model-dir",
-        default="generated_models/v5_controller_auto10_001",
-        help="directory for deterministic wrappers, for example generated_models/v5_controller_auto10_002",
+        default="generated_models/grid_round",
+        help="directory for deterministic wrappers, for example generated_models/grid_round",
     )
     p.add_argument(
         "--exclude-control",
@@ -634,3 +634,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

@@ -1,4 +1,4 @@
-"""Pydantic v2 data contracts for every auto_v3 artifact exchanged between modules.
+﻿"""Pydantic v2 data contracts for every baseline_source artifact exchanged between modules.
 
 Every on-disk JSON artifact (metrics.json, analysis.json, manifest.json, state.json,
 preflight report, codegen log entry) is a serialization of one of these models.
@@ -61,14 +61,14 @@ class TrainConfig(BaseModel):
     results_dir: str
     split_manifest_path: str
     heartbeat_interval_epochs: int = 10
-    compute_r2: bool = False  # per-case R²/MAE at heartbeat (adds ~10s overhead)
+    compute_r2: bool = False  # per-case RÂ²/MAE at heartbeat (adds ~10s overhead)
     phase: Literal["search", "stability", "final"] = "search"
     eval_splits: list[Literal["val", "holdout"]] = Field(
         default_factory=lambda: ["val"]
     )
     script_path: Optional[str] = None
     # Wall-time early stop rules
-    early_stop_wall_min: int = 100  # stop if < baseline R² after this many minutes
+    early_stop_wall_min: int = 100  # stop if < baseline RÂ² after this many minutes
     max_wall_min: int = 200  # absolute max wall time in minutes
     baseline_r2_curve_path: Optional[str] = None  # path to {epoch: r2} JSON for same-epoch comparison
     # Input feature configuration
@@ -106,7 +106,7 @@ class SplitMetrics(BaseModel):
 
 
 class MetricsResult(BaseModel):
-    """Canonical schema of metrics.json — the sole training→analyzer contract."""
+    """Canonical schema of metrics.json â€” the sole trainingâ†’analyzer contract."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -246,7 +246,7 @@ class ReviewVerdict(BaseModel):
 # Campaign state + baseline
 # ---------------------------------------------------------------------------
 class BaselineMetrics(BaseModel):
-    """Baseline reference — auto_v2's 7-level UNet, 20 seeds."""
+    """Baseline reference â€” auto_v2's 7-level UNet, 20 seeds."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -426,3 +426,6 @@ def dump_json(model: BaseModel, path: str | Path) -> None:
 def load_json(cls: type[BaseModel], path: str | Path) -> BaseModel:
     """Load a Pydantic model from its JSON serialization."""
     return cls.model_validate_json(Path(path).read_text())
+
+
+

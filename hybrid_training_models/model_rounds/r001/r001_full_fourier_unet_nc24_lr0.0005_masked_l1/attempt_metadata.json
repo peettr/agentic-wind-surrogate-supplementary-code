@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\fourier_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\fourier_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "5f6b47e76fc43a1b6a5b89a102f75ac3ad73ed90d57aacfdfd13bec0ec02564d",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r001_full_fourier_unet_nc24_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r001_full_fourier_unet_nc24_lr0.0005_masked_l1/model.py"
 }
+
+

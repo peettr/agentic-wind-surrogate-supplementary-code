@@ -1,4 +1,4 @@
-{
+﻿{
   "source_root": "<GRID_HPC_SOURCE_ROOT>",
   "metrics_count": 514,
   "top_val_r2": {
@@ -7,14 +7,16 @@
     "experiment_id": "r_benchmark_03_unet_sdf_7level_benchmark200_retry1",
     "arch_name": "codegen_unet_sdf_7level",
     "seed": 1,
-    "campaign": "v5_controller_auto11_003_benchmark200",
-    "metrics_path": "<GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto11_003_benchmark200/runs/r_benchmark_03_unet_sdf_7level_benchmark200_retry1/metrics.json",
-    "run_dir": "<GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto11_003_benchmark200/runs/r_benchmark_03_unet_sdf_7level_benchmark200_retry1",
+    "campaign": "grid_round_benchmark200",
+    "metrics_path": "<GRID_HPC_SOURCE_ROOT>/campaigns/grid_round_benchmark200/runs/r_benchmark_03_unet_sdf_7level_benchmark200_retry1/metrics.json",
+    "run_dir": "<GRID_HPC_SOURCE_ROOT>/campaigns/grid_round_benchmark200/runs/r_benchmark_03_unet_sdf_7level_benchmark200_retry1",
     "status": "ok",
     "epochs_trained": 200,
     "gpu": "NVIDIA H100 80GB HBM3",
     "params": ""
   },
-  "copied_reports": "<HPC_USER_ROOT>/auto_v5_report_package_remote/reports",
-  "notes": "Auto V5 report package evidence copied for local report drafting. 3-seed not requested because final validation is below Auto V4."
+  "copied_reports": "<HPC_USER_ROOT>/grid_report_package_remote/reports",
+  "notes": "Grid report package evidence copied for local report drafting. 3-seed not requested because final validation is below Sequential."
 }
+
+

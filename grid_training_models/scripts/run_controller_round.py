@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""One-command Auto V5 controller round runner.
+﻿#!/usr/bin/env python3
+"""One-command Grid controller round runner.
 
 This script creates a new smoke control, materializes generated standalone model
 files, submits the initial smoke jobs, then runs the local controller clock until
@@ -62,15 +62,15 @@ class RoundNames:
 def derive_round_names(report_dir: Path) -> RoundNames:
     """Derive campaign, run-prefix, and generated model dir from report name.
 
-    ``reports/controller_auto10_006`` becomes the established Auto V5 naming
+    ``reports/controller_grid_controller_006`` becomes the established Grid naming
     scheme used by the controller artifacts.
     """
     name = report_dir.name
     token = name[len("controller_") :] if name.startswith("controller_") else name
     return RoundNames(
-        campaign=f"v5_controller_{token}_smoke20",
+        campaign=f"grid_controller_{token}_smoke20",
         run_prefix=f"r_{token}",
-        model_dir=f"generated_models/v5_controller_{token}",
+        model_dir=f"generated_models/grid_controller_{token}",
     )
 
 
@@ -108,7 +108,7 @@ def generate_initial_round(
     count: int,
     remote_root: str,
     exclude_control: list[Path],
-    source_campaign: str = "v5_ai_curated_001",
+    source_campaign: str = "grid_curated_001",
     include_hard_excluded_arches: bool = False,
 ) -> dict[str, Any]:
     names = derive_round_names(report_dir)
@@ -346,8 +346,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--count", type=int, default=10)
     p.add_argument(
         "--source-campaign",
-        default="v5_ai_curated_001",
-        help="curated source campaign to sample candidates from, for example v5_ai_curated_002",
+        default="grid_curated_001",
+        help="curated source campaign to sample candidates from, for example grid_curated_002",
     )
     p.add_argument(
         "--include-hard-excluded-arches",
@@ -404,3 +404,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

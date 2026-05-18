@@ -1,4 +1,4 @@
-﻿"""V4 Workflow Codegen â€” Generate and fix model .py files.
+﻿"""Sequential Workflow Codegen â€” Generate and fix model .py files.
 
 Two modes:
 1. Normal mode: generate model code from spec, using V3 models as reference
@@ -39,7 +39,7 @@ from schema_guards import (
 
 import re as _re
 
-LOGGER = logging.getLogger("auto_v6.codegen")
+LOGGER = logging.getLogger("hybrid.codegen")
 POSTPROCESS_ACTIONS: list[dict] = []
 
 
@@ -92,8 +92,8 @@ def _fix_init_sig(code: str, arch_name: str, arch_kwargs: dict) -> str:
 
 CLAUDE_BIN_FULL = shutil.which("claude") or shutil.which("claude.exe") or "claude"
 CODEX_BIN_FULL = shutil.which("codex") or "codex"
-CODEX_MODEL = os.environ.get("AUTO_V6_CODEGEN_CODEX_MODEL", "gpt-5.5")
-CLAUDE_FIX_MODEL = os.environ.get("AUTO_V6_FIX_CLAUDE_MODEL", "claude-opus-4-7")
+CODEX_MODEL = os.environ.get("hybrid_CODEGEN_CODEX_MODEL", "gpt-5.5")
+CLAUDE_FIX_MODEL = os.environ.get("hybrid_FIX_CLAUDE_MODEL", "claude-opus-4-7")
 
 MODELS_DIR = PROJECT_ROOT / "shared" / "models"
 GENERATED_DIR = PROJECT_ROOT / "models" / "generated"
@@ -190,7 +190,7 @@ def _ensure_arch_class_export(code: str, arch_name: str) -> str:
     base_cls = candidates[-1]
     wrapper = f'''
 
-# Auto V6 standalone export shim.  Keep this exact cfg.arch_name class for train.py.
+# Hybrid standalone export shim.  Keep this exact cfg.arch_name class for train.py.
 class {arch_name}({base_cls}):
     def __init__(self, in_channels=1, out_channels=1, n_c=16, depth=7, **kwargs):
         import inspect
@@ -638,7 +638,7 @@ def build_fix_prompt(arch_name: str, error_log: str, diagnosis: str,
 
 
 def _is_claude_fix_enabled() -> bool:
-    return _env_enabled("AUTO_V6_FIX_CLAUDE_ENABLED", "1")
+    return _env_enabled("hybrid_FIX_CLAUDE_ENABLED", "1")
 
 
 def _is_code_repair_error(message: str) -> bool:
@@ -1003,7 +1003,7 @@ def extract_code_block(text: str) -> str | None:
 # -- Main ---------------------------------------------------------------
 
 def main() -> None:
-    campaign_dir = Path(os.environ.get("V6_CAMPAIGN_DIR", "."))
+    campaign_dir = Path(os.environ.get("HYBRID_CAMPAIGN_DIR", "."))
     state = load_state(campaign_dir)
     round_num = state.get("round_num", 0)
     art_dir = round_artifact_dir(campaign_dir, round_num)
@@ -1213,4 +1213,7 @@ def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(name)s %(levelname)s: %(message)s")
     main()
+
+
+
 

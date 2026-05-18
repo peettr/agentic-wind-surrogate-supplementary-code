@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r023_full_fno_encoder_decoder_nc40_lr0.0003_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "fno_encoder_decoder",
   "arch_kwargs": {
     "n_c": 40,
@@ -21,6 +21,8 @@
   "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r023_full_fno_encoder_decoder_nc40_lr0.0003_masked_l1_gradient",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\shared\\models\\fno_encoder_decoder.py",
+  "script_path": "<LOCAL_WORKSPACE>\\sequential\\shared\\models\\fno_encoder_decoder.py",
   "model_source_kind": "reference_copy"
 }
+
+

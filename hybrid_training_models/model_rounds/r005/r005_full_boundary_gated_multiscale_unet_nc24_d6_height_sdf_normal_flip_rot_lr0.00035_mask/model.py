@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -135,3 +135,5 @@ class boundary_gated_multiscale_unet(nn.Module):
             out_valid = out_valid.all(dim=1, keepdim=True).expand_as(out)
 
         return torch.where(out_valid, out, torch.full_like(out, float("nan")))
+
+

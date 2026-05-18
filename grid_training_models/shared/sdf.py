@@ -1,5 +1,5 @@
-"""
-sdf.py — Signed Distance Function + surface normal augmentation.
+﻿"""
+sdf.py â€” Signed Distance Function + surface normal augmentation.
 
 Given a binary building mask (building_heights > 0), compute:
   1. SDF: signed distance to nearest building boundary
@@ -13,7 +13,7 @@ a 3-channel input (height, sdf, normal_angle) instead of just height.
 
 References:
   - "Neural Operators with Localized Physics-Informed Attention"
-  - Auto_v3 Model Scout synthesis #C: "Signed Distance Conditioned UNet"
+  - baseline_source Model Scout synthesis #C: "Signed Distance Conditioned UNet"
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ def compute_boundary_normal_angle(building_mask: np.ndarray) -> np.ndarray:
 
     Returns
     -------
-    angle : (H, W) float32, in [0, 2π)
+    angle : (H, W) float32, in [0, 2Ï€)
         atan2 of the outward normal direction.
     """
     mask = building_mask > 0
@@ -75,12 +75,12 @@ def compute_boundary_normal_angle(building_mask: np.ndarray) -> np.ndarray:
         boundary = mask.copy()
 
     # Compute gradient of distance transform to get normal direction
-    # Use EDT on the complement → gradient points away from buildings
+    # Use EDT on the complement â†’ gradient points away from buildings
     dt = ndimage.distance_transform_edt(~mask).astype(np.float32)
     gy, gx = np.gradient(dt)
-    angle = np.arctan2(gy, gx).astype(np.float32)  # [-π, π]
+    angle = np.arctan2(gy, gx).astype(np.float32)  # [-Ï€, Ï€]
 
-    # Normalize to [0, 2π)
+    # Normalize to [0, 2Ï€)
     angle = angle % (2 * np.pi)
 
     return angle
@@ -107,7 +107,7 @@ def augment_input_channels(
     channels : (3, H, W) float32
         Channel 0: building heights (unchanged)
         Channel 1: SDF
-        Channel 2: boundary normal angle / (2π) → [0, 1]
+        Channel 2: boundary normal angle / (2Ï€) â†’ [0, 1]
     """
     mask = building_heights > 0
 
@@ -163,3 +163,6 @@ if __name__ == "__main__":
     print("  [PASS] Boundary SDF ~ 0")
 
     print("\nAll tests passed!")
+
+
+

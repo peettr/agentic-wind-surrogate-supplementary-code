@@ -1,4 +1,4 @@
-"""Spatial Adaptive Conv UNet — convolution kernels adapt to local geometry.
+﻿"""Spatial Adaptive Conv UNet â€” convolution kernels adapt to local geometry.
 
 Each ConvBlock learns per-pixel kernel weights conditioned on the input,
 allowing the network to apply different filters near buildings vs. open terrain.
@@ -151,3 +151,6 @@ class SACUNet(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

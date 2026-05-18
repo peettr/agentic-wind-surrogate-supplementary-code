@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Assign Auto V5 codegen smoke runs to Condor GPU tiers.
+﻿#!/usr/bin/env python3
+"""Assign Grid codegen smoke runs to Condor GPU tiers.
 
 Input is a dynamic-precheck JSON containing rows with at least:
   arch_name, run_id, params, model_file
@@ -102,3 +102,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+

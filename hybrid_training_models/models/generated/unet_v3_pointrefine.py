@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -90,3 +90,5 @@ class unet_v3_pointrefine(nn.Module):
 
         h = torch.where(valid[:, :1], h, torch.full_like(h, float("nan")))
         return h
+
+

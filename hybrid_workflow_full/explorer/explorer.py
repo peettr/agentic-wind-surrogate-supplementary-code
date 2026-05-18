@@ -1,10 +1,10 @@
-﻿"""Auto V6 Explorer - AI-driven experiment suggestion and evaluation loop.
+﻿"""Hybrid Explorer - AI-driven experiment suggestion and evaluation loop.
 
-The Explorer is the core of V4: instead of fixed orthogonal grids (V3's L18),
+The Explorer is the core of Sequential: instead of fixed orthogonal grids (V3's L18),
 it uses prior results to suggest new experiments, evaluates them, and feeds
 the results back into the suggestion loop.
 
-V3 results are NOT loaded. V4 discovers everything from scratch.
+V3 results are NOT loaded. Sequential discovers everything from scratch.
 """
 from __future__ import annotations
 
@@ -93,14 +93,14 @@ class ExperimentResult:
 
 
 def load_v3_baseline() -> list[ExperimentResult]:
-    """Load ONLY the original V3 baseline result (frozen, V4 cannot modify).
+    """Load ONLY the original V3 baseline result (frozen, Sequential cannot modify).
 
     What is disclosed:
-    - unet_v2_baseline model code (frozen, V4 cannot modify)
-    - Grid 18 baseline run (run_00): R2=0.680 at 200ep, lr=5e-4, n_c=16, height-only
+    - unet_v2_baseline model code (frozen, Sequential cannot modify)
+    - orthogonal exploratory sweep baseline run (run_00): R2=0.680 at 200ep, lr=5e-4, n_c=16, height-only
 
     What is NOT disclosed:
-    - Grid 18 other 18 runs (the tuning results)
+    - orthogonal exploratory sweep other 18 runs (the tuning results)
     - Any other V3 experiment results
     """
     baseline_result = ExperimentResult(
@@ -111,7 +111,7 @@ def load_v3_baseline() -> list[ExperimentResult]:
             gradient_clip=None, use_ema=False, augmentation=False,
             input_features="height", epochs=200, seed=1,
         ),
-        r2_median=0.680,  # Grid 18 run_00: 200ep, lr=5e-4
+        r2_median=0.680,  # orthogonal exploratory sweep run_00: 200ep, lr=5e-4
         mae_median=0.092,
         peak_vram_gb=0, wall_time_sec=0, gpu="",
         status="completed",
@@ -155,4 +155,7 @@ def summarize_results(results: list[ExperimentResult]) -> dict:
         })
 
     return summary
+
+
+
 

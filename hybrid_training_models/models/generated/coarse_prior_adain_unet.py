@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -113,3 +113,5 @@ class coarse_prior_adain_unet(nn.Module):
         valid = valid.expand_as(out)
         out = torch.where(valid, out, torch.full_like(out, float("nan")))
         return out
+
+

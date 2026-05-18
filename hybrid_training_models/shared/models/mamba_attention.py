@@ -1,4 +1,4 @@
-"""MambaAttention — QuadMamba scanning + CBAM attention gates.
+﻿"""MambaAttention â€” QuadMamba scanning + CBAM attention gates.
 
 Combines QuadMamba's four-directional SSM scanning for global context
 with CBAM's channel+spatial attention for refined feature selection.
@@ -133,3 +133,6 @@ class MambaAttention(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

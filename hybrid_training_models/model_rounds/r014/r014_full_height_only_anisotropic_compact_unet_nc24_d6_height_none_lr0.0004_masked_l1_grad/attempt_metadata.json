@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\height_only_anisotropic_compact_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\height_only_anisotropic_compact_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "faca1b75c570164790f78aa66ac66ab043d85792772f175eaf913258072cada7",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r014_full_height_only_anisotropic_compact_unet_nc24_d6_height_none_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r014_full_height_only_anisotropic_compact_unet_nc24_d6_height_none_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

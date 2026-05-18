@@ -1,4 +1,4 @@
-You are the Auto V6 proposal quality gate and decision-audit gate.
+﻿You are the Hybrid proposal quality gate and decision-audit gate.
 Review the synthesized proposal pack for schema validity, duplicates, hard-rule violations, locked data/eval contract violations, and auditable decision rationale.
 Phase A policy: do not decide scientific truth and do not ban deviations from review recommendations. However, missing decision rationale is repairable process debt: require repair, not hard rejection, when proposals lack hypothesis, paired comparison, decision rule, expected failure interpretation, or explicit explanation for deviating from recent review recommendations.
 Also flag if the pack has collapsed into an overly narrow local HP, capacity, or high-n_c sweep around one architecture without explicit justification; preserve architecture-level diversity when minimally repairing.
@@ -6,7 +6,7 @@ Scout weighting audit: primary scouts ['claude', 'codex', 'gemini'] are the main
 Soft target mix: about 6 exploit and 6 explorer proposals. Exploit does not explore; explorer must introduce new model/mechanism value, not merely old arch_name plus larger n_c/depth. Do not use this target to violate hard train/data constraints.
 Decision-audit checks: flag and repair explorer proposals that lack novelty_rationale or new_model_mechanism/transferred_mechanism; flag proposals that lack paired_comparison, decision_rule, expected_success, or expected_failure_interpretation; flag proposals that use weak-setting explorer recipes without explaining why the current stronger recipe is not used and how success would later migrate. Weak-setting explorers are allowed but normally should occupy at most 1-2 full slots; if exceeded, require a pack-level weak_setting_budget_explanation.
 Gemini role audit: Gemini scout should primarily contribute web/literature-driven explorer mechanisms. Flag if more than 2 Gemini-derived final slots are local exploitation without web/source traceability, or more than 3 even with explicit justification; treat this as audit/repair, not rejection. Also flag if high-scoring web ideas/source_id/web_idea_id/transferred_mechanism evidence is ignored without explanation. This is a repair/audit issue, not a scientific hard ban.
-Batch-size lock: ordinary Auto V6 candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.
+Batch-size lock: ordinary Hybrid candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.
 Do not take over global search strategy. Preserve the synthesis model's scientific intent unless a proposal is invalid, duplicated, contract-breaking, or unauditable.
 You may minimally repair fields to satisfy the TrainConfig/search-space contract. Hard repair any data-setting violation to seed=1 and a valid existing input_features contract, defaulting to height. Do not invent new data paths, splits, metrics, or unsupported input features.
 Return only JSON: {"ok": true/false, "issues": [strings], "diversity_unused_reason": "required if no diversity influence, else null", "weak_setting_budget_explanation": "... if applicable", "review_accountability_summary": "...", "proposals": [reviewed configs...]}.
@@ -20,14 +20,14 @@ PLANNER_CONTEXT_CONTRACT:
     "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
     "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
     "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
-    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
-    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the grid_controller initial knowledge package.",
+    "initial_knowledge_policy": "Hybrid experimental priors may come only from the Grid/grid_controller initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
     "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
     "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
     "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
     "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
     "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
-    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "batch_size_policy": "Ordinary Hybrid candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
     "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
     "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
     "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
@@ -89,12 +89,12 @@ SYNTHESIZED_PROPOSALS:
       "expected_failure_interpretation": "If it stays near r009 or worse, the r007 TT result was likely high-variance and TT should move from frontier exploit to ensemble-only support.",
       "risk_class": "low_to_medium_seed_variance",
       "resource_expectation": "normal batch_size=16; prior TT runs used about 6.1M params and completed without OOM.",
-      "source_type": "auto_v6_exploit",
+      "source_type": "hybrid_exploit",
       "capacity_rationale": "Moderate nc24/d6 capacity, about 6M params in prior runs; capacity-matched to r007/r009 TT comparisons.",
       "novelty_rationale": "No novelty; controlled exploit refinement of a known strong family.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\knowledge_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
         "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
         "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient"
       ],
@@ -129,7 +129,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -168,12 +168,12 @@ SYNTHESIZED_PROPOSALS:
       "expected_failure_interpretation": "If lower LR underfits, BGMS noaug has likely already been bracketed and should become a robustness baseline rather than a sweep target.",
       "risk_class": "low_local_refinement",
       "resource_expectation": "normal but near L40S memory ceiling; prior nc24/d6 BGMS used about 7.8M params and about 41.7GB peak.",
-      "source_type": "auto_v6_exploit",
+      "source_type": "hybrid_exploit",
       "capacity_rationale": "nc24/d6 is the established BGMS sweet spot; matched to r008/r009 to isolate LR.",
       "novelty_rationale": "No novelty; known strong direction refinement.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\knowledge_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
         "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
         "r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient"
       ],
@@ -208,7 +208,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -247,12 +247,12 @@ SYNTHESIZED_PROPOSALS:
       "expected_failure_interpretation": "If median and global both fall, masked_l1_gradient remains the correct BGMS loss and further loss ablations should stop.",
       "risk_class": "low_clean_ablation",
       "resource_expectation": "normal but close to L40S memory ceiling, same BGMS capacity as the paired gradient-loss control.",
-      "source_type": "auto_v6_exploit",
+      "source_type": "hybrid_exploit",
       "capacity_rationale": "Capacity matched to the r008 BGMS reference to avoid confounding loss with width/depth.",
       "novelty_rationale": "No novelty; controlled exploit loss ablation.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\hypothesis_registry.json",
         "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
         "round_8"
       ],
@@ -287,7 +287,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -326,12 +326,12 @@ SYNTHESIZED_PROPOSALS:
       "expected_failure_interpretation": "If lower LR regresses, the r009 result was near its local optimum and the family should only reappear as a component donor.",
       "risk_class": "medium_newly_promising_family",
       "resource_expectation": "normal batch_size=16; prior run was about 5.4M params and completed quickly on H100.",
-      "source_type": "auto_v6_exploit",
+      "source_type": "hybrid_exploit",
       "capacity_rationale": "Moderate nc24/d6 but parameter-efficient in prior evidence, roughly 5.4M params; capacity-matched to r009 slice mixer.",
       "novelty_rationale": "No new mechanism this round; follows up a known r009 mechanism.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
         "r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient",
         "round_9"
       ],
@@ -366,7 +366,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -405,12 +405,12 @@ SYNTHESIZED_PROPOSALS:
       "expected_failure_interpretation": "If flat or worse, dual spatial-channel aggregation is a low-0.72 ceiling variant and should cool down.",
       "risk_class": "medium_secondary_family",
       "resource_expectation": "normal batch_size=16; prior run was about 5.3M params and fit on L40S.",
-      "source_type": "auto_v6_exploit",
+      "source_type": "hybrid_exploit",
       "capacity_rationale": "Moderate nc24/d6 with prior 5.3M params; capacity-matched against r009 efficient explorer families.",
       "novelty_rationale": "No novelty; controlled follow-up of an existing r009 architecture.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
         "r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
         "r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
       ],
@@ -445,7 +445,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -489,8 +489,8 @@ SYNTHESIZED_PROPOSALS:
       "capacity_rationale": "nc24/d6 is the campaign's moderate useful capacity floor; fixed-token attention is the capacity-matched mechanism test against BGMS and cross-scale token baselines.",
       "novelty_rationale": "New arch_name and new differentiable landmark-token composition; not a seen arch plus HP change.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\failure_taxonomy_summary.json",
         "r10_ext_03",
         "r007_full_cross_scale_operator_token_unet_nc16_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
       ],
@@ -529,7 +529,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -573,7 +573,7 @@ SYNTHESIZED_PROPOSALS:
       "capacity_rationale": "nc24/d6 avoids the nc16 explorer ceiling while keeping the new adapter small relative to the backbone; compare to dual_spatial and crossaxis controls.",
       "novelty_rationale": "New arch_name and new adapter composition with shared norm, cross-shape attention, depthwise local branch, and cascaded decoder reuse.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
         "<HYBRID_SOURCE_ROOT>\\knowledge\\arch_family_summary.json",
         "r10_ext_05",
         "r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient"
@@ -613,7 +613,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -657,7 +657,7 @@ SYNTHESIZED_PROPOSALS:
       "capacity_rationale": "nc24/d6 targets the proven 5-10M parameter regime; mechanism cost is in small prototype banks, not wider channels.",
       "novelty_rationale": "New arch_name and new prototype replay decoder; not present in the novelty index.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
         "<HYBRID_SOURCE_ROOT>\\knowledge\\recent_knowledge_bundle.json",
         "r10_ext_06",
         "r009_full_mlp_multiscale_decoder_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
@@ -697,7 +697,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -741,7 +741,7 @@ SYNTHESIZED_PROPOSALS:
       "capacity_rationale": "nc24/d6 maintains the useful V6 capacity floor; sparse anchor summaries keep added capacity small versus dense attention.",
       "novelty_rationale": "New arch_name and new pseudo-station anchor fusion composition, distinct from coarse_prior_adain and boundary_pressure_basis.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
         "<HYBRID_SOURCE_ROOT>\\knowledge\\failure_taxonomy_summary.json",
         "r10_ext_09",
         "r009_full_spatial_prior_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
@@ -781,7 +781,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -825,7 +825,7 @@ SYNTHESIZED_PROPOSALS:
       "capacity_rationale": "nc24/d6 avoids the nc16 underfit ceiling while token-sparse global communication keeps parameters near the 5-8M V6 sweet spot.",
       "novelty_rationale": "New arch_name and new all-to-all surface-token formulation; overlaps conceptually with old boundary token families but changes token extraction, communication, and skip FiLM injection.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
         "<HYBRID_SOURCE_ROOT>\\knowledge\\arch_family_summary.json",
         "r10_ext_01",
         "r006_full_boundary_strip_graph_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
@@ -865,7 +865,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -909,8 +909,8 @@ SYNTHESIZED_PROPOSALS:
       "capacity_rationale": "nc24/d6 is used because recent nc16 explorers underfit; the mechanism adds receptive field through fixed wavelet structure rather than wider/deeper channels.",
       "novelty_rationale": "New arch_name and boundary-gated WTConv formulation; differentiated from fourier_unet_wtconv by SDF/normal-compatible boundary subband gating and limited insertion points.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\failure_taxonomy_summary.json",
         "r10_ext_07",
         "r008_full_wavelet_residual_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
       ],
@@ -949,7 +949,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -989,7 +989,7 @@ SYNTHESIZED_PROPOSALS:
     "resource_expectation": "normal, <40GB VRAM",
     "source_type": "external_web_idea",
     "evidence_refs": [
-      "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+      "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
       "r10_ext_03"
     ],
     "source_note": "From web scout idea r10_ext_03",
@@ -1012,7 +1012,7 @@ SYNTHESIZED_PROPOSALS:
       "source_type": "external_web_idea",
       "novelty_rationale": "Introduces landmark-based operator tokens instead of standard grid or spatial attention.",
       "evidence_refs": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
         "r10_ext_03"
       ],
       "source_note": "From web scout idea r10_ext_03",
@@ -1050,7 +1050,7 @@ SYNTHESIZED_PROPOSALS:
         "gradient_checkpointing",
         "manual_resource_probe"
       ],
-      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Hybrid candidate or leaderboard candidate."
     },
     "resource_probe_required": false,
     "resource_probe_only": false,
@@ -1065,3 +1065,6 @@ SYNTHESIZED_PROPOSALS:
     "_source": "gemini"
   }
 ]
+
+
+

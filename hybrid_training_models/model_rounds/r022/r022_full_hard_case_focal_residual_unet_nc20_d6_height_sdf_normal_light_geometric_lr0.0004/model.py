@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -116,3 +116,5 @@ class hard_case_focal_residual_unet(nn.Module):
             nan_fill = torch.full_like(out, float("nan"))
             out = torch.where(invalid_b, nan_fill, out)
         return out
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -108,3 +108,5 @@ class unet_v3_gausres(nn.Module):
 
         nan_fill = torch.full_like(y, float("nan"))
         return torch.where(valid.expand_as(y), y, nan_fill)
+
+

@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\crossaxis_attn_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\crossaxis_attn_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "be8c17a470fe23b815d564bc71744244cc38a5b7357dcd399c920b38ea17cb0c",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r002_full_crossaxis_attn_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r002_full_crossaxis_attn_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -116,3 +116,5 @@ class segformer_allmlp_decoder(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand(-1, out.shape[1], -1, -1)
         out = torch.where(valid, out, torch.full_like(out, float("nan")))
         return out
+
+

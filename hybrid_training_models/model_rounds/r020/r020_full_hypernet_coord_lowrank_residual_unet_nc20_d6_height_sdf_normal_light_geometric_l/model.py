@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -140,3 +140,5 @@ class hypernet_coord_lowrank_residual_unet(nn.Module):
 
         nan = torch.full_like(out, float("nan"))
         return torch.where(valid, out, nan)
+
+

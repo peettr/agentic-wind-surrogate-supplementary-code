@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -122,3 +122,5 @@ class localized_integral_differential(nn.Module):
             mask = spatial_nan.expand(-1, y.shape[1], -1, -1)
             y = torch.where(mask, torch.full_like(y, float("nan")), y)
         return y
+
+

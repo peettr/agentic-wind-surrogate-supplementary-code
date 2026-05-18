@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Local Auto V5 controller clock.
+﻿#!/usr/bin/env python3
+"""Local Grid controller clock.
 
 Runs controller-owned ticks from WSL. Each tick inspects the generic state
 machine and starts the appropriate bounded program, including smoke repair,
@@ -463,3 +463,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

@@ -1,4 +1,4 @@
-﻿"""Rule-based failure classifier for Auto V6/V5 controller.
+﻿"""Rule-based failure classifier for Hybrid/V5 controller.
 
 AI may be used later for ambiguous diagnosis, but deterministic rules own the
 first-pass action: PASS, WAIT, DIAGNOSE, RETRY, REPAIR, AUTO_FAIL.
@@ -271,4 +271,7 @@ def classify_result(result: dict[str, Any]) -> dict[str, Any]:
         return {"classification": "UNKNOWN_TERMINAL_FAIL", "next_action": "RETRY", "confidence": "low", "evidence": [f"status={status}", "log present but no known pattern"], "missing_evidence": ["specific deterministic pattern"]}
 
     return {"classification": "UNKNOWN_STATE", "next_action": "DIAGNOSE", "confidence": "low", "evidence": [f"status={status}"], "missing_evidence": ["terminal marker or logs"]}
+
+
+
 

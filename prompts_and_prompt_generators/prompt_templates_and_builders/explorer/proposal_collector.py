@@ -1,4 +1,4 @@
-"""Deduplicate, classify and score raw proposals from AI callers.
+﻿"""Deduplicate, classify and score raw proposals from AI callers.
 
 Each AI caller returns a list of raw proposal dicts (see ``prompt_builder.py``
 for the schema). The same architecture often appears under slightly different
@@ -92,7 +92,7 @@ class Proposal:
         }
 
     def fingerprint(self) -> str:
-        """Stable id across runs — handy for cross-campaign dedup."""
+        """Stable id across runs â€” handy for cross-campaign dedup."""
         h = hashlib.sha1(self.name.encode("utf-8")).hexdigest()[:10]
         return f"{self.name}_{h}"
 
@@ -133,7 +133,7 @@ class ProposalCollector:
                 LOGGER.warning("Skipping malformed proposal from %s: %s", scout, exc)
                 continue
             if norm.name in self._zoo_names:
-                LOGGER.debug("Proposal %s already registered in zoo — skipping", norm.name)
+                LOGGER.debug("Proposal %s already registered in zoo â€” skipping", norm.name)
                 continue
             existing = self._by_name.get(norm.name)
             if existing is None:
@@ -197,7 +197,7 @@ class ProposalCollector:
             existing.estimated_vram_gb = incoming.estimated_vram_gb
 
     def _score(self, p: Proposal) -> int:
-        """Rubric from DESIGN.md §'评分标准'."""
+        """Rubric from DESIGN.md Â§'è¯„åˆ†æ ‡å‡†'."""
         score = 0
         if len(set(p.scouted_by)) >= 2:
             score += 3
@@ -215,7 +215,7 @@ class ProposalCollector:
         return score
 
     def _existing_categories(self) -> set[str]:
-        # UNet family → cnn_encoder_decoder; FNO → operator.
+        # UNet family â†’ cnn_encoder_decoder; FNO â†’ operator.
         defaults = {"cnn_encoder_decoder", "operator"}
         return defaults
 
@@ -230,3 +230,6 @@ def _maybe_float(value: Any) -> float | None:
 
 
 __all__ = ["Proposal", "ProposalCollector", "normalize_name"]
+
+
+

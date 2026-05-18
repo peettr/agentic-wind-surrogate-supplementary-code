@@ -1,11 +1,11 @@
-"""Factorized Fourier Neural Operator (F-FNO) conforming to BaseSurrogate contract.
+﻿"""Factorized Fourier Neural Operator (F-FNO) conforming to BaseSurrogate contract.
 
 Based on Tran et al., 2023 "Factorized Fourier Neural Operators" (F-FNO).
 Key improvement over standard FNO: factorizes 2D spectral convolution into
 separate row-wise and column-wise 1D convolutions, reducing parameters and
 improving training stability while maintaining global receptive field.
 
-Input/output contract: (B, 1, 640, 640) → (B, 1, 640, 640) with ReLU output.
+Input/output contract: (B, 1, 640, 640) â†’ (B, 1, 640, 640) with ReLU output.
 """
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ class FactorizedSpectralConv2d(nn.Module):
 
     @staticmethod
     def _complex_mul_1d(x: torch.Tensor, w: torch.Tensor) -> torch.Tensor:
-        """1D complex multiply: (B, I, m) × (I, O, m) → (B, O, m)"""
+        """1D complex multiply: (B, I, m) Ã— (I, O, m) â†’ (B, O, m)"""
         return torch.einsum("bix,iox->box", x, w)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -111,7 +111,7 @@ class FFNO(BaseSurrogate):
         modes: Fourier modes per spatial dimension (default 32).
         activation: activation function, 'gelu' or 'relu' (default 'gelu').
         lifting_factor: input lifting multiplier (default 1).
-        training: dict of training extras (scheduler, wd, etc.) — ignored by model.
+        training: dict of training extras (scheduler, wd, etc.) â€” ignored by model.
     """
 
     def __init__(
@@ -161,3 +161,6 @@ if __name__ == "__main__":
             with torch.no_grad():
                 y = m(x)
             print(f"FFNO n_c={n_c} modes={modes}: params={n_params:,} ({n_params/1e6:.1f}M) out={tuple(y.shape)} min={y.min():.4f}")
+
+
+

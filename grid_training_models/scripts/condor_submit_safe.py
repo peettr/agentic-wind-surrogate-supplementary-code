@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Condor job submitter with preflight checks and post-submit monitoring.
 
 Usage:
@@ -88,7 +88,7 @@ class PreflightCheck:
         if missing:
             self.issues.append(f"Missing train_config.json: {missing}")
             return False
-        print(f"  ✅ All {len(self.runs)} train_config.json present")
+        print(f"  âœ… All {len(self.runs)} train_config.json present")
         return True
 
     def check_config_fields(self) -> bool:
@@ -106,7 +106,7 @@ class PreflightCheck:
         if bad:
             self.issues.append(f"Bad configs: {bad}")
             return False
-        print(f"  ✅ All configs valid")
+        print(f"  âœ… All configs valid")
         return True
 
     def check_compute_r2(self) -> bool:
@@ -118,9 +118,9 @@ class PreflightCheck:
             if out.strip() != "True":
                 no_r2.append(name)
         if no_r2:
-            self.fixes.append(f"⚠️  compute_r2 not set in: {no_r2}")
+            self.fixes.append(f"âš ï¸  compute_r2 not set in: {no_r2}")
             return False
-        print(f"  ✅ compute_r2=True in all configs")
+        print(f"  âœ… compute_r2=True in all configs")
         return True
 
     def clean_stale_files(self) -> None:
@@ -145,7 +145,7 @@ class PreflightCheck:
                 self._crc(f"rm -f {f}")
         # campaign-level log
         self._crc(f"rm -f {self.campaign}/condor.log")
-        print(f"  ✅ Cleaned stale files for {len(self.runs)} runs")
+        print(f"  âœ… Cleaned stale files for {len(self.runs)} runs")
 
     def check_permissions(self) -> bool:
         """Ensure run dirs are writable."""
@@ -153,7 +153,7 @@ class PreflightCheck:
         for name in self.runs:
             d = f"{self.campaign}/{name}"
             rc, _ = self._crc(f"chmod 755 {d} 2>/dev/null")
-        print(f"  ✅ Run dir permissions OK")
+        print(f"  âœ… Run dir permissions OK")
         return True
 
     def check_data_files(self) -> bool:
@@ -169,7 +169,7 @@ class PreflightCheck:
             if rc != 0:
                 self.issues.append(f"Missing: {data_dir}/{f}")
                 return False
-        print(f"  ✅ Data files present in {data_dir}")
+        print(f"  âœ… Data files present in {data_dir}")
         return True
 
     def check_wrapper(self, submit_path: str) -> bool:
@@ -183,7 +183,7 @@ class PreflightCheck:
                     if rc != 0:
                         self.issues.append(f"Missing wrapper: {wrapper}")
                         return False
-                    print(f"  ✅ Wrapper exists: {wrapper}")
+                    print(f"  âœ… Wrapper exists: {wrapper}")
                     return True
         self.issues.append("No executable line in submit file")
         return False
@@ -203,12 +203,12 @@ class PreflightCheck:
             print(f"    {f}")
 
         if self.issues:
-            print(f"\n❌ {len(self.issues)} issues found:")
+            print(f"\nâŒ {len(self.issues)} issues found:")
             for i in self.issues:
                 print(f"    {i}")
             return False
 
-        print("\n✅ All checks passed — safe to submit")
+        print("\nâœ… All checks passed â€” safe to submit")
         return True
 
 
@@ -265,7 +265,7 @@ class PostSubmitMonitor:
         for job in held_jobs:
             reason = job["reason"]
             name = job["name"]
-            print(f"  🔧 Fixing held job {name}: {reason[:80]}...")
+            print(f"  ðŸ”§ Fixing held job {name}: {reason[:80]}...")
 
             # Permission denied on output/error file
             if "Permission denied" in reason:
@@ -316,29 +316,29 @@ class PostSubmitMonitor:
             print(f"  Poll {poll}/{self.max_polls}: {summary}")
 
             if held > 0:
-                print(f"  ⚠️  {held} job(s) held — diagnosing...")
+                print(f"  âš ï¸  {held} job(s) held â€” diagnosing...")
                 held_jobs = self.get_held_reasons()
                 for j in held_jobs:
                     print(f"    {j['name']}: {j['reason'][:100]}")
                 n_fixed = self.fix_and_release(held_jobs)
                 if n_fixed > 0:
-                    print(f"  ✅ Fixed {n_fixed}, released")
+                    print(f"  âœ… Fixed {n_fixed}, released")
 
             if idle == 0 and held == 0 and running > 0:
-                print(f"  ✅ All {total} jobs running!")
+                print(f"  âœ… All {total} jobs running!")
                 return True
 
             if done == total:
-                print(f"  ✅ All {total} jobs completed!")
+                print(f"  âœ… All {total} jobs completed!")
                 return True
 
             time.sleep(self.poll_interval)
 
-        print(f"\n  ⚠️  Monitoring ended. Final status: {counts}")
+        print(f"\n  âš ï¸  Monitoring ended. Final status: {counts}")
         held = counts.get(5, 0)
         if held > 0:
             held_jobs = self.get_held_reasons()
-            print(f"  ❌ {held} jobs still held:")
+            print(f"  âŒ {held} jobs still held:")
             for j in held_jobs:
                 print(f"    {j['name']}: {j['reason'][:120]}")
         return False
@@ -360,7 +360,7 @@ def main():
     # 1. Parse run names
     names = parse_run_names(submit_file)
     if not names:
-        print("❌ No run names found in submit file")
+        print("âŒ No run names found in submit file")
         sys.exit(1)
     print(f"Found {len(names)} runs: {names}")
 
@@ -368,7 +368,7 @@ def main():
     pf = PreflightCheck(campaign_dir, names)
     ok = pf.run_all(submit_file)
     if not ok:
-        print("\n❌ Preflight failed. Fix issues and retry.")
+        print("\nâŒ Preflight failed. Fix issues and retry.")
         sys.exit(1)
 
     # 3. Submit
@@ -376,13 +376,13 @@ def main():
     rc, out, err = _crc_ssh(f"cd {campaign_dir} && condor_submit {os.path.basename(submit_file)}")
     print(out)
     if rc != 0:
-        print(f"❌ Submit failed: {err}")
+        print(f"âŒ Submit failed: {err}")
         sys.exit(1)
 
     # Parse cluster ID
     m = re.search(r"cluster (\d+)", out)
     if not m:
-        print("⚠️  Could not parse cluster ID, skipping monitoring")
+        print("âš ï¸  Could not parse cluster ID, skipping monitoring")
         sys.exit(0)
     cluster_id = int(m.group(1))
     print(f"Submitted as cluster {cluster_id}")
@@ -396,15 +396,18 @@ def main():
         f"> {campaign_dir}/monitor_{cluster_id}.log 2>&1 &"
     )
     if rc == 0:
-        print(f"  ✅ Monitor running on CRC (cluster {cluster_id})")
-        print(f"  📋 Log: {campaign_dir}/monitor_{cluster_id}.log")
+        print(f"  âœ… Monitor running on CRC (cluster {cluster_id})")
+        print(f"  ðŸ“‹ Log: {campaign_dir}/monitor_{cluster_id}.log")
         print(f"  Checks every 2min, auto-fixes held jobs, stops when all done")
     else:
-        print(f"  ⚠️  Could not start monitor: {out}")
-        print(f"  Falling back to local monitoring (5 polls × 60s)")
+        print(f"  âš ï¸  Could not start monitor: {out}")
+        print(f"  Falling back to local monitoring (5 polls Ã— 60s)")
         monitor = PostSubmitMonitor(cluster_id, campaign_dir, names, poll_interval=60, max_polls=5)
         monitor.run()
 
 
 if __name__ == "__main__":
     main()
+
+
+

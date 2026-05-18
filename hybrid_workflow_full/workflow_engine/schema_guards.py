@@ -1,4 +1,4 @@
-"""Shared schema guards for Auto V6 planner/codegen/submit boundaries.
+﻿"""Shared schema guards for Hybrid planner/codegen/submit boundaries.
 
 These guards mirror locked train.py/losses.py contracts without modifying them.
 They intentionally reject aliases such as masked_l1_grad instead of normalizing.
@@ -166,3 +166,6 @@ def validate_registered_arch_config(arch_name: str, cfg: dict) -> tuple[bool, st
     if missing and not has_kwargs:
         return False, f"constructor does not accept arch_kwargs {missing}"
     return True, "ok"
+
+
+

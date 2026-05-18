@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -134,3 +134,5 @@ class gradient_boundary_token_alltoall_unet(nn.Module):
         output = self.final(h)
         output = torch.where(valid, output, torch.full_like(output, float("nan")))
         return output
+
+

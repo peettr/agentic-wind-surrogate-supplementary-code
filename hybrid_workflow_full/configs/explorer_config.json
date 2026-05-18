@@ -1,4 +1,4 @@
-{
+﻿{
     "explorer": {
         "mode": "sdf_transfer",
         "round_strategy": ["sdf_transfer", "architecture_explore", "hyperparam_finetune"],
@@ -33,3 +33,6 @@
         "max_tokens": 4096
     }
 }
+
+
+

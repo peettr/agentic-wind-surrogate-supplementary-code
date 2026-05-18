@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -181,3 +181,5 @@ class geometry_modulated_afno_unet(nn.Module):
             out_valid = valid.any(dim=1, keepdim=True).expand(-1, self.out_channels, -1, -1)
         out = torch.where(out_valid, out, torch.full_like(out, float("nan")))
         return out
+
+

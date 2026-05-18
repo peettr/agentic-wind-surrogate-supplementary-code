@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\bounded_transport_warp_residual_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\bounded_transport_warp_residual_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "5a76d472a38ef7a6889e9f9c3987b74d8d1c79a6bc0a6298d7885fd3a21039ef",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r016_full_bounded_transport_warp_residual_unet_nc20_d6_height_light_geometric_lr0.0004_masked_huber/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r016_full_bounded_transport_warp_residual_unet_nc20_d6_height_light_geometric_lr0.0004_masked_huber/model.py"
 }
+
+

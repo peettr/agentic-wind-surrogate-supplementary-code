@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -154,3 +154,5 @@ class conditional_basis_decoder_mixer_unet(nn.Module):
         valid_out = valid_all.expand(-1, out.shape[1], -1, -1)
 
         return torch.where(valid_out, out, torch.full_like(out, float("nan")))
+
+

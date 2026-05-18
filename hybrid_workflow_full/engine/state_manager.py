@@ -1,4 +1,4 @@
-"""StateManager: atomic campaign-state persistence.
+﻿"""StateManager: atomic campaign-state persistence.
 
 Responsibilities:
 
@@ -27,7 +27,7 @@ from shared.configs.schema import (
 )
 
 
-LOGGER = logging.getLogger("auto_v3.state")
+LOGGER = logging.getLogger("baseline_source.state")
 
 
 class KillSwitchError(RuntimeError):
@@ -200,3 +200,6 @@ class StateManager:
 
 
 __all__ = ["KillSwitchError", "StateManager"]
+
+
+

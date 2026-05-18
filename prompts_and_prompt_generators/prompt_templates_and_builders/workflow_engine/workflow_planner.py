@@ -1,4 +1,4 @@
-﻿"""V4 Workflow Planner â€” Multi-AI experiment proposal generator.
+﻿"""Sequential Workflow Planner â€” Multi-AI experiment proposal generator.
 
 Reads campaign state + history, dispatches 7 AI scouts concurrently
 (ThreadPoolExecutor), then Codex synthesizes into ~12 experiment configs.
@@ -37,23 +37,23 @@ from workflow_common import (
 from workflow_knowledge import rebuild_knowledge, knowledge_dir
 from schema_guards import validate_experiment_schema, VALID_INPUT_FEATURE_CHANNELS
 
-LOGGER = logging.getLogger("auto_v6.planner")
+LOGGER = logging.getLogger("hybrid.planner")
 
 CLAUDE_BIN_FULL = shutil.which("claude.cmd") or shutil.which("claude") or shutil.which("claude.exe") or "claude"
 CODEX_BIN_FULL = shutil.which("codex.cmd") or shutil.which("codex") or "codex"
 GEMINI_BIN_FULL = shutil.which("gemini.cmd") or shutil.which("gemini") or "gemini"
-CLAUDE_SCOUT_MODEL = os.environ.get("AUTO_V6_CLAUDE_SCOUT_MODEL", "claude-opus-4-7")
-CLAUDE_SYNTHESIS_MODEL = os.environ.get("AUTO_V6_CLAUDE_SYNTHESIS_MODEL", CLAUDE_SCOUT_MODEL)
-CODEX_SCOUT_MODEL = os.environ.get("AUTO_V6_CODEX_SCOUT_MODEL", "gpt-5.5")
-CODEX_GATE_MODEL = os.environ.get("AUTO_V6_CODEX_GATE_MODEL", CODEX_SCOUT_MODEL)
-WEB_SCOUT_ENABLED = os.environ.get("AUTO_V6_WEB_SCOUT", "1").lower() not in {"0", "false", "no"}
-GLM_SCOUT_ENABLED = os.environ.get("AUTO_V6_GLM_SCOUT", "0").lower() not in {"0", "false", "no"}
+CLAUDE_SCOUT_MODEL = os.environ.get("hybrid_CLAUDE_SCOUT_MODEL", "claude-opus-4-7")
+CLAUDE_SYNTHESIS_MODEL = os.environ.get("hybrid_CLAUDE_SYNTHESIS_MODEL", CLAUDE_SCOUT_MODEL)
+CODEX_SCOUT_MODEL = os.environ.get("hybrid_CODEX_SCOUT_MODEL", "gpt-5.5")
+CODEX_GATE_MODEL = os.environ.get("hybrid_CODEX_GATE_MODEL", CODEX_SCOUT_MODEL)
+WEB_SCOUT_ENABLED = os.environ.get("hybrid_WEB_SCOUT", "1").lower() not in {"0", "false", "no"}
+GLM_SCOUT_ENABLED = os.environ.get("hybrid_GLM_SCOUT", "0").lower() not in {"0", "false", "no"}
 
 # 7 AI scouts (from V3 model_scout)
 VALID_INPUT_FEATURES = {"height", "height_sdf", "height_sdf_normal"}
 LOCKED_SEED = 1
 LOCKED_INPUT_FEATURES = "height"
-INITIAL_KNOWLEDGE_FILENAME = "initial_knowledge_auto11.md"
+INITIAL_KNOWLEDGE_FILENAME = "initial_knowledge_grid_controller.md"
 INITIAL_KNOWLEDGE_CSV_FILENAME = "model_results.csv"
 
 ANTI_ENDLESS_FINETUNE_RULES = {
@@ -200,7 +200,7 @@ def sanitize_proposal(cfg: dict) -> dict:
         cfg["arch_name"] = ARCH_ALIASES.get(arch_name, arch_name)
 
     # the human researcher hard-locked data paths/splits/eval for this campaign. Height is the
-    # default input contract, but Auto V6 may use one of the pre-existing feature
+    # default input contract, but Hybrid may use one of the pre-existing feature
     # contracts when the external initial-knowledge package explicitly motivates it.
     cfg["input_features"] = _normalize_input_features(cfg.get("input_features"))
 
@@ -220,7 +220,7 @@ def run_codex_cli(prompt: str, *, model: str, timeout: int = 900,
                   cwd: str = "/tmp") -> tuple[bool, str, str]:
     """Run Codex CLI and parse the final message file, not terminal logs."""
     import tempfile
-    with tempfile.TemporaryDirectory(prefix="auto_v6_codex_") as td:
+    with tempfile.TemporaryDirectory(prefix="hybrid_codex_") as td:
         out_path = Path(td) / "last_message.txt"
         cmd = [
             CODEX_BIN_FULL, "exec", "--model", model,
@@ -244,7 +244,7 @@ def run_codex_web_cli(prompt: str, *, model: str, timeout: int = 900,
     local/context-driven unless the external idea pre-stage explicitly runs.
     """
     import tempfile
-    with tempfile.TemporaryDirectory(prefix="auto_v6_codex_web_") as td:
+    with tempfile.TemporaryDirectory(prefix="hybrid_codex_web_") as td:
         out_path = Path(td) / "last_message.txt"
         cmd = [
             CODEX_BIN_FULL, "--search", "exec", "--model", model,
@@ -376,7 +376,7 @@ def _strip_v3_result_fields(obj: Any) -> Any:
             if key in V3_RESULT_KEYS:
                 continue
             if key == "category" and isinstance(value, str) and value.lower().startswith("tier_"):
-                # V3 tier labels are rankings/classifications, not legal V4
+                # V3 tier labels are rankings/classifications, not legal Sequential
                 # context. The model itself remains available via name/code.
                 continue
             if key == "forbidden_combinations":
@@ -430,10 +430,10 @@ def _int_or_none(value: Any) -> int | None:
 
 
 def _initial_knowledge_csv_digest(campaign_dir: Path) -> dict[str, Any]:
-    """Compact structured digest of the human researcher-provided Auto11 CSV seed.
+    """Compact structured digest of the human researcher-provided grid_controller CSV seed.
 
-    This is allowed Auto V6 experimental seed evidence. It is deliberately
-    sourced only from auto_v6 initial knowledge, not Phase9 or auto_v4.
+    This is allowed Hybrid experimental seed evidence. It is deliberately
+    sourced only from hybrid initial knowledge, not Phase9 or sequential.
     """
     kdir = knowledge_dir(campaign_dir)
     candidates = [
@@ -508,7 +508,7 @@ def _initial_knowledge_csv_digest(campaign_dir: Path) -> dict[str, Any]:
     digest = {
         "available": True,
         "path": str(csv_path),
-        "policy": "Allowed Auto V6 seed evidence from Auto V5/Auto11 only. Do not mix with Phase9 evidence.",
+        "policy": "Allowed Hybrid seed evidence from Grid/grid_controller only. Do not mix with Phase9 evidence.",
         "baseline_val_R2_median": baseline_val,
         "row_count": len(rows),
         "ranked_count": len(ranked),
@@ -533,7 +533,7 @@ def _initial_knowledge_csv_digest(campaign_dir: Path) -> dict[str, Any]:
 def load_review_history(campaign_dir: Path, round_num: int) -> list[dict]:
     """Load all prior review/diagnosis artifacts for planner context.
 
-    These are V4 campaign outcomes, so they are intentionally available to
+    These are Sequential campaign outcomes, so they are intentionally available to
     scouts. V3 results remain excluded by construction.
     """
     artifacts_root = campaign_dir / "artifacts"
@@ -575,14 +575,14 @@ def load_planner_context(campaign_dir: Path, state: dict, history: list[dict],
             "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
             "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
             "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
-            "data_settings_hard_lock": f"Data settings are hard-locked: seed={LOCKED_SEED}, existing split/eval/data paths only. input_features defaults to {LOCKED_INPUT_FEATURES}; allowed existing feature contracts are {sorted(VALID_INPUT_FEATURES)} when explicitly justified by the Auto11 initial knowledge package.",
-            "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+            "data_settings_hard_lock": f"Data settings are hard-locked: seed={LOCKED_SEED}, existing split/eval/data paths only. input_features defaults to {LOCKED_INPUT_FEATURES}; allowed existing feature contracts are {sorted(VALID_INPUT_FEATURES)} when explicitly justified by the grid_controller initial knowledge package.",
+            "initial_knowledge_policy": "Hybrid experimental priors may come only from the Grid/grid_controller initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
             "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
             "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
             "planner_split": "Use two tracks only with an adaptive explorer target of 4-6 per 12-experiment round, defaulting to 5. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value. This target is planning guidance, not a hard scientific rule.",
             "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
             "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
-            "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+            "batch_size_policy": "Ordinary Hybrid candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
             "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
             "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
             "review_soft_policy": "Reviewer outputs, including round_review, cross_round_audit, cooldowns, soft_advisories, contradicted_patterns, and search_policy_notes, are soft evidence unless they identify a schema-invalid config, resource-infeasible config, locked train/data/eval contract violation, or explicit user/controller rule. Following a review requires evidence; departing from a review requires only concise rationale plus a valid paired comparison/decision rule. Do not hard-ban EMA, model family, input feature contract, or loss solely because a reviewer recommended against it.",
@@ -612,8 +612,8 @@ def load_planner_context(campaign_dir: Path, state: dict, history: list[dict],
         "locked_files_contract": _read_text_context(CONTEXT_FILES["locked_files"], clean_perf_lines=False),
         "all_review_history": load_review_history(campaign_dir, round_num),
         "recent_experiment_history": history[-80:],
-        "v6_knowledge_files": _planner_knowledge_files(campaign_dir),
-        "v6_knowledge_digest": _planner_knowledge_digest(campaign_dir),
+        "hybrid_knowledge_files": _planner_knowledge_files(campaign_dir),
+        "hybrid_knowledge_digest": _planner_knowledge_digest(campaign_dir),
         "novelty_index": _planner_novelty_index(campaign_dir),
         "initial_knowledge_file": str(knowledge_dir(campaign_dir) / INITIAL_KNOWLEDGE_FILENAME),
         "initial_knowledge_csv_file": str(knowledge_dir(campaign_dir) / INITIAL_KNOWLEDGE_CSV_FILENAME),
@@ -634,7 +634,7 @@ def _metric_float(value: Any) -> float | None:
 def _history_result_rows(history: list[dict]) -> list[dict[str, Any]]:
     """Compact completed-result rows for planner front matter.
 
-    Source is Auto V6 history/artifacts only.  This helper intentionally avoids
+    Source is Hybrid history/artifacts only.  This helper intentionally avoids
     hand-curated family bans or round-specific advice; it only extracts
     comparable completed full-run evidence.
     """
@@ -781,7 +781,7 @@ def _front_matter_prompt_block(context: dict[str, Any]) -> str:
 
 
 def _planner_knowledge_files(campaign_dir: Path) -> dict[str, str]:
-    """Return paths to V4-only knowledge files for local CLI scouts."""
+    """Return paths to Sequential-only knowledge files for local CLI scouts."""
     kdir = knowledge_dir(campaign_dir)
     names = [
         "all_results_summary.jsonl",
@@ -801,7 +801,7 @@ def _planner_knowledge_digest(campaign_dir: Path) -> dict[str, Any]:
     """Small digest embedded directly in prompts; full history stays in files."""
     kdir = knowledge_dir(campaign_dir)
     digest = {
-        "knowledge_policy": "All files are V4-only history. V3 performance remains forbidden.",
+        "knowledge_policy": "All files are Sequential-only history. V3 performance remains forbidden.",
         "quota_target": {"explorer_range": [4, 6], "explorer_default": 5, "note": "Adaptive guidance, not a hard scientific rule."},
         "exploit_definition": "Exploit proposals do not explore. They refine, reproduce, or cleanly compare known strong directions using existing architectures and controlled HP/loss/EMA/augmentation changes.",
         "explorer_requirement": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications from adjacent tasks/literature mechanisms. Reusing an old arch_name with only width/depth/lr/loss changes is not explorer.",
@@ -833,7 +833,7 @@ def _novelty_config_key(row: dict[str, Any]) -> str:
 
 
 def _planner_novelty_index(campaign_dir: Path) -> dict[str, Any]:
-    """Build a compact V4-only novelty index for scouts and rationale warnings.
+    """Build a compact Sequential-only novelty index for scouts and rationale warnings.
 
     This is deliberately lightweight.  It does not decide scientific value, but
     it makes seen architecture/config status explicit so explorer proposals do
@@ -876,7 +876,7 @@ def _planner_novelty_index(campaign_dir: Path) -> dict[str, Any]:
                     "failure_class": row.get("failure_class"),
                 })
     return {
-        "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+        "policy": "Use this Sequential-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
         "seen_arch_names": sorted(seen_arch),
         "seen_families": sorted(seen_family),
         "seen_config_keys": sorted(seen_config),
@@ -988,13 +988,13 @@ def _web_query_metadata(query_spec: Any) -> tuple[str, str, str]:
 
 
 def _normalize_web_query_mode(mode: str | None) -> str:
-    mode = (mode or os.environ.get("AUTO_V6_WEB_QUERY_MODE") or "routine").strip().lower()
+    mode = (mode or os.environ.get("hybrid_WEB_QUERY_MODE") or "routine").strip().lower()
     return mode if mode in {"full", "routine", "targeted"} else "routine"
 
 
 def _normalize_web_query_limit(limit: int | str | None, mode: str) -> int | None:
     if limit is None:
-        limit = os.environ.get("AUTO_V6_WEB_QUERY_LIMIT")
+        limit = os.environ.get("hybrid_WEB_QUERY_LIMIT")
     if limit in {None, ""}:
         if mode == "full":
             return None
@@ -1223,7 +1223,7 @@ def _adaptive_web_query_policy(context: dict[str, Any] | None,
     missing_set = set(missing_clusters)
     failure_terms = ["failure", "failed", "repair", "codegen", "smoke", "full", "error", "oom", "out of memory"]
     success_terms = ["keep_score_0_5", "high review", "promising", "recommended", "score_0_5", "score"]
-    cooldown_disabled = os.environ.get("AUTO_V6_WEB_DISABLE_COOLDOWN", "0").strip().lower() in {"1", "true", "yes"}
+    cooldown_disabled = os.environ.get("hybrid_WEB_DISABLE_COOLDOWN", "0").strip().lower() in {"1", "true", "yes"}
 
     query_weights: dict[str, float] = {}
     weight_reasons: dict[str, list[str]] = {}
@@ -1517,14 +1517,14 @@ def _expected_web_clusters() -> list[str]:
 
 
 def _web_reuse_enabled() -> bool:
-    return os.environ.get("AUTO_V6_WEB_REUSE_SOURCES", "0").strip().lower() in {"1", "true", "yes"}
+    return os.environ.get("hybrid_WEB_REUSE_SOURCES", "0").strip().lower() in {"1", "true", "yes"}
 
 
 def _recent_web_source_artifacts(art_dir: Path, *, max_files: int | None = None) -> list[Path]:
     """Find recent sibling external_sources_gemini.json artifacts for light reuse hints."""
     if max_files is None:
         try:
-            max_files = int(os.environ.get("AUTO_V6_WEB_REUSE_SCAN_LIMIT", "8"))
+            max_files = int(os.environ.get("hybrid_WEB_REUSE_SCAN_LIMIT", "8"))
         except ValueError:
             max_files = 8
     candidates: list[Path] = []
@@ -1549,7 +1549,7 @@ def _source_reuse_hints(art_dir: Path, selected_queries: list[Any]) -> dict[str,
     """Return cache/reuse candidates keyed by exact query or topic_cluster.
 
     This is deliberately lightweight: no database, no network calls. By default
-    callers only record cache_candidate hints; setting AUTO_V6_WEB_REUSE_SOURCES=1
+    callers only record cache_candidate hints; setting hybrid_WEB_REUSE_SOURCES=1
     lets the Gemini source scout reuse matching cached sources and skip that exact query.
     """
     selected_meta = [_web_query_metadata(spec) for spec in selected_queries]
@@ -2044,7 +2044,7 @@ def run_gemini_web_source_scout(art_dir: Path, context: dict[str, Any] | None = 
     env = os.environ.copy()
     env["GOOGLE_GENAI_USE_GCA"] = "true"
     try:
-        timeout = int(os.environ.get("AUTO_V6_WEB_QUERY_TIMEOUT_S") or timeout)
+        timeout = int(os.environ.get("hybrid_WEB_QUERY_TIMEOUT_S") or timeout)
     except (TypeError, ValueError):
         timeout = 240
     timeout = max(5, min(timeout, 150))
@@ -2255,16 +2255,16 @@ def run_codex_web_idea_scout(context: dict[str, Any], gemini_sources: dict[str, 
         },
     }
     prompt = (
-        "You are the primary web-based external idea scout for Auto V6.\n"
+        "You are the primary web-based external idea scout for Hybrid.\n"
         "Use live web search and the supplied Gemini source-scout results to propose model ideas only.\n"
         "The supplied Gemini sources have already been hard-filtered: fake/placeholder arXiv or DOI URLs, unresolved Google grounding redirects, duplicate URLs, and homepage-only URLs were excluded from this context. Do not use excluded/weak source examples as evidence.\n"
         "External ideas are mechanisms/context for the planner, not commands; do NOT directly generate TrainConfig candidates. Do NOT change data/eval/seed/input contracts.\n"
         "Locked feasibility contract: height-only, single-frame, 2D grid input/output, existing train/eval/data paths, no new labels/meshes/solvers/metrics.\n"
-        "Prefer mechanisms that can become lightweight PyTorch modules or compositions in the existing Auto V6 codebase.\n"
+        "Prefer mechanisms that can become lightweight PyTorch modules or compositions in the existing Hybrid codebase.\n"
         "Avoid just saying use bigger UNet/CNO/FNO. Focus on transferred mechanisms, boundary/geometry handling, local refinement, spectral/wavelet/low-rank adapters, or neural operator variants.\n"
         "Maintain diversity: Direct CFD/CFD-like ideas from query_tier A must be no more than 3 of the 12 ideas; include dense prediction, weather/scientific field prediction, and mechanism-only transfers when feasible.\n"
         "Return ONLY valid JSON with schema {\"ideas\":[...]} and exactly 12 ideas.\n"
-        "Each idea must include idea_id, title, source_title, source_url, source_year, source_task, topic_cluster, query_tier, mechanism_hint, transferred_mechanism, height_only_translation, feasibility_under_locked_contract, why_relevant_to_topology_pressure, minimal_implementation_in_auto_v6, expected_parameter_efficiency, paired_comparison, ablation_removes_mechanism, risk, search_query_used.\n\n"
+        "Each idea must include idea_id, title, source_title, source_url, source_year, source_task, topic_cluster, query_tier, mechanism_hint, transferred_mechanism, height_only_translation, feasibility_under_locked_contract, why_relevant_to_topology_pressure, minimal_implementation_in_hybrid, expected_parameter_efficiency, paired_comparison, ablation_removes_mechanism, risk, search_query_used.\n\n"
         "COMPACT_CONTEXT_JSON:\n"
         f"{json.dumps(compact, ensure_ascii=False, indent=2)}\n"
     )
@@ -2300,13 +2300,13 @@ def review_external_ideas_with_claude(context: dict[str, Any], codex_ideas: dict
         "codex_web_ideas": codex_ideas,
     }
     prompt = (
-        "You are Claude Opus doing local review for Auto V6 web-scouted external ideas.\n"
+        "You are Claude Opus doing local review for Hybrid web-scouted external ideas.\n"
         "Do not browse. Do not generate train configs. External ideas are mechanisms/context only; review and compress them into planner-safe material.\n"
         "Hard-filter any idea that cannot satisfy the locked contract: height-only, single-frame, 2D grid input/output, existing train/eval/data paths, no new labels/meshes/solvers/metrics, fixed seed/input_features.\n"
         "Use a 7-axis rubric with 0-5 subscores: novelty, feasibility, height_only_compatibility, parameter_efficiency, implementation_risk, paired_comparison_clarity, diversity_contribution. Preserve keep_score_0_5 compatibility as the overall keep score.\n"
         "Reject or down-rank ideas that require new data, mesh/point-cloud labels, expensive solvers, huge parameter growth, temporal sequences, added input channels, or vague name-only transfers.\n"
         "Return ONLY JSON: {\"reviewed_ideas\":[...], \"rejected\":[...], \"topic_cluster_counts\":{...}, \"coverage_warning\":\"...\", \"missing_clusters_for_next_round\":[...], \"summary\":\"...\"}.\n"
-        "Each reviewed idea must include idea_id, title, keep_score_0_5, subscores, topic_cluster, source_task, query_tier, height_only_translation, ablation_removes_mechanism, implementation_risk, minimal_implementation_in_auto_v6, expected_parameter_efficiency, recommended_paired_comparison, planner_hint, source_urls.\n\n"
+        "Each reviewed idea must include idea_id, title, keep_score_0_5, subscores, topic_cluster, source_task, query_tier, height_only_translation, ablation_removes_mechanism, implementation_risk, minimal_implementation_in_hybrid, expected_parameter_efficiency, recommended_paired_comparison, planner_hint, source_urls.\n\n"
         "LOCAL_REVIEW_CONTEXT_JSON:\n"
         f"{json.dumps(compact, ensure_ascii=False, indent=2)}\n"
     )
@@ -2479,7 +2479,7 @@ def build_search_prompt(context: dict[str, Any]) -> str:
         "You are proposing experiments for a neural architecture search on wind pressure prediction.\n"
         f"Round: {context['campaign']['round_num']}\n\n"
         "You are an independent scout, not a policy controller. Your job is to propose a high-value next batch.\n"
-        "You receive all available V4 review history, candidate code summaries, V3-derived architecture/HP ranges, and hard workflow contracts.\n"
+        "You receive all available Sequential review history, candidate code summaries, V3-derived architecture/HP ranges, and hard workflow contracts.\n"
         "Do not blindly follow the latest review. Treat reviews as evidence and choose freely: exploit winners or explore new families/mechanisms, as long as the rationale is technically coherent and compatible with the hard constraints.\n"
         "Do not use V3 performance values/rankings/tiers/conclusions. V3 architecture definitions and HP ranges are allowed.\n\n"
         f"{_front_matter_prompt_block(context)}\n"
@@ -2489,7 +2489,7 @@ def build_search_prompt(context: dict[str, Any]) -> str:
         "input_features, epochs, seed, use_ema, ema_decay, augmentation\n\n"
         "Scout task:\n"
         "- Propose concrete experiments tied to explicit hypotheses, paired comparisons, and decision rules, not only architecture names.\n"
-        "- Use the full V4-only structured history files and review history to understand what has happened, including failures, fixes, retries, and long-term patterns.\n"
+        "- Use the full Sequential-only structured history files and review history to understand what has happened, including failures, fixes, retries, and long-term patterns.\n"
         "- Use V3-derived architecture and HP ranges as the legal search space, not as performance hints.\n"
         "- Keep the locked train/eval/data contract unchanged.\n"
         "- Do not create, transform, select, split, or otherwise operate on data. Use only allowed input_features values and leave data settings to the locked pipeline.\n"
@@ -2538,8 +2538,8 @@ def build_codex_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     full planner prompt can exceed that once review history grows, so Codex gets
     a compact prompt plus local file paths it may inspect on demand.
     """
-    kfiles = context.get("v6_knowledge_files") or {}
-    digest = context.get("v6_knowledge_digest") or {}
+    kfiles = context.get("hybrid_knowledge_files") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     required_context_files = {
         "knowledge_summary": kfiles.get("knowledge_summary"),
@@ -2575,7 +2575,7 @@ def build_codex_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "external_web_scout": context.get("external_web_scout"),
     }
     return (
-        "You are the Codex scout for Auto V6 candidate generation.\n"
+        "You are the Codex scout for Hybrid candidate generation.\n"
         "You run in the project workspace and MUST inspect the required local context files listed in COMPACT_CONTEXT_JSON.required_context_files before proposing.\n"
         "Do not read unrelated workspace memory/persona files. Use only the listed context files and the compact context embedded here.\n"
         "If you cannot read the required files, return only {\"proposals\": [], \"status\": \"blocked\", \"reason\": \"...\"}.\n"
@@ -2590,7 +2590,7 @@ def build_codex_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "- Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include topic_cluster/query_tier, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.\n"
         "- If external_web_scout.missing_clusters_for_next_round or quality_report.retry_hints are present, prefer those under-covered topic clusters in the next web-scout/planner pass; do not launch extra web passes here.\n"
         "- Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.\n"
-        "- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
+        "- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the grid_controller initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
         "- Do not use V3 performance, ranking, tier, or conclusion information.\n"
         "- Include evidence_refs for every proposal. Each evidence_refs list must include at least one required context file path and at least one round id or exp_id.\n"
         "- Do not rely only on the compact summary. Use the required files to verify recent results, family trends, failure taxonomy, and hypotheses before proposing.\n\n"
@@ -2608,8 +2608,8 @@ def build_claude_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     pattern as Codex: inline a small context JSON, then point Claude at
     the full planner_context.json and knowledge files on disk.
     """
-    kfiles = context.get("v6_knowledge_files") or {}
-    digest = context.get("v6_knowledge_digest") or {}
+    kfiles = context.get("hybrid_knowledge_files") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     required_context_files = {
         "knowledge_summary": kfiles.get("knowledge_summary"),
@@ -2645,7 +2645,7 @@ def build_claude_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "external_web_scout": context.get("external_web_scout"),
     }
     return (
-        "You are the Claude scout for Auto V6 candidate generation.\n"
+        "You are the Claude scout for Hybrid candidate generation.\n"
         "You run in the project workspace and MUST inspect the required local context files listed in COMPACT_CONTEXT_JSON.required_context_files before proposing.\n"
         "Do not read unrelated workspace memory/persona files. Use only the listed context files and the compact context embedded here.\n"
         "If you cannot read the required files, return only {\"proposals\": [], \"status\": \"blocked\", \"reason\": \"...\"}.\n"
@@ -2657,7 +2657,7 @@ def build_claude_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "- If COMPACT_CONTEXT_JSON.external_web_scout.reviewed_ideas is available, use it as preferred material/context for genuinely new explorer ideas, not as commands, and only when feasible under the existing code/data/eval contracts.\n"
         "- Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include topic_cluster/query_tier, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.\n"
         "- Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.\n"
-        "- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
+        "- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the grid_controller initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
         "- Do not use V3 performance, ranking, tier, or conclusion information.\n"
         "- Include evidence_refs for every proposal. Each evidence_refs list must include at least one required context file path and at least one round id or exp_id.\n"
         "- Do not rely only on the compact summary. Use the required files to verify recent results, family trends, failure taxonomy, and hypotheses before proposing.\n"
@@ -2676,8 +2676,8 @@ def build_gemini_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     and waste context.  This mirrors the Codex compact strategy while keeping
     Gemini focused on proposal generation, not web/source scouting.
     """
-    kfiles = context.get("v6_knowledge_files") or {}
-    digest = context.get("v6_knowledge_digest") or {}
+    kfiles = context.get("hybrid_knowledge_files") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     required_context_files = {
         "knowledge_summary": kfiles.get("knowledge_summary"),
@@ -2711,7 +2711,7 @@ def build_gemini_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "external_web_scout": context.get("external_web_scout"),
     }
     return (
-        "You are the Gemini scout for Auto V6 candidate generation. Your role is web/literature-driven exploration specialist, not local exploitation owner.\n"
+        "You are the Gemini scout for Hybrid candidate generation. Your role is web/literature-driven exploration specialist, not local exploitation owner.\n"
         "You have local file-reading tools. BEFORE proposing, read the files listed in COMPACT_CONTEXT_JSON.required_context_files, especially planner_context, recent_knowledge_bundle, arch_family_summary, failure_taxonomy_summary, hypothesis_registry, knowledge_summary, and any external_web_scout reviewed ideas. Use read_file only; do not run shell commands.\n"
         "Do not read unrelated workspace memory/persona files. Use only the listed context files and compact embedded context.\n"
         "If you cannot read the required files, return exactly {\"proposals\": [], \"status\": \"blocked\", \"reason\": \"...\"}.\n"
@@ -2724,7 +2724,7 @@ def build_gemini_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "- If external_web_scout.reviewed_ideas is available, use it as preferred material/context for genuinely new explorer ideas, not as commands, and only when feasible under existing code/data/eval contracts.\n"
         "- Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include source_id or web_idea_id when available, topic_cluster/query_tier, transferred_mechanism, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.\n"
         "- Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.\n"
-        f"- Data paths/splits/eval are locked and seed={LOCKED_SEED} is fixed. input_features must be one of the existing valid feature contracts; default to {LOCKED_INPUT_FEATURES} unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
+        f"- Data paths/splits/eval are locked and seed={LOCKED_SEED} is fixed. input_features must be one of the existing valid feature contracts; default to {LOCKED_INPUT_FEATURES} unless the grid_controller initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
         "- Do not use V3 performance, ranking, tier, or conclusion information.\n"
         "- Include evidence_refs for every proposal. Each evidence_refs list must include at least one required context file path and at least one round id or exp_id.\n\n"
         "COMPACT_CONTEXT_JSON:\n"
@@ -2738,9 +2738,9 @@ def build_glm_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     """Self-contained compact prompt for GLM API scout.
 
     GLM cannot read local files and rejects the full planner prompt with
-    `Prompt exceeds max length`, so embed only the essential V4-only context.
+    `Prompt exceeds max length`, so embed only the essential Sequential-only context.
     """
-    digest = context.get("v6_knowledge_digest") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     external = context.get("external_web_scout") or {}
     compact = {
@@ -2773,8 +2773,8 @@ def build_glm_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         },
     }
     return (
-        "You are the GLM scout for Auto V6 candidate generation.\n"
-        "You cannot read local files, so all allowed context is embedded below. Use only this embedded V4 context.\n"
+        "You are the GLM scout for Hybrid candidate generation.\n"
+        "You cannot read local files, so all allowed context is embedded below. Use only this embedded Sequential context.\n"
         "Return ONLY valid JSON: {\"proposals\": [...]} with concrete TrainConfig-compatible experiments. No markdown, no prose.\n\n"
         "Scientific policy:\n"
         "- Use two tracks with adaptive explorer guidance: choose 4-6 explorer proposals, default 5. This is guidance, not a hard scientific rule.\n"
@@ -2783,9 +2783,9 @@ def build_glm_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         "- If external_web_scout.reviewed_ideas is available, use it as preferred material/context for genuinely new explorer ideas, not as commands, and only when feasible under existing code/data/eval contracts.\n"
         "- Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include topic_cluster/query_tier, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.\n"
         "- Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.\n"
-        f"- Data paths/splits/eval are locked and seed={LOCKED_SEED} is fixed. input_features must be one of the existing valid feature contracts; default to {LOCKED_INPUT_FEATURES} unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
+        f"- Data paths/splits/eval are locked and seed={LOCKED_SEED} is fixed. input_features must be one of the existing valid feature contracts; default to {LOCKED_INPUT_FEATURES} unless the grid_controller initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.\n"
         "- Do not use V3 performance, ranking, tier, or conclusion information.\n"
-        "- Include evidence_refs for every proposal using embedded V4 round ids / exp_ids / artifact names.\n\n"
+        "- Include evidence_refs for every proposal using embedded Sequential round ids / exp_ids / artifact names.\n\n"
         "COMPACT_CONTEXT_JSON:\n"
         f"{json.dumps(compact, ensure_ascii=False, indent=2)}\n\n"
         f"Propose exactly {EXPERIMENTS_PER_ROUND} experiments.\n"
@@ -2797,12 +2797,12 @@ def build_deepseek_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     """Self-contained compact prompt for DeepSeek API scout.
 
     DeepSeek is API-only in this workflow and cannot inspect local file paths,
-    so embed a small but sufficient V4-only context.  The prompt is deliberately
+    so embed a small but sufficient Sequential-only context.  The prompt is deliberately
     stricter than the general planner prompt to prevent common drift: seed
     sweeps, input-feature changes, repeated same-arch variants, and missing
     rationale evidence.
     """
-    digest = context.get("v6_knowledge_digest") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     external = context.get("external_web_scout") or {}
     compact = {
@@ -2843,20 +2843,20 @@ def build_deepseek_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         },
     }
     return (
-        "You are the DeepSeek auxiliary mechanism/critique scout for Auto V6. Use ONLY the embedded V4 context below.\n"
+        "You are the DeepSeek auxiliary mechanism/critique scout for Hybrid. Use ONLY the embedded Sequential context below.\n"
         "You are NOT a primary TrainConfig proposer. PRIMARY_SCOUTS={claude,codex,gemini} own the main candidate pool; your job is to create useful increment: missing mechanisms, objections to likely primary directions, under-covered families, mechanism ideas, and repair suggestions.\n"
         "Return ONLY valid JSON: {\"auxiliary_ideas\": [{\"arch_name\": \"optional existing/new family\", \"mechanism\": \"...\", \"hypothesis\": \"...\", \"why_relevant\": \"...\", \"objection_or_gap\": \"...\", \"suggested_contract_repairs\": {...}}], \"critique\": [...], \"recommendations\": [...], \"proposals\": []}. Optional proposals are allowed only as rough examples; they need not be TrainConfig-clean and will be converted to auxiliary ideas, not used as same-weight configs. No markdown, no prose.\n\n"
         "HARD LOCKS â€” non-negotiable:\n"
         f"- seed is exactly {LOCKED_SEED} for every proposal. Do NOT propose seed sweeps, alternate seeds, replicates with different seeds, or any seed rationale.\n"
-        f"- input_features must be one of the existing valid feature contracts; default to {LOCKED_INPUT_FEATURES}. Do NOT invent added channels, masks, labels, new splits, new preprocessing, or any data-path change; SDF-style features are allowed only when supported by the existing contract and explicitly tied to the Auto11 initial knowledge package.\n"
+        f"- input_features must be one of the existing valid feature contracts; default to {LOCKED_INPUT_FEATURES}. Do NOT invent added channels, masks, labels, new splits, new preprocessing, or any data-path change; SDF-style features are allowed only when supported by the existing contract and explicitly tied to the grid_controller initial knowledge package.\n"
         "- Data/eval contract is locked: no changes to paths, splits, targets, metrics, validation protocol, labels, geometry representation, or augmentation beyond existing legal TrainConfig fields.\n"
         "- Loss contract is locked: use only legal existing loss_name values from the contract/search space; do NOT invent composite losses, auxiliary losses, new terms, curriculum losses, or metric/loss rewrites.\n"
         "- At most 2 proposals may share the same arch_name. This is a hard cap, not guidance.\n"
         "- Do not use V3 performance/ranking/tier/conclusion information. V3 architecture/search-space definitions are context only.\n"
-        "- evidence_refs is REQUIRED for every proposal and must cite embedded V4 round ids, exp_ids, artifact names, hypothesis ids, or external_web_scout idea names. Empty/generic evidence_refs are invalid.\n\n"
+        "- evidence_refs is REQUIRED for every proposal and must cite embedded Sequential round ids, exp_ids, artifact names, hypothesis ids, or external_web_scout idea names. Empty/generic evidence_refs are invalid.\n\n"
         "Scientific policy:\n"
         "- Use two tracks with adaptive explorer guidance: choose 4-6 explorer proposals, default 5. This is guidance, not a hard scientific rule.\n"
-        "- Exploit does not explore; it uses known strong V4 directions, clean ablations, replicates, and score-seeking refinements under the hard locks.\n"
+        "- Exploit does not explore; it uses known strong Sequential directions, clean ablations, replicates, and score-seeking refinements under the hard locks.\n"
         "- Explorer must introduce new model/mechanism value: new arch_name, new composition, lightweight architectural modification, or transferred mechanism. Old arch_name plus larger n_c/depth/lr/loss is not explorer.\n"
         "- Prefer parameter-efficient tests. Do not default to bigger n_c/depth; include capacity_rationale for any high-capacity config and identify a capacity-matched comparison.\n"
         "- Ordinary candidates must use batch_size=16. Do not tune batch_size for performance. Lower batch sizes are allowed only at batch_size=8 with resource_probe=true or OOM/resource_guard repair context and are feasibility evidence only, not ordinary leaderboard candidates; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.\n"
@@ -2874,7 +2874,7 @@ def build_grok_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     """Self-contained compact prompt for Grok API scout."""
     # Same shape as GLM, but intentionally small. Grok full prompt timed out at
     # ~2.3MB request body; small prompt smoke works.
-    digest = context.get("v6_knowledge_digest") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     external = context.get("external_web_scout") or {}
     compact = {
@@ -2900,7 +2900,7 @@ def build_grok_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         },
     }
     return (
-        "You are the Grok auxiliary mechanism/critique scout for Auto V6. Use only the embedded V4 context below.\n"
+        "You are the Grok auxiliary mechanism/critique scout for Hybrid. Use only the embedded Sequential context below.\n"
         "You are NOT a primary TrainConfig proposer. PRIMARY_SCOUTS={claude,codex,gemini} own the main candidate pool; your output is auxiliary idea/critique context for synthesis.\n"
         "Return ONLY valid JSON: {\"auxiliary_ideas\": [{\"arch_name\": \"optional\", \"mechanism\": \"...\", \"hypothesis\": \"...\", \"why_relevant\": \"...\", \"objection_or_gap\": \"...\", \"suggested_contract_repairs\": {...}, \"source_note\": \"...\"}], \"critique\": [...], \"recommendations\": [...], \"proposals\": []}. Optional rough proposals are allowed but will be converted to auxiliary ideas, not same-weight TrainConfig candidates. No markdown, no prose.\n"
         "Focus on missing mechanisms, objections to obvious primary directions, under-covered architecture families, parameter-efficient mechanism ideas, and repair suggestions. Do not fill a 12-config batch. Do not alter data/eval contracts or use V3 performance/ranking/tier conclusions. If web_search is available, use it only to sharpen 1-2 mechanism ideas/source_notes, not to generate direct leaderboard configs.\n\n"
@@ -2912,7 +2912,7 @@ def build_grok_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
 
 def build_mimo_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
     """Self-contained compact prompt for MiMo API scout."""
-    digest = context.get("v6_knowledge_digest") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     external = context.get("external_web_scout") or {}
     compact = {
@@ -2938,7 +2938,7 @@ def build_mimo_search_prompt(context: dict[str, Any], art_dir: Path) -> str:
         },
     }
     return (
-        "You are the MiMo auxiliary mechanism/critique scout for Auto V6. Use only the embedded V4 context below plus enabled web search if it helps mechanism novelty.\n"
+        "You are the MiMo auxiliary mechanism/critique scout for Hybrid. Use only the embedded Sequential context below plus enabled web search if it helps mechanism novelty.\n"
         "You are NOT a primary TrainConfig proposer. PRIMARY_SCOUTS={claude,codex,gemini} own the main candidate pool; your output should be auxiliary idea/critique context that adds mechanisms, objections, gaps, and repairs.\n"
         "Return ONLY valid JSON: {\"auxiliary_ideas\": [{\"arch_name\": \"optional\", \"mechanism\": \"...\", \"hypothesis\": \"...\", \"why_relevant\": \"...\", \"objection_or_gap\": \"...\", \"suggested_contract_repairs\": {...}, \"source_note\": \"...\"}], \"critique\": [...], \"recommendations\": [...], \"proposals\": []}. Optional rough proposals are allowed but will be converted to auxiliary ideas, not same-weight TrainConfig candidates. Do NOT use nested \"config\". No markdown, no prose.\n"
         "Focus on missing mechanisms, objections to likely primary directions, under-covered families, parameter-efficient mechanism ideas, and repair suggestions. Do not fill a 12-config batch. Do not alter data/eval contracts or use V3 performance/ranking/tier conclusions.\n\n"
@@ -4003,7 +4003,7 @@ def synthesize_proposals(scout_results: dict[str, dict], context: dict[str, Any]
     """Use Claude CLI to synthesize final proposal pack from all scouts."""
     compact = _compact_scout_results(scout_results)
     prompt = (
-        "You are the proposal synthesis model for Auto V6.\n"
+        "You are the proposal synthesis model for Hybrid.\n"
         "Inputs: full planner context and independent scout proposals.\n"
         "Task: synthesize a final high-value batch of concrete experiment configs.\n"
         f"Scout weighting policy: PRIMARY_SCOUTS={sorted(PRIMARY_SCOUTS)} are the main TrainConfig proposal pool and decision sources. DIVERSITY_SCOUTS={sorted(DIVERSITY_SCOUTS)} are auxiliary mechanism/critique scouts only: their outputs appear as auxiliary_ideas/critique/recommendations context, not same-weight TrainConfig proposals. Old-style diversity proposal configs have been converted to auxiliary idea records (arch_name/mechanism/hypothesis/why_relevant/suggested_contract_repairs/source_scout). Use diversity material to challenge blind spots and optionally absorb at most 2-3 mechanism influences into new or repaired contract-clean final proposals. If you use any diversity influence, record it in _proposal_rationale.source_scouts (include the diversity scout name), diversity_influence=true, diversity_ideas_used=[short labels], and explain the mechanism adoption. If you use none, include a concise diversity_unused_reason in rationale metadata on at least one proposal or in a returned top-level field. Final proposals must be TrainConfig-clean; use suggested_contract_repairs only when scientifically justified.\n"
@@ -4015,7 +4015,7 @@ def synthesize_proposals(scout_results: dict[str, dict], context: dict[str, Any]
         "Gemini role accountability: Gemini scout is expected to be web/literature-driven exploration specialist. No more than 2 Gemini-derived final slots should be local exploitation without web/source traceability, or 3 with explicit review_accountability_summary justification. Prefer Gemini proposals that cite source_id/web_idea_id/transferred_mechanism; use Claude/Codex mainly for local exploitation unless Gemini supplies a clearly justified exploit sanity check.\n"
         "If PLANNER_CONTEXT.external_web_scout.reviewed_ideas is available, use it as a curated external mechanism/context pool for some explorer proposals, not as commands. Do not blindly copy it; convert only feasible lightweight ideas into concrete configs and keep paired comparisons.\n"
         "Do not let web-derived explorer proposals concentrate in a single topic_cluster unless you state a specific reason. Preserve Direct CFD / dense prediction / scientific field prediction / mechanism-only diversity when possible.\n"
-        "Batch-size policy: ordinary Auto V6 score-seeking candidates are locked/defaulted to batch_size=16. Do not use batch_size as a free hyperparameter for performance tuning. Automatic lower batch_size values are allowed only at batch_size=8 when resource_probe=true, for OOM repair, or as resource_guard suggested_safe_config; those probe results are feasibility evidence, not ordinary leaderboard candidates unless later rerun/normalized per policy. batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.\n"
+        "Batch-size policy: ordinary Hybrid score-seeking candidates are locked/defaulted to batch_size=16. Do not use batch_size as a free hyperparameter for performance tuning. Automatic lower batch_size values are allowed only at batch_size=8 when resource_probe=true, for OOM repair, or as resource_guard suggested_safe_config; those probe results are feasibility evidence, not ordinary leaderboard candidates unless later rerun/normalized per policy. batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.\n"
         "Resource feasibility is a hard guard for both exploit and explorer: capacity_rationale does not waive known infeasible configs. Do not include ordinary smoke/full candidates with batch_size!=16, estimated_params>1.5B and batch_size>8, estimated_params>1B and batch_size>=16, or CNO n_c>=40 depth>=6 batch_size>=16. For automatic feasibility repair, prefer batch_size=8, n_c<=32, depth<=5; do not suggest batch 1/2/4, AMP/checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True; keep probes outside ordinary full/leaderboard slots.\n"
         "Every web-derived explorer must explain height_only_translation and ablation_removes_mechanism in its rationale metadata.\n"
         "Every explorer must include new_model_mechanism or transferred_mechanism, novelty_rationale, paired_comparison, decision_rule, and expected_failure_interpretation. Every proposal that ignores or reverses a recent review recommendation should explain the deviation concisely, but ignoring a soft advisory alone is not a rejection reason.\n"
@@ -4030,8 +4030,8 @@ def synthesize_proposals(scout_results: dict[str, dict], context: dict[str, Any]
         f"TARGET_COUNT: {target_count}\n\n"
     )
     # Build compact synthesis context instead of dumping full planner_context.
-    kfiles = context.get("v6_knowledge_files") or {}
-    digest = context.get("v6_knowledge_digest") or {}
+    kfiles = context.get("hybrid_knowledge_files") or {}
+    digest = context.get("hybrid_knowledge_digest") or {}
     ksummary = digest.get("knowledge_summary") or {}
     recent_tail = (context.get("recent_experiment_history") or [])[-12:]
     recent_tail = [_strip_v3_result_fields(r) for r in recent_tail]
@@ -4058,7 +4058,7 @@ def synthesize_proposals(scout_results: dict[str, dict], context: dict[str, Any]
         "external_web_scout": context.get("external_web_scout"),
     }
     compact_prompt = (
-        "You are the proposal synthesis model for Auto V6.\n"
+        "You are the proposal synthesis model for Hybrid.\n"
         "You run in the project workspace. The full planner context is available at SYNTHESIS_CONTEXT.full_planner_context_file for deeper inspection if needed.\n"
         "Do not read unrelated workspace memory/persona files.\n\n"
         + prompt  # re-use the existing policy/instruction text (already built above)
@@ -4248,7 +4248,7 @@ def quality_gate_with_codex(proposals: list[dict], context: dict[str, Any],
                             target_count: int, art_dir: Path) -> list[dict]:
     """Use Codex CLI as a proposal review/quality gate, not strategy owner."""
     prompt = (
-        "You are the Auto V6 proposal quality gate and decision-audit gate.\n"
+        "You are the Hybrid proposal quality gate and decision-audit gate.\n"
         "Review the synthesized proposal pack for schema validity, duplicates, hard-rule violations, locked data/eval contract violations, and auditable decision rationale.\n"
         "Phase A policy: do not decide scientific truth and do not ban deviations from review recommendations. However, missing decision rationale is repairable process debt: require repair, not hard rejection, when proposals lack hypothesis, paired comparison, decision rule, expected failure interpretation, or explicit explanation for deviating from recent review recommendations. Do not reject or replace a proposal solely because it ignores a soft advisory/cooldown/search_policy_note; only repair the rationale unless there is schema/resource/locked-contract/user-controller violation.\n"
         "Also flag if the pack has collapsed into an overly narrow local HP, capacity, or high-n_c sweep around one architecture without explicit justification; preserve architecture-level diversity when minimally repairing.\n"
@@ -4258,7 +4258,7 @@ def quality_gate_with_codex(proposals: list[dict], context: dict[str, Any],
         "Audit metadata request: for each returned proposal, include or preserve _proposal_rationale fields evidence_relation, evidence_response, belief_update_rule, batch_role, and evidence_refs when available. independent_explorer is a valid batch_role when a proposal is intentionally not a paired frontier/control slot. These audit metadata fields are for traceability only and must not become hard scientific rules, bans, or score thresholds.\n"
         "Gemini role audit: Gemini scout should primarily contribute web/literature-driven explorer mechanisms. Flag if more than 2 Gemini-derived final slots are local exploitation without web/source traceability, or more than 3 even with explicit justification; treat this as audit/repair, not rejection. Also flag if high-scoring web ideas/source_id/web_idea_id/transferred_mechanism evidence is ignored without explanation. This is a repair/audit issue, not a scientific hard ban.\n"
         f"Loss registry audit: valid_loss_names={list(VALID_LOSS_NAMES)}. Check every proposal.loss_name against these exact shared.losses LIBRARY keys. Illegal aliases/descriptions such as gradient_aware, spectral_gradient_aware, masked_l1_grad, gradient, or spectral_gradient are hard schema failures. Repair them to a legal value when the scientific intent is clear (gradient-aware intent => masked_l1_gradient); otherwise replace the proposal with a contract-clean alternative. Do not return any proposal with an illegal loss_name and do not silently alias outside this explicit review.\n"
-        "Batch-size lock: ordinary Auto V6 candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.\n"
+        "Batch-size lock: ordinary Hybrid candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.\n"
         "Do not take over global search strategy. Preserve the synthesis model's scientific intent unless a proposal is invalid, duplicated, contract-breaking, or unauditable.\n"
         f"You may minimally repair fields to satisfy the TrainConfig/search-space contract. Hard repair any data-setting violation to seed={LOCKED_SEED} and a valid existing input_features contract, defaulting to {LOCKED_INPUT_FEATURES}. Do not invent new data paths, splits, metrics, or unsupported input features.\n"
         "Return only JSON: {\"ok\": true/false, \"issues\": [strings], \"diversity_unused_reason\": \"required if no diversity influence, else null\", \"weak_setting_budget_explanation\": \"... if applicable\", \"review_accountability_summary\": \"...\", \"proposals\": [reviewed configs with _proposal_rationale audit metadata including evidence_relation/evidence_response/belief_update_rule/batch_role/evidence_refs when available]}.\n\n"
@@ -4317,9 +4317,9 @@ def quality_gate_with_codex(proposals: list[dict], context: dict[str, Any],
 # â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def main() -> None:
-    campaign_dir = Path(os.environ.get("V6_CAMPAIGN_DIR", "."))
+    campaign_dir = Path(os.environ.get("HYBRID_CAMPAIGN_DIR", "."))
     state = load_state(campaign_dir)
-    # Keep V4-only knowledge files fresh before building planner context.
+    # Keep Sequential-only knowledge files fresh before building planner context.
     try:
         rebuild_knowledge(campaign_dir, state)
     except Exception as exc:
@@ -4333,8 +4333,8 @@ def main() -> None:
     initial_knowledge_available = (knowledge_dir(campaign_dir) / INITIAL_KNOWLEDGE_FILENAME).is_file()
     use_initial_knowledge_search = round_num == 0 and initial_knowledge_available
     # Run the external web scout for all open-search rounds.  A clean Round 0
-    # without initial knowledge remains baseline-only, but Auto V6 Round 0 with
-    # the human researcher-supplied Auto11 initial knowledge is an open search bootstrap and
+    # without initial knowledge remains baseline-only, but Hybrid Round 0 with
+    # the human researcher-supplied grid_controller initial knowledge is an open search bootstrap and
     # should provide web-derived material for explorer slots.
     web_scout_allowed = round_num != 0 or use_initial_knowledge_search
     if web_scout_allowed:
@@ -4499,7 +4499,7 @@ def main() -> None:
 
     resource_guard_report = {
         "timestamp": now_iso(),
-        "policy": "Hard resource feasibility guard plus batch-size lock. Ordinary Auto V6 candidates use batch_size=16; automatic lower batch sizes are explicit batch_size=8 resource_probe/OOM-repair/resource_guard-safe-config evidence only, not ordinary leaderboard candidates unless rerun/normalized; batch_size<8 requires manual_resource_probe_approved=True. capacity_rationale cannot waive known infeasible ordinary smoke/full configs; blocked configs require safe rewrite or explicit resource_probe.",
+        "policy": "Hard resource feasibility guard plus batch-size lock. Ordinary Hybrid candidates use batch_size=16; automatic lower batch sizes are explicit batch_size=8 resource_probe/OOM-repair/resource_guard-safe-config evidence only, not ordinary leaderboard candidates unless rerun/normalized; batch_size<8 requires manual_resource_probe_approved=True. capacity_rationale cannot waive known infeasible ordinary smoke/full configs; blocked configs require safe rewrite or explicit resource_probe.",
         "blocked_count": sum(1 for p in proposals if p.get("resource_guard_blocked")),
         "warning_count": sum(1 for p in proposals if p.get("resource_guard_triggered") and not p.get("resource_guard_blocked")),
         "proposals": [
@@ -4563,6 +4563,9 @@ def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(name)s %(levelname)s: %(message)s")
     main()
+
+
+
 
 
 

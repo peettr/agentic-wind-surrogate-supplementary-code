@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r029_full_physics_slice_adapter_unet_nc24_lr0.0003_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "physics_slice_adapter_unet",
   "arch_kwargs": {
     "n_c": 24,
@@ -21,6 +21,8 @@
   "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r029_full_physics_slice_adapter_unet_nc24_lr0.0003_masked_l1_gradient",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\models\\generated\\physics_slice_adapter_unet.py",
+  "script_path": "<LOCAL_WORKSPACE>\\sequential\\models\\generated\\physics_slice_adapter_unet.py",
   "model_source_kind": "generated"
 }
+
+

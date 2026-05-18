@@ -1,7 +1,8 @@
-# Hybrid Training and Models
+﻿# Hybrid Training and Models
 
 This folder contains Hybrid training/evaluation code and models.
 
-- `models/` and `shared/`: source model and training code.
-- `model_rounds/`: full-run candidate models reorganized by round, with each experiment containing its own `model.py` and `config.json`.
-- `model_rounds_manifest.csv`: inventory of round-organized model files.
+The release source of truth for candidate files is `model_rounds/`. Each round contains one subfolder per candidate, and each candidate folder contains `model.py`, `config.json`, and available attempt metadata.
+
+
+

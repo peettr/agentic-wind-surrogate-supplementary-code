@@ -1,4 +1,4 @@
-﻿"""Auto V6 Model Zoo â€” 40 architectures from V3 with bug fixes.
+﻿"""Hybrid Model Zoo â€” 40 architectures from V3 with bug fixes.
 
 Categories:
   baselines: UNet v2, v3, SDF-7level, AFNO hybrid
@@ -15,4 +15,7 @@ Bug fixes applied (from V3 code review):
   - HRDCN: HRBlock now uses DCNv2 (was plain Conv)
   - FourierUNet: FFT pad correctly separates positive/negative frequencies
 """
+
+
+
 

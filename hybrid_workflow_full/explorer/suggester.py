@@ -1,4 +1,4 @@
-﻿"""AI-driven experiment suggester for Auto V6.
+﻿"""AI-driven experiment suggester for Hybrid.
 
 Uses V3 baseline results to suggest new experiments via:
   1. Factor analysis: Identify which hyperparameters matter most
@@ -32,7 +32,7 @@ V3_BEST_CONFIGS = {
         "use_ema": False,
         "epochs": 200,
     },
-    "grid18_champion": {
+    "orthogonal exploratory sweep_champion": {
         "arch_name": "unet_v2_baseline",
         "n_c": 32,
         "loss_name": "masked_l1",
@@ -203,7 +203,7 @@ def suggest_architecture_explore(round_num: int, prior_results: list[ExperimentR
 def suggest_hyperparam_finetune(round_num: int, prior_results: list[ExperimentResult]) -> SuggestionBatch:
     """Fine-tune hyperparameters around the best configurations.
     
-    Based on V3 Grid 18 findings:
+    Based on V3 orthogonal exploratory sweep findings:
     - l1_gradient loss is competitive with l1
     - lr=5e-4 and 1e-3 are both viable
     - EMA helps at lr=5e-4
@@ -265,7 +265,7 @@ def generate_suggestions(
 if __name__ == "__main__":
     from explorer import load_v3_baseline
 
-    print("Auto V6 Suggester - Generating SDF transfer suggestions...")
+    print("Hybrid Suggester - Generating SDF transfer suggestions...")
     batch = generate_suggestions("sdf_transfer", round_num=1)
     print(f"Strategy: {batch.strategy}")
     print(f"Rationale: {batch.rationale}")
@@ -278,4 +278,7 @@ if __name__ == "__main__":
     out_dir.mkdir(exist_ok=True)
     batch.save(out_dir / "suggestion_round1.json")
     print(f"\nSaved to configs/suggestion_round1.json")
+
+
+
 

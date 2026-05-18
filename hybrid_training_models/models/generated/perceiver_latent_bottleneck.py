@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -100,3 +100,5 @@ class perceiver_latent_bottleneck(nn.Module):
             y = F.interpolate(y, size=x.shape[-2:], mode="bilinear", align_corners=False)
 
         return torch.where(valid_out, y, torch.full_like(y, float("nan")))
+
+

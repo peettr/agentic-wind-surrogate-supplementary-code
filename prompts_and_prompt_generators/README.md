@@ -1,4 +1,4 @@
-# Prompts and Prompt Generators
+﻿# Prompts and Prompt Generators
 
 This directory provides a compact, release-oriented prompt record.
 
@@ -11,3 +11,6 @@ This directory provides a compact, release-oriented prompt record.
 ## Rationale
 
 The original workflow stored every full prompt for every round. Late-round planner prompts contained accumulated context and could exceed 10 MB each, with substantial repetition across rounds. For release, the package keeps representative full prompts and the prompt-building code/templates needed to understand and reconstruct the prompting process. Raw JSON/JSONL provider streams and all non-representative full prompt copies are excluded.
+
+
+

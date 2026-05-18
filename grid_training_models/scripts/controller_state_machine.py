@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
-"""Generic artifact-driven state machine for Auto V5 controller rounds.
+﻿#!/usr/bin/env python3
+"""Generic artifact-driven state machine for Grid controller rounds.
 
 This module deliberately does not plan a new set of candidates. It only inspects
 an existing controller report directory and decides the next generic transition
-for any Auto V5-like round: smoke retry/repair, promotion, benchmark submit,
+for any Grid-like round: smoke retry/repair, promotion, benchmark submit,
 benchmark retry, final ranking, or complete.
 """
 from __future__ import annotations
@@ -19,8 +19,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 BASELINE_REFERENCE = {
-    "source_run": "<BASELINE_HPC_SOURCE_ROOT>/campaigns/grid18_200ep/baseline",
-    "experiment_id": "grid18_200ep_baseline",
+    "source_run": "<BASELINE_HPC_SOURCE_ROOT>/campaigns/orthogonal exploratory sweep_200ep/baseline",
+    "experiment_id": "orthogonal exploratory sweep_200ep_baseline",
     "r2_median": 0.7085034105693335,
     "r2_global": 0.6566194830043587,
     "mae_median": 0.09351099282503128,
@@ -332,7 +332,7 @@ def write_final_ranking(
         "ranking_by_r2_median": rows,
     }
     write_json(report_dir / "final_ranking.json", result)
-    lines = ["# Auto V5 benchmark200 final ranking", "", f"Generated at: `{result['generated_at']}`", ""]
+    lines = ["# Grid benchmark200 final ranking", "", f"Generated at: `{result['generated_at']}`", ""]
     lines.append(
         "Baseline reference: "
         f"R2_median={baseline['r2_median']:.6f}, R2_global={baseline['r2_global']:.6f}, MAE_median={baseline['mae_median']:.6f}."
@@ -342,7 +342,7 @@ def write_final_ranking(
         lines.append(
             f"{row['rank']}. `{row['run_id']}`: "
             f"R2_median={row['r2_median']:.6f}, R2_global={row['r2_global']:.6f}, "
-            f"MAE_median={row['mae_median']:.6f}, ΔR2_median={row['delta_vs_baseline_r2_median']:.6f}"
+            f"MAE_median={row['mae_median']:.6f}, Î”R2_median={row['delta_vs_baseline_r2_median']:.6f}"
         )
     best = rows[0]
     lines.append("")
@@ -375,3 +375,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

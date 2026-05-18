@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -114,3 +114,5 @@ class height_only_anisotropic_compact_unet(nn.Module):
             valid_out = valid.all(dim=1, keepdim=True).expand(-1, y.shape[1], -1, -1)
 
         return torch.where(valid_out, y, torch.full_like(y, float("nan")))
+
+

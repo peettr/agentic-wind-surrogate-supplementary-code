@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -136,3 +136,5 @@ class texture_boundary_dual_fusion_unet(nn.Module):
             else:
                 out_valid = out_valid.any(dim=1, keepdim=True).expand(-1, out.shape[1], -1, -1)
         return torch.where(out_valid, out, torch.full_like(out, float("nan")))
+
+

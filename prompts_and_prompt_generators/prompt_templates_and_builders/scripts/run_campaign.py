@@ -1,4 +1,4 @@
-﻿"""V4 Campaign Runner â€” State machine automation loop.
+﻿"""Sequential Campaign Runner â€” State machine automation loop.
 
 Adapted from V1's proven workflow_runner.py pattern.
 Each phase is aç‹¬ç«‹å‡½æ•°, transitions are validated, state is persisted atomically.
@@ -32,7 +32,7 @@ from explorer.planner_v4 import V4Planner
 from explorer.candidate_library import CandidateLibrary
 from explorer.reviewer import review_round, build_review_context
 
-LOGGER = logging.getLogger("auto_v6.runner")
+LOGGER = logging.getLogger("hybrid.runner")
 
 # AI binaries
 
@@ -522,7 +522,7 @@ def _dict_to_cfg(d: dict) -> ExperimentConfig:
 
 def run_campaign(campaign_dir: str,
                  max_rounds: int = 12, resume: bool = False, dry_run: bool = False):
-    """Main entry point: V4 campaign state machine."""
+    """Main entry point: Sequential campaign state machine."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
 
     camp = Path(campaign_dir)
@@ -554,7 +554,7 @@ def run_campaign(campaign_dir: str,
         if v3_bl and not any(getattr(r, "arch_name", "") == "unet_v2_baseline" for r in history):
             history.extend(v3_bl)
 
-        LOGGER.info("=== V4 Campaign: %s ===", camp)
+        LOGGER.info("=== Sequential Campaign: %s ===", camp)
         LOGGER.info("max_rounds: %d", max_rounds)
 
         max_iter = 50  # safety limit
@@ -633,7 +633,7 @@ def run_campaign(campaign_dir: str,
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="V4 Campaign Runner (state machine)")
+    parser = argparse.ArgumentParser(description="Sequential Campaign Runner (state machine)")
     parser.add_argument("--campaign-dir", required=True)
     parser.add_argument("--max-rounds", type=int, default=12)
     parser.add_argument("--resume", action="store_true")
@@ -644,4 +644,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
 

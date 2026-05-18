@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -134,3 +134,5 @@ class height_derived_boundary_alltoall_mixer_unet(nn.Module):
         valid_any = valid.any(dim=1, keepdim=True)
         y = torch.where(valid_any, y, torch.full_like(y, float("nan")))
         return y
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 19,
+  "slot": 4,
+  "arch_name": "unet_sdf_7level",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 125771905,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "1.0",
+  "metrics": {
+    "r2_median": "0.7211150199064167",
+    "r2_global": "0.7007923495084197",
+    "mae_median": "0.0842215493321418",
+    "mae_mean": "0.0772855588658289"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

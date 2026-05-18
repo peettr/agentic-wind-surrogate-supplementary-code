@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Validate an AI-curated Auto V5 hyperparameter plan.
+﻿#!/usr/bin/env python3
+"""Validate an AI-curated Grid hyperparameter plan.
 
 This script checks that every included architecture satisfies the configured
 selection-policy count range, all HP values come from the selected HP policy
@@ -232,3 +232,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

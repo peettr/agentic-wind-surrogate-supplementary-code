@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -79,3 +79,5 @@ class p8_kan_unet(nn.Module):
 
         output = output.masked_fill(~valid, float("nan"))
         return output
+
+

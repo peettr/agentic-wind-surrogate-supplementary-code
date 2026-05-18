@@ -1,14 +1,14 @@
-"""Analyzer: aggregate per-seed ``metrics.json`` into per-experiment reports.
+﻿"""Analyzer: aggregate per-seed ``metrics.json`` into per-experiment reports.
 
 Reads only ``metrics.json`` (never stdout / log files) and writes:
 
-* ``results.tsv``   — compact index, one row per seeded run.
-* ``results.jsonl`` — append-only event log of :class:`ExperimentResult`.
-* ``analysis.json`` — per-experiment aggregation (mean / std / min / max
-  of val-R² median across seeds, plus % improvement over baseline).
+* ``results.tsv``   â€” compact index, one row per seeded run.
+* ``results.jsonl`` â€” append-only event log of :class:`ExperimentResult`.
+* ``analysis.json`` â€” per-experiment aggregation (mean / std / min / max
+  of val-RÂ² median across seeds, plus % improvement over baseline).
 
 Hash cross-check helpers ensure every seed was evaluated with the same
-``eval_module.py`` and ``split_manifest.json`` — any drift invalidates
+``eval_module.py`` and ``split_manifest.json`` â€” any drift invalidates
 comparisons across the campaign.
 """
 from __future__ import annotations
@@ -27,7 +27,7 @@ from shared.configs.schema import (
 )
 
 
-LOGGER = logging.getLogger("auto_v3.analyzer")
+LOGGER = logging.getLogger("baseline_source.analyzer")
 
 
 class Analyzer:
@@ -182,3 +182,6 @@ class Analyzer:
 
 
 __all__ = ["Analyzer"]
+
+
+

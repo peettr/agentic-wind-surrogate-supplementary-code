@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -117,3 +117,5 @@ class localized_integral_differential_unet(nn.Module):
         valid = valid.expand_as(output)
 
         return torch.where(valid, output, torch.full_like(output, float("nan")))
+
+

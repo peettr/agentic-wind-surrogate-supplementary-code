@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -113,3 +113,5 @@ class dual_spatial_channel_agg_unet(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand(-1, y.shape[1], -1, -1)
         y = torch.where(valid, y, torch.full_like(y, float("nan")))
         return y
+
+

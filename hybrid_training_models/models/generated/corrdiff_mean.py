@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -89,3 +89,5 @@ class corrdiff_mean(nn.Module):
         output = F.interpolate(output, size=x.shape[-2:], mode="bilinear", align_corners=False)
         output = torch.where(valid.expand_as(output), output, torch.full_like(output, float("nan")))
         return output
+
+

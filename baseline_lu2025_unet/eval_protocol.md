@@ -1,3 +1,0 @@
-# Evaluation Protocol
-
-Draft placeholder.

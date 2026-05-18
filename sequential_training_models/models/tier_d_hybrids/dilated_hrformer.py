@@ -1,4 +1,4 @@
-"""DilatedHRFormer — Window attention + dilated convolution hybrid.
+﻿"""DilatedHRFormer â€” Window attention + dilated convolution hybrid.
 
 Combines HRFormer's efficient window self-attention with dilated convolutions
 for multi-scale feature extraction. Window attention captures local interactions,
@@ -146,3 +146,6 @@ class DilatedHRFormer(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

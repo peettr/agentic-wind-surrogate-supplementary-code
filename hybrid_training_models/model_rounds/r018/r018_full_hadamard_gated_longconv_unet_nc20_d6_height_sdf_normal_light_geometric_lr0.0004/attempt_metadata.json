@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\hadamard_gated_longconv_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\hadamard_gated_longconv_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "8ef165c480b3f2f870c83514c1b82c7794deb7c726f3e7b1436a40be5c40861f",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r018_full_hadamard_gated_longconv_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r018_full_hadamard_gated_longconv_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

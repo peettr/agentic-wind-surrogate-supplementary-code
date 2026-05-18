@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\haloed_local_fourier_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\haloed_local_fourier_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "b0845501582f4ff71eb23ee6d170e7a8ed5adba7b46d74066312b030907278ce",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r015_full_haloed_local_fourier_unet_nc24_d5_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r015_full_haloed_local_fourier_unet_nc24_d5_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

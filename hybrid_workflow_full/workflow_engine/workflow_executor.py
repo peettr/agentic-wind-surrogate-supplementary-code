@@ -1,4 +1,4 @@
-﻿"""V4 Workflow Executor â€” Submit/monitor jobs on CRC via SSH.
+﻿"""Sequential Workflow Executor â€” Submit/monitor jobs on CRC via SSH.
 
 Three submission paths:
 1. GPU training (Condor): uses condor_submit.template, shared filesystem
@@ -26,7 +26,7 @@ from pathlib import Path, PurePosixPath
 from string import Template
 from typing import Optional
 
-LOGGER = logging.getLogger("auto_v6.executor")
+LOGGER = logging.getLogger("hybrid.executor")
 
 # â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -259,7 +259,7 @@ def _make_run_local_model_code(code: str, arch_name: str = "") -> str:
         if preferred:
             code = code.rstrip() + f'''
 
-# Wrapper for Auto V6 script_path loading by registry arch_name.
+# Wrapper for Hybrid script_path loading by registry arch_name.
 class {arch_name}({preferred}):
     def __init__(self, in_channels=1, out_channels=1, n_c=16, depth=7, **kwargs):
         import inspect
@@ -436,7 +436,7 @@ class Executor:
             "SCRIPT_PATH": self.remote.train_script,
             "CONFIG_PATH": remote_config,
             "RESULTS_DIR": remote_results,
-            "STRATEGY": train_config.get("strategy", "v4"),
+            "STRATEGY": train_config.get("strategy", "Sequential"),
             "SEED": str(train_config.get("seed", 1)),
             "PYTHON": "python",
             "REQUEST_MEMORY_GB": str(request_memory_gb),
@@ -944,6 +944,9 @@ class Executor:
             python_script=script_remote,
             working_dir=self.remote.analysis_dir(self.campaign_id),
         )
+
+
+
 
 
 

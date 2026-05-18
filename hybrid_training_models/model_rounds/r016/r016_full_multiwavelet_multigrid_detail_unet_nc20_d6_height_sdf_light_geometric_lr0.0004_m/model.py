@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -115,3 +115,5 @@ class multiwavelet_multigrid_detail_unet(nn.Module):
         out = F.interpolate(out, size=x.shape[-2:], mode="bilinear", align_corners=False)
         out = torch.where(valid_out, out, torch.full_like(out, float("nan")))
         return out
+
+

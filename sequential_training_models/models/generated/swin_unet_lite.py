@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -138,3 +138,5 @@ class swin_unet_lite(nn.Module):
         output = output.clone()
         output[~valid] = float("nan")
         return output
+
+

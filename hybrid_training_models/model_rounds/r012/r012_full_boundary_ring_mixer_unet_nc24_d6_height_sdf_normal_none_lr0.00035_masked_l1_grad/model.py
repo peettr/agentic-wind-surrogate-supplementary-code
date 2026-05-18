@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -116,3 +116,5 @@ class boundary_ring_mixer_unet(nn.Module):
             valid = valid[:, :1].expand(-1, out.shape[1], -1, -1)
         out = out.masked_fill(~valid, float("nan"))
         return out
+
+

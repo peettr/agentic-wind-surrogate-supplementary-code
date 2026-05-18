@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -161,3 +161,5 @@ class latent_cross_attention_operator_unet(nn.Module):
             valid_out = valid
 
         return torch.where(valid_out, y, torch.full_like(y, float("nan")))
+
+

@@ -1,4 +1,4 @@
-"""Deformable Conv v3 UNet — learnable offset sampling for irregular geometries.
+﻿"""Deformable Conv v3 UNet â€” learnable offset sampling for irregular geometries.
 
 Uses DCNv3 (InternImage-style) deformable convolutions that adapt their sampling
 pattern based on input, naturally handling irregular building boundaries.
@@ -150,3 +150,6 @@ class DCNUNet(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

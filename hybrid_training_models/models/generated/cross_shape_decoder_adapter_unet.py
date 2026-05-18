@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -120,3 +120,5 @@ class cross_shape_decoder_adapter_unet(nn.Module):
         y = y.clone()
         y[~out_valid] = float("nan")
         return y
+
+

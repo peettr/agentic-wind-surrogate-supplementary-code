@@ -1,4 +1,4 @@
-"""FourierUNet — UNet with Fourier upsampling in decoder.
+﻿"""FourierUNet â€” UNet with Fourier upsampling in decoder.
 
 Replaces standard ConvTranspose2d upsampling with Fourier-based upsampling
 that preserves frequency content. Encoder is standard convolution, decoder
@@ -126,7 +126,7 @@ class FourierUNet(nn.Module):
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
 
-# Wrapper for Auto V6 script_path loading by registry arch_name.
+# Wrapper for Hybrid script_path loading by registry arch_name.
 class fourier_unet(FourierUNet):
     def __init__(self, in_channels=1, out_channels=1, n_c=16, depth=7, **kwargs):
         import inspect
@@ -146,3 +146,6 @@ class fourier_unet(FourierUNet):
             if _k in sig.parameters:
                 call_kwargs[_k] = _v
         super().__init__(**call_kwargs)
+
+
+

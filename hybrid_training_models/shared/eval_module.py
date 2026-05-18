@@ -1,4 +1,4 @@
-"""Hash-locked raw-domain evaluator.
+﻿"""Hash-locked raw-domain evaluator.
 
 .. warning::
 
@@ -9,9 +9,9 @@
 Evaluation contract (Appendix A.3 of framework doc):
 
 * Domain      : raw wind speed via ``DataFormatterFixed.restore_raw_output_data``.
-* Primary     : per-case R² median.
-* R²          : ``1 - SS_res / SS_tot`` on pixels where ``truth >= 0 & finite``.
-* Global R²   : concatenation of all valid pixels across cases.
+* Primary     : per-case RÂ² median.
+* RÂ²          : ``1 - SS_res / SS_tot`` on pixels where ``truth >= 0 & finite``.
+* Global RÂ²   : concatenation of all valid pixels across cases.
 * Patch merge : ``np.nanmean(restored_patches, axis=0)``.
 * Integrity   : before every ``evaluate()``, SHA-256 of this file AND of
                 ``split_manifest.json`` are re-verified against the cached values.
@@ -42,7 +42,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def compute_eval_hash() -> str:
-    """SHA-256 of this module's source code — the eval fingerprint."""
+    """SHA-256 of this module's source code â€” the eval fingerprint."""
     return _sha256_file(Path(__file__))
 
 
@@ -78,7 +78,7 @@ def _import_data_formatter() -> Any:
 
 
 # ---------------------------------------------------------------------------
-# Per-case R² on raw domain
+# Per-case RÂ² on raw domain
 # ---------------------------------------------------------------------------
 def _per_case_r2(
     case_name: str,
@@ -89,7 +89,7 @@ def _per_case_r2(
     formatter_cls: Any,
     fmt_shape: int = 640,
 ) -> tuple[float, float, Optional[np.ndarray], Optional[np.ndarray]]:
-    """Restore ``patch_indices`` into raw domain and compute R² + MAE."""
+    """Restore ``patch_indices`` into raw domain and compute RÂ² + MAE."""
     formatter = formatter_cls(
         raw_data=[combined], wind_angles=[wind_angle], formatted_shape=fmt_shape
     )
@@ -289,3 +289,6 @@ class EvalModule:
 
 
 __all__ = ["EvalModule", "compute_eval_hash", "compute_split_hash"]
+
+
+

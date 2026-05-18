@@ -1,4 +1,4 @@
-import math
+﻿import math
 
 import torch
 import torch.nn as nn
@@ -155,3 +155,5 @@ class hadamard_gated_longconv_unet(nn.Module):
             out_valid = out_valid[:, :1].expand(-1, out.shape[1], -1, -1)
 
         return torch.where(out_valid, out, torch.full_like(out, float("nan")))
+
+

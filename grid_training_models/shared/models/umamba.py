@@ -1,4 +1,4 @@
-"""U-Mamba — UNet encoder-decoder with Mamba (S6) state space model in bottleneck.
+﻿"""U-Mamba â€” UNet encoder-decoder with Mamba (S6) state space model in bottleneck.
 
 Replaces the bottleneck with a bidirectional Mamba SSM for efficient linear-
 complexity long-range dependency modeling. Falls back to a simplified SSM
@@ -232,3 +232,6 @@ class UMamba(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

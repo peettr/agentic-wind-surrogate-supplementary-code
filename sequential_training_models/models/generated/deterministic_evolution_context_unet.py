@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -98,3 +98,5 @@ class deterministic_evolution_context_unet(nn.Module):
             valid = valid.all(dim=1, keepdim=True).expand(-1, self.out_channels, -1, -1)
 
         return torch.where(valid, out, torch.full_like(out, float("nan")))
+
+

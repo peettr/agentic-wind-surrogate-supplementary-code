@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r013_full_residual_spectral_nc16_lr0.0005_masked_l1",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "residual_spectral",
   "arch_kwargs": {
     "n_c": 16,
@@ -22,3 +22,5 @@
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10
 }
+
+

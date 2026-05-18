@@ -1,4 +1,4 @@
-"""TransolverLite — Lightweight Transolver with reduced attention.
+﻿"""TransolverLite â€” Lightweight Transolver with reduced attention.
 
 Simplified version of Transolver: fewer physics slices, lighter attention,
 and batch-norm-free design. Designed to fix the original Transolver's
@@ -115,3 +115,6 @@ class TransolverLite(BaseSurrogate):
         x = self.unpatch(x)
         x = F.interpolate(x, size=(H, W), mode='bilinear', align_corners=False)
         return F.relu(self.output_proj(x))
+
+
+

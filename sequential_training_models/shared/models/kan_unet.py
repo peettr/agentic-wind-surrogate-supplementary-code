@@ -1,4 +1,4 @@
-"""U-KAN — UNet with Kolmogorov-Arnold Network (KAN) layers replacing MLPs.
+﻿"""U-KAN â€” UNet with Kolmogorov-Arnold Network (KAN) layers replacing MLPs.
 
 KAN layers use learnable B-spline activations on edges instead of fixed
 activations on nodes, potentially offering more flexible function approximation.
@@ -59,7 +59,7 @@ class KANLayer(nn.Module):
 
         # Spline component
         basis = self._basis(x_flat)  # (N, in_ch, grid_size)
-        # Einsum: (N, in_ch, grid_size) × (out_ch, in_ch, grid_size) -> (N, out_ch)
+        # Einsum: (N, in_ch, grid_size) Ã— (out_ch, in_ch, grid_size) -> (N, out_ch)
         spline_out = torch.einsum('nig,oig->no', basis, self.spline_weight)
 
         out = base_out + spline_out  # (N, out_ch)
@@ -162,3 +162,6 @@ class KANUNet(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

@@ -1,4 +1,4 @@
-"""ResidualSpectralNet — Deep residual network with spectral bottleneck.
+﻿"""ResidualSpectralNet â€” Deep residual network with spectral bottleneck.
 
 Deep residual encoder-decoder with a spectral (Fourier) processing bottleneck.
 The encoder/decoder use standard residual blocks, while the bottleneck
@@ -128,3 +128,6 @@ class ResidualSpectralNet(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return self.output_proj(x)
+
+
+

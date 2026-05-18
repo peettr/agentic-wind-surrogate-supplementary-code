@@ -1,4 +1,4 @@
-"""Attention Gate UNet — standard UNet with attention gates on skip connections.
+﻿"""Attention Gate UNet â€” standard UNet with attention gates on skip connections.
 
 Attention gates learn to focus on relevant spatial regions (building edges, flow
 separation points) by dynamically weighting skip-connection features based on
@@ -72,7 +72,7 @@ class AttentionGate(nn.Module):
 
         Args:
             skip: encoder features (B, C_skip, H, W).
-            gate: decoder gating signal (B, C_gate, H, W) — same spatial size as skip.
+            gate: decoder gating signal (B, C_gate, H, W) â€” same spatial size as skip.
         """
         # Align spatial sizes if needed (gate may be slightly different after upsampling)
         if skip.shape[2:] != gate.shape[2:]:
@@ -161,3 +161,6 @@ class AttentionGateUNet(BaseSurrogate):
             x = self.dec[k](x)
 
         return self.head(x)
+
+
+

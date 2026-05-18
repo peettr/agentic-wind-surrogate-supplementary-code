@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -75,3 +75,5 @@ class edge_offset_corrector_unet(nn.Module):
         valid_out = valid.all(dim=1, keepdim=True)
         out = torch.where(valid_out, out, torch.full_like(out, float("nan")))
         return out
+
+

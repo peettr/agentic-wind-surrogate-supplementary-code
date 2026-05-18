@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import os
@@ -106,7 +106,7 @@ def test_quadmamba_depth4_registered_blocked():
 
 
 def test_r0_schema_dry_run_no_false_failures():
-    runs = ROOT / "campaigns" / "auto_v6" / "runs"
+    runs = ROOT / "campaigns" / "hybrid" / "runs"
     checked = 0
     failures = []
     for cfg_path in runs.glob("r000_smoke_*/*train_config.json"):
@@ -134,3 +134,6 @@ if __name__ == "__main__":
     for test in tests:
         test()
         print(f"PASS {test.__name__}")
+
+
+

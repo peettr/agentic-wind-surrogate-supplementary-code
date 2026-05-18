@@ -1,4 +1,4 @@
-# Model Specs — architecture descriptions ONLY (no implementation code)
+﻿# Model Specs â€” architecture descriptions ONLY (no implementation code)
 
 # Each spec defines:
 #   name: model identifier
@@ -64,7 +64,7 @@ unet_afno:
   source_reference: shared/models/unet_afno.py
 
 # ============================================================
-# TIER A — UNet Variants
+# TIER A â€” UNet Variants
 # ============================================================
 
 attention_gate_unet:
@@ -186,7 +186,7 @@ hrnet:
   n_c_options: [16, 32]
 
 # ============================================================
-# TIER B — New Architectures
+# TIER B â€” New Architectures
 # ============================================================
 
 umamba:
@@ -291,7 +291,7 @@ cnn_deeponet:
   n_c_options: [16, 32]
 
 # ============================================================
-# TIER C — Neural Operators
+# TIER C â€” Neural Operators
 # ============================================================
 
 fno2d:
@@ -339,7 +339,7 @@ cno:
   n_c_options: [16, 32]
 
 # ============================================================
-# TIER D — Hybrids
+# TIER D â€” Hybrids
 # ============================================================
 
 dilated_fno:
@@ -526,3 +526,6 @@ uno:
   known_issues: None
   depth_options: [4]
   n_c_options: [16, 32]
+
+
+

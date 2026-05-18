@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Generate canonical metadata for Auto V5 model implementations."""
+﻿#!/usr/bin/env python3
+"""Generate canonical metadata for Grid model implementations."""
 from __future__ import annotations
 
 import argparse
@@ -65,3 +65,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

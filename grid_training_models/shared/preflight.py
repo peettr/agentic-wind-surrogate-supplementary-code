@@ -1,13 +1,13 @@
-"""Preflight: hard gate that prevents invalid code from reaching a GPU.
+﻿"""Preflight: hard gate that prevents invalid code from reaching a GPU.
 
-Six checks, all run on CPU with a ``B=1`` dummy batch (Appendix §2.3):
+Six checks, all run on CPU with a ``B=1`` dummy batch (Appendix Â§2.3):
 
 1. AST syntax parse.
 2. Forward pass on ``(1, 1, 640, 640)`` zeros.
-3. Dimension check — output must equal ``(1, 1, 640, 640)``.
-4. VRAM estimate — ``params × overhead`` must not exceed 80 GB.
-5. Differentiability — ``loss.sum().backward()`` on a randn sample.
-6. NaN safety — forward output and all parameter gradients finite.
+3. Dimension check â€” output must equal ``(1, 1, 640, 640)``.
+4. VRAM estimate â€” ``params Ã— overhead`` must not exceed 80 GB.
+5. Differentiability â€” ``loss.sum().backward()`` on a randn sample.
+6. NaN safety â€” forward output and all parameter gradients finite.
 
 Preflight is stateless and side-effect-free except for module import.
 """
@@ -68,7 +68,7 @@ class Preflight:
         When ``loss_script_path`` is provided the masked-NaN check uses the
         generated loss class instead of the built-in ``masked_l1``
         (addresses Codex V2 issue 3). Otherwise the masked-NaN check falls
-        back to ``masked_l1`` — preserves the previous behavior for arch-only
+        back to ``masked_l1`` â€” preserves the previous behavior for arch-only
         proposals.
         """
         t0 = time.time()
@@ -363,3 +363,6 @@ class Preflight:
 
 
 __all__ = ["Preflight", "VRAM_LIMIT_GB"]
+
+
+

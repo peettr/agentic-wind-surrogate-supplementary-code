@@ -1,4 +1,4 @@
-"""CNN-DeepONet — CNN branch encoder + MLP trunk for dense field regression.
+﻿"""CNN-DeepONet â€” CNN branch encoder + MLP trunk for dense field regression.
 
 Branch network (CNN) encodes the building height map into a latent vector.
 Trunk network (MLP) queries arbitrary spatial locations to predict wind speed.
@@ -113,3 +113,6 @@ class CNNDeepONet(BaseSurrogate):
         # Bilinear upsample to 640x640
         out = F.interpolate(coarse, size=(640, 640), mode='bilinear', align_corners=False)
         return F.relu(out)
+
+
+

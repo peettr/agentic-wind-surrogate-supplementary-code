@@ -1,4 +1,4 @@
-{
+﻿{
     "search_space": {
         "architecture": {
             "type": "categorical",
@@ -96,3 +96,6 @@
         ]
     }
 }
+
+
+

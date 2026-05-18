@@ -1,10 +1,10 @@
-You are Claude Opus doing local review for Auto V6 web-scouted external ideas.
+﻿You are Claude Opus doing local review for Hybrid web-scouted external ideas.
 Do not browse. Do not generate train configs. External ideas are mechanisms/context only; review and compress them into planner-safe material.
 Hard-filter any idea that cannot satisfy the locked contract: height-only, single-frame, 2D grid input/output, existing train/eval/data paths, no new labels/meshes/solvers/metrics, fixed seed/input_features.
 Use a 7-axis rubric with 0-5 subscores: novelty, feasibility, height_only_compatibility, parameter_efficiency, implementation_risk, paired_comparison_clarity, diversity_contribution. Preserve keep_score_0_5 compatibility as the overall keep score.
 Reject or down-rank ideas that require new data, mesh/point-cloud labels, expensive solvers, huge parameter growth, temporal sequences, added input channels, or vague name-only transfers.
 Return ONLY JSON: {"reviewed_ideas":[...], "rejected":[...], "topic_cluster_counts":{...}, "coverage_warning":"...", "missing_clusters_for_next_round":[...], "summary":"..."}.
-Each reviewed idea must include idea_id, title, keep_score_0_5, subscores, topic_cluster, source_task, query_tier, height_only_translation, ablation_removes_mechanism, implementation_risk, minimal_implementation_in_auto_v6, expected_parameter_efficiency, recommended_paired_comparison, planner_hint, source_urls.
+Each reviewed idea must include idea_id, title, keep_score_0_5, subscores, topic_cluster, source_task, query_tier, height_only_translation, ablation_removes_mechanism, implementation_risk, minimal_implementation_in_hybrid, expected_parameter_efficiency, recommended_paired_comparison, planner_hint, source_urls.
 
 LOCAL_REVIEW_CONTEXT_JSON:
 {
@@ -19,14 +19,14 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
     "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
     "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
-    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
-    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the grid_controller initial knowledge package.",
+    "initial_knowledge_policy": "Hybrid experimental priors may come only from the Grid/grid_controller initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
     "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
     "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
     "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
     "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
     "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
-    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "batch_size_policy": "Ordinary Hybrid candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
     "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
     "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
     "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
@@ -115,7 +115,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "uno"
   ],
   "novelty_index": {
-    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "policy": "Use this Sequential-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
     "seen_arch_names": [],
     "seen_families": [],
     "seen_config_keys": [],
@@ -267,7 +267,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "hard_excluded_from_codex": true
       },
       {
-        "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+        "title": "SegFlow: FMSÂ² Framework for Thin Structure Segmentation",
         "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
         "year": 2025,
         "topic_cluster": "segmentation_boundary_refinement",
@@ -367,7 +367,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
           ]
         },
         {
-          "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+          "title": "SegFlow: FMSÂ² Framework for Thin Structure Segmentation",
           "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
           "flags": [
             "unresolved_google_grounding_redirect",
@@ -556,7 +556,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
             ]
           },
           {
-            "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+            "title": "SegFlow: FMSÂ² Framework for Thin Structure Segmentation",
             "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
             "flags": [
               "unresolved_google_grounding_redirect",
@@ -738,7 +738,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "reuse_hints": {
       "enabled": true,
       "scanned_artifacts": [
-        "auto_v6\\campaigns\\auto_v6\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
+        "hybrid\\campaigns\\hybrid\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
       ],
       "cache_candidate_count": 0,
       "cluster_cache_candidate_count": 0,
@@ -919,7 +919,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
     "model": "gpt-5.5",
     "ideas": [
       {
-        "idea_id": "EV6_R0_EXT_01",
+        "idea_id": "Ehybrid_R0_EXT_01",
         "title": "Gaussian residual field head",
         "source_title": "Pixel to Gaussian: Ultra-Fast Continuous Super-Resolution with 2D Gaussian Modeling",
         "source_url": "https://arxiv.org/abs/2503.06617",
@@ -932,7 +932,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Use only the height tensor to produce coarse pressure features and local Gaussian residual parameters; no SDF, normals, labels, meshes, or coordinate queries from data.",
         "feasibility_under_locked_contract": "Feasible as a single-frame grid-to-grid PyTorch residual head with fixed differentiable splatting and unchanged train/eval/data paths.",
         "why_relevant_to_topology_pressure": "Topology pressure errors often concentrate as localized extrema and boundary-layer details that a smooth decoder can miss; small anisotropic kernels target those residual structures.",
-        "minimal_implementation_in_auto_v6": "Attach a GaussianResidualHead after an existing decoder: 1x1 projections predict amplitude, covariance, and sub-cell offset; clamp parameters and add rendered residual to the base output.",
+        "minimal_implementation_in_hybrid": "Attach a GaussianResidualHead after an existing decoder: 1x1 projections predict amplitude, covariance, and sub-cell offset; clamp parameters and add rendered residual to the base output.",
         "expected_parameter_efficiency": "High; most computation is fixed rendering, with only small projection layers for kernel parameters.",
         "paired_comparison": "Compare the same backbone with this residual Gaussian head against the backbone with a plain 1x1 residual head.",
         "ablation_removes_mechanism": "Replace Gaussian rendering with standard bilinear upsampling plus 1x1 convolution.",
@@ -940,7 +940,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "dense field prediction super resolution wavelet decoder architecture 2025; Gemini G004 ContinuousSR seed"
       },
       {
-        "idea_id": "EV6_R0_EXT_02",
+        "idea_id": "Ehybrid_R0_EXT_02",
         "title": "Adaptive high-gradient point refinement",
         "source_title": "PointRend: Image Segmentation as Rendering",
         "source_url": "https://openaccess.thecvf.com/content_CVPR_2020/html/Kirillov_PointRend_Image_Segmentation_As_Rendering_CVPR_2020_paper.html",
@@ -953,7 +953,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Selection scores are computed from height-derived features and the model's own coarse prediction; no boundary labels or extra input channels are introduced.",
         "feasibility_under_locked_contract": "Feasible as a deterministic refinement module that scatters corrected values back to the same 2D output grid under the existing single-frame contract.",
         "why_relevant_to_topology_pressure": "Pressure fields are mostly smooth but can have sparse sharp transitions around topology edges, making adaptive local capacity more efficient than uniform widening.",
-        "minimal_implementation_in_auto_v6": "Implement a RefinementPointHead taking coarse output plus decoder features, selecting a capped fraction of cells, predicting residuals, and scattering them into the full grid.",
+        "minimal_implementation_in_hybrid": "Implement a RefinementPointHead taking coarse output plus decoder features, selecting a capped fraction of cells, predicting residuals, and scattering them into the full grid.",
         "expected_parameter_efficiency": "High; extra parameters sit in a tiny MLP and computation is concentrated on sparse difficult cells.",
         "paired_comparison": "Compare to the same backbone with uniform full-grid residual refinement at matched or higher cost.",
         "ablation_removes_mechanism": "Disable adaptive cell selection and apply only the coarse decoder output.",
@@ -961,7 +961,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025; PointRend Image Segmentation as Rendering boundary refinement source CVPR 2020"
       },
       {
-        "idea_id": "EV6_R0_EXT_03",
+        "idea_id": "Ehybrid_R0_EXT_03",
         "title": "Dynamic snake topology-edge convolution",
         "source_title": "Dynamic Snake Convolution based on Topological Geometric Constraints for Tubular Structure Segmentation",
         "source_url": "https://arxiv.org/abs/2307.08388",
@@ -974,7 +974,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Offsets are predicted from height features only; persistent-homology losses and segmentation labels are not transferred.",
         "feasibility_under_locked_contract": "Feasible as a local convolutional block on the existing 2D grid with bounded offsets and no mesh or solver dependency.",
         "why_relevant_to_topology_pressure": "Pressure responses can track narrow geometric corridors, corners, and edge chains; a kernel that bends along those structures may capture them with fewer channels.",
-        "minimal_implementation_in_auto_v6": "Add a SnakeConv2d block with horizontal and vertical offset chains, bilinear sampling, and residual fusion into a UNet-like or HR-style encoder stage.",
+        "minimal_implementation_in_hybrid": "Add a SnakeConv2d block with horizontal and vertical offset chains, bilinear sampling, and residual fusion into a UNet-like or HR-style encoder stage.",
         "expected_parameter_efficiency": "Medium-high; dynamic offsets add small predictors while replacing larger static receptive-field stacks.",
         "paired_comparison": "Compare snake convolution against ordinary depthwise separable convolution in the same encoder position.",
         "ablation_removes_mechanism": "Freeze offsets to zero while keeping the same convolution and fusion path.",
@@ -982,7 +982,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "thin structure segmentation boundary refinement neural network 2024 2025 arxiv; dynamic snake convolution topological geometric constraints segmentation 2023 2024"
       },
       {
-        "idea_id": "EV6_R0_EXT_04",
+        "idea_id": "Ehybrid_R0_EXT_04",
         "title": "Wavelet large-receptive-field adapter",
         "source_title": "Wavelet Convolutions for Large Receptive Fields",
         "source_url": "https://eccv.ecva.net/virtual/2024/poster/1059",
@@ -995,7 +995,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Wavelet transforms operate directly on learned feature maps from the height input; no additional data channels are required.",
         "feasibility_under_locked_contract": "Feasible as a deterministic 2D feature transform plus small learnable depthwise filters inside existing grid models.",
         "why_relevant_to_topology_pressure": "Pressure depends on both broad domain coupling and local edge detail; wavelet bands give a compact way to represent both without simply deepening the network.",
-        "minimal_implementation_in_auto_v6": "Implement WTConv2d with fixed Haar or biorthogonal filters, per-band depthwise convolution, inverse transform, and residual connection.",
+        "minimal_implementation_in_hybrid": "Implement WTConv2d with fixed Haar or biorthogonal filters, per-band depthwise convolution, inverse transform, and residual connection.",
         "expected_parameter_efficiency": "High; receptive field grows through decomposition levels rather than many large kernels or extra channels.",
         "paired_comparison": "Compare a baseline decoder block against the same block with one WTConv adapter inserted.",
         "ablation_removes_mechanism": "Replace WTConv with a standard depthwise 3x3 convolution at the same channel count.",
@@ -1003,7 +1003,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "Wavelet Convolutions Large Receptive Fields ECCV 2024 WTConv"
       },
       {
-        "idea_id": "EV6_R0_EXT_05",
+        "idea_id": "Ehybrid_R0_EXT_05",
         "title": "Local-enhanced 2D Mamba restoration block",
         "source_title": "MambaIR: A Simple Baseline for Image Restoration with State-Space Model",
         "source_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/2740_ECCV_2024_paper.php",
@@ -1016,7 +1016,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The SSM receives only latent features encoded from the height grid and writes a same-resolution pressure feature residual.",
         "feasibility_under_locked_contract": "Feasible if implemented as a lightweight residual block using existing 2D Mamba or scan utilities, with no temporal state and no data changes.",
         "why_relevant_to_topology_pressure": "Topology pressure requires long-range coupling across the domain while preserving local edge-conditioned extrema; MambaIR's local-plus-global design directly targets that tradeoff.",
-        "minimal_implementation_in_auto_v6": "Add a ResidualStateSpaceBlock with bidirectional row/column scans, depthwise local convolution, channel attention, and residual scaling.",
+        "minimal_implementation_in_hybrid": "Add a ResidualStateSpaceBlock with bidirectional row/column scans, depthwise local convolution, channel attention, and residual scaling.",
         "expected_parameter_efficiency": "Medium-high; linear-complexity scans can replace heavier attention or wider convolution stacks.",
         "paired_comparison": "Compare against the same backbone using only convolutional residual blocks in the matched positions.",
         "ablation_removes_mechanism": "Disable the SSM scan branch and keep only local convolution plus channel attention.",
@@ -1024,7 +1024,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "Mamba state space model vision dense prediction lightweight architecture 2025; MambaIR A Simple Baseline for Image Restoration with State-Space Model ECCV 2024"
       },
       {
-        "idea_id": "EV6_R0_EXT_06",
+        "idea_id": "Ehybrid_R0_EXT_06",
         "title": "Low-rank residual adapters for field decoders",
         "source_title": "Shears: Unstructured Sparsity with Neural Low-rank Adapter Search",
         "source_url": "https://arxiv.org/abs/2404.10934",
@@ -1037,7 +1037,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Adapters operate only on latent features produced from the height input and do not alter the input contract.",
         "feasibility_under_locked_contract": "Feasible as small factorized linear or convolutional residual modules with zero initialization and no train/eval/data changes.",
         "why_relevant_to_topology_pressure": "Pressure response may need specialized corrections for topology-induced regimes; low-rank adapters can add targeted capacity without a large backbone increase.",
-        "minimal_implementation_in_auto_v6": "Create AdapterConv2d and AdapterSpectralDelta modules with rank-factorized down/up projections and a learned scalar gate, inserted behind existing projections.",
+        "minimal_implementation_in_hybrid": "Create AdapterConv2d and AdapterSpectralDelta modules with rank-factorized down/up projections and a learned scalar gate, inserted behind existing projections.",
         "expected_parameter_efficiency": "Very high; most weights remain unchanged while the adapter adds a small low-rank correction path.",
         "paired_comparison": "Compare low-rank adapters against adding an ordinary full-rank residual projection with similar or larger parameter count.",
         "ablation_removes_mechanism": "Set adapter gates to zero while keeping the base model unchanged.",
@@ -1045,7 +1045,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "low rank neural operator adapter PDE surrogate 2024 2025 arxiv; Shears Unstructured Sparsity with Neural Low-rank Adapter Search"
       },
       {
-        "idea_id": "EV6_R0_EXT_07",
+        "idea_id": "Ehybrid_R0_EXT_07",
         "title": "Geometry-conditioned Lagrangian feature warp",
         "source_title": "Fully differentiable Lagrangian convolutional neural network for physics-informed precipitation nowcasting",
         "source_url": "https://www.sciencedirect.com/science/article/pii/S2590197425000783",
@@ -1058,7 +1058,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The displacement is inferred from height features only; it is a geometry-conditioned feature relocation, not a temporal forecast or new physical solver.",
         "feasibility_under_locked_contract": "Feasible with torch grid_sample on 2D feature maps and no additional labels, meshes, metrics, or input frames.",
         "why_relevant_to_topology_pressure": "Pressure structures can be shifted or bent by geometry; learned local warping can align decoder features with obstacle boundaries before final regression.",
-        "minimal_implementation_in_auto_v6": "Add a bounded WarpRefineBlock: predict dx/dy from decoder features, grid_sample the features, concatenate warped and original features, then predict a residual.",
+        "minimal_implementation_in_hybrid": "Add a bounded WarpRefineBlock: predict dx/dy from decoder features, grid_sample the features, concatenate warped and original features, then predict a residual.",
         "expected_parameter_efficiency": "Medium-high; a small flow predictor can replace several layers of static convolutional refinement.",
         "paired_comparison": "Compare the same refinement block with grid_sample warping enabled versus identity warping.",
         "ablation_removes_mechanism": "Force dx/dy to zero and keep the residual correction head.",
@@ -1066,7 +1066,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "precipitation nowcasting dense field prediction neural network architecture 2025"
       },
       {
-        "idea_id": "EV6_R0_EXT_08",
+        "idea_id": "Ehybrid_R0_EXT_08",
         "title": "AFNO plus differential local detail branch",
         "source_title": "FourCastLSTM: A precipitation nowcasting model integrating global and local spatiotemporal features",
         "source_url": "https://www.sciencedirect.com/science/article/pii/S0098300425001165",
@@ -1079,7 +1079,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Both branches consume latent features from the height grid in a single frame; no recurrent or multi-frame forecasting component is transferred.",
         "feasibility_under_locked_contract": "Feasible as a lightweight composition of existing spectral blocks and finite-difference-style convolutions on the same 2D grid.",
         "why_relevant_to_topology_pressure": "Pressure has global coupling but topology edges create sharp local gradients; the paired global/local branch directly separates those roles.",
-        "minimal_implementation_in_auto_v6": "Implement a GlobalLocalFieldBlock with AFNO or Fourier mixing in one path, fixed-gradient plus learnable convolution in the other, then gated residual fusion.",
+        "minimal_implementation_in_hybrid": "Implement a GlobalLocalFieldBlock with AFNO or Fourier mixing in one path, fixed-gradient plus learnable convolution in the other, then gated residual fusion.",
         "expected_parameter_efficiency": "Medium; spectral mixing covers global context while the differential branch stays small.",
         "paired_comparison": "Compare against an AFNO-only or Fourier-only block in the same decoder location.",
         "ablation_removes_mechanism": "Remove the differential local branch and keep only global spectral mixing.",
@@ -1087,7 +1087,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "precipitation nowcasting dense field prediction neural network architecture 2025; FourCastLSTM precipitation nowcasting global local spatiotemporal features"
       },
       {
-        "idea_id": "EV6_R0_EXT_09",
+        "idea_id": "Ehybrid_R0_EXT_09",
         "title": "Localized operator kernel refinement",
         "source_title": "Neural Operators with Localized Integral and Differential Kernels",
         "source_url": "https://research.nvidia.com/publication/2024-07_neural-operators-localized-integral-and-differential-kernels",
@@ -1100,7 +1100,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The local kernels act on hidden feature maps derived from the height grid; no continuous query mesh or new geometry representation is required.",
         "feasibility_under_locked_contract": "Feasible as fixed-grid local convolution kernels with optional basis-weighted support, producing the same 2D output.",
         "why_relevant_to_topology_pressure": "Fourier-style operators can oversmooth local boundary layers; localized kernels add stencil-like sensitivity to sharp geometry-induced changes.",
-        "minimal_implementation_in_auto_v6": "Add LocalOperator2d with small learned support, residual scaling, and optional parallel Fourier branch fusion.",
+        "minimal_implementation_in_hybrid": "Add LocalOperator2d with small learned support, residual scaling, and optional parallel Fourier branch fusion.",
         "expected_parameter_efficiency": "High; adds localized basis weights rather than a broad increase in depth or channels.",
         "paired_comparison": "Compare spectral or Fourier-UNet blocks with and without the localized operator branch.",
         "ablation_removes_mechanism": "Replace localized operator kernels with ordinary pointwise convolution.",
@@ -1108,7 +1108,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "neural operator wavelet local refinement architecture PDE 2024 2025 arxiv"
       },
       {
-        "idea_id": "EV6_R0_EXT_10",
+        "idea_id": "Ehybrid_R0_EXT_10",
         "title": "Local-global mixing operator block",
         "source_title": "DyMixOp: Guiding Neural Operator Design for PDEs from a Complex Dynamics Perspective with Local-Global-Mixing",
         "source_url": "https://arxiv.org/abs/2508.13490",
@@ -1121,7 +1121,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "All paths operate on height-derived latent grids in one frame; no time integration or PDE solver component is transferred.",
         "feasibility_under_locked_contract": "Feasible as a compact PyTorch composition of convolution, spectral mixing, gating, and residual normalization on a 2D grid.",
         "why_relevant_to_topology_pressure": "Topology pressure combines local geometry effects with domain-wide interactions; explicit local-global interaction may capture nonlinear coupling more efficiently than stacking one operator type.",
-        "minimal_implementation_in_auto_v6": "Add LocalGlobalMixBlock with depthwise local conv, low-mode Fourier or AFNO path, gated product interaction, and residual output projection.",
+        "minimal_implementation_in_hybrid": "Add LocalGlobalMixBlock with depthwise local conv, low-mode Fourier or AFNO path, gated product interaction, and residual output projection.",
         "expected_parameter_efficiency": "Medium-high; the mechanism adds structured paths instead of simply increasing backbone width.",
         "paired_comparison": "Compare against a block with local and global paths summed but not gated together.",
         "ablation_removes_mechanism": "Remove the multiplicative local-global interaction gate and use simple residual addition.",
@@ -1129,7 +1129,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "local global mixing neural operator PDE 2025 arxiv DyMixOp"
       },
       {
-        "idea_id": "EV6_R0_EXT_11",
+        "idea_id": "Ehybrid_R0_EXT_11",
         "title": "Height-derived geometry token operator",
         "source_title": "Geometry Aware Operator Transformer as an Efficient and Accurate Neural Surrogate for PDEs on Arbitrary Domains",
         "source_url": "https://arxiv.org/abs/2505.18781",
@@ -1142,7 +1142,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "Geometry tokens are learned summaries of the height grid itself; no SDF, normal, point cloud, mesh, or external domain representation is added.",
         "feasibility_under_locked_contract": "Feasible as a light token cross-attention module over downsampled height features inside the existing 2D single-frame model path.",
         "why_relevant_to_topology_pressure": "A compact geometry context can tell local pressure predictions which global topology regime they are in, especially when similar local heights occur in different layouts.",
-        "minimal_implementation_in_auto_v6": "Add GeometryTokenMixer: patch-pool height encoder features into tokens, apply shallow cross-attention from decoder features to tokens, then residual-fuse back to the grid.",
+        "minimal_implementation_in_hybrid": "Add GeometryTokenMixer: patch-pool height encoder features into tokens, apply shallow cross-attention from decoder features to tokens, then residual-fuse back to the grid.",
         "expected_parameter_efficiency": "Medium; token count is small and avoids full quadratic attention over all pixels.",
         "paired_comparison": "Compare to the same decoder with only convolutional skip fusion and no geometry-token attention.",
         "ablation_removes_mechanism": "Replace cross-attention to geometry tokens with global average pooled conditioning.",
@@ -1150,7 +1150,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "search_query_used": "boundary embedded neural operator complex geometry PDE 2024 2025; Geometry Aware Operator Transformer arxiv 2505.18781"
       },
       {
-        "idea_id": "EV6_R0_EXT_12",
+        "idea_id": "Ehybrid_R0_EXT_12",
         "title": "Height-conditioned low-rank operator basis",
         "source_title": "Fusion DeepONet: A Data-Efficient Neural Operator for Geometry-Dependent Hypersonic Flows on Arbitrary Grids",
         "source_url": "https://arxiv.org/abs/2501.01934",
@@ -1163,7 +1163,7 @@ LOCAL_REVIEW_CONTEXT_JSON:
         "height_only_translation": "The branch input is only the height grid; the spatial basis is an internal learned grid-aligned parameterization, not an added data feature.",
         "feasibility_under_locked_contract": "Feasible as a single-frame low-rank basis head plus residual decoder on the existing output grid with unchanged data and evaluation.",
         "why_relevant_to_topology_pressure": "Many pressure fields may share global modes controlled by topology; a coefficient basis can model global structure cheaply while the residual path handles local edges.",
-        "minimal_implementation_in_auto_v6": "Implement LowRankOperatorHead: global height encoder, coefficient projection, learned basis maps, additive CNN residual refinement, and final output projection.",
+        "minimal_implementation_in_hybrid": "Implement LowRankOperatorHead: global height encoder, coefficient projection, learned basis maps, additive CNN residual refinement, and final output projection.",
         "expected_parameter_efficiency": "High if basis count is modest; global modes are represented with coefficients rather than a much wider decoder.",
         "paired_comparison": "Compare to a decoder-only model and to the same low-rank head without local residual fusion.",
         "ablation_removes_mechanism": "Remove the learned basis path and keep only the CNN residual decoder.",
@@ -1173,3 +1173,6 @@ LOCAL_REVIEW_CONTEXT_JSON:
     ]
   }
 }
+
+
+

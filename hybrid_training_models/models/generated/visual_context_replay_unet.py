@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -111,3 +111,5 @@ class visual_context_replay_unet(nn.Module):
             output = output.masked_fill(~valid_out, float("nan"))
 
         return output
+
+

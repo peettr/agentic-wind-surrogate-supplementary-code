@@ -1,4 +1,4 @@
-"""QuadMamba — Quad-tree selective scan for 2D spatial data.
+﻿"""QuadMamba â€” Quad-tree selective scan for 2D spatial data.
 
 Partitions the spatial domain into quad-tree regions, scans within each
 region with hierarchical merging. Preserves 2D spatial locality better
@@ -180,3 +180,6 @@ class QuadMamba(BaseSurrogate):
             x = _pad_cat(x, skip)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -75,3 +75,5 @@ class p8_dilated_unet(nn.Module):
         valid = valid.expand(-1, output.shape[1], -1, -1)
         output = torch.where(valid, output, torch.full_like(output, float("nan")))
         return output
+
+

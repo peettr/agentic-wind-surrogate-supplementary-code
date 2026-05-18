@@ -1,4 +1,4 @@
-"""Verification tests for the attempt budget accounting fix.
+﻿"""Verification tests for the attempt budget accounting fix.
 
 Tests that:
 1. PASS (completed with metrics) is never overridden by max attempts.
@@ -64,11 +64,11 @@ def test_pass_not_overridden_by_max_total_attempts():
     limit = check_limit(entry, "PASS", "retry", current_classification="PASS")
     assert limit is None, f"check_limit should return None for PASS, got {limit}"
 
-    print("  PASS test_pass_not_overridden_by_max_total_attempts ✓")
+    print("  PASS test_pass_not_overridden_by_max_total_attempts âœ“")
 
 
 def test_pass_not_overridden_by_check_limit_override():
-    """Simulate the controller flow: classify_result→PASS, check_limit→should be None."""
+    """Simulate the controller flow: classify_resultâ†’PASS, check_limitâ†’should be None."""
     mf = fresh_manifest()
     base_id = "boundary_crossattn_unet_nc32_lr0.00025_masked_l1_gradient"
 
@@ -83,7 +83,7 @@ def test_pass_not_overridden_by_check_limit_override():
     assert entry["status"] == "PASS"  # First retry was PASS
 
     # Now the full retry completes with metrics
-    # Controller flow: classify_result → PASS, then check_limit
+    # Controller flow: classify_result â†’ PASS, then check_limit
     cls_classification = "PASS"
     action = "PASS"
     attempt_type = "retry"
@@ -99,7 +99,7 @@ def test_pass_not_overridden_by_check_limit_override():
     )
     assert entry["status"] == "PASS", f"Expected PASS, got {entry['status']}"
 
-    print("  PASS test_pass_not_overridden_by_check_limit_override ✓")
+    print("  PASS test_pass_not_overridden_by_check_limit_override âœ“")
 
 
 def test_failed_retry_respects_limits():
@@ -128,7 +128,7 @@ def test_failed_retry_respects_limits():
     limit = check_limit(entry, "RETRY", "retry")
     assert limit == "AUTO_FAIL_MAX_TOTAL_ATTEMPTS", f"Expected AUTO_FAIL_MAX_TOTAL_ATTEMPTS, got {limit}"
 
-    print("  PASS test_failed_retry_respects_limits ✓")
+    print("  PASS test_failed_retry_respects_limits âœ“")
 
 
 def test_no_double_count_on_re_record():
@@ -150,7 +150,7 @@ def test_no_double_count_on_re_record():
     assert entry["status"] == "PASS"
     assert len(entry["attempts"]) == 1
 
-    print("  PASS test_no_double_count_on_re_record ✓")
+    print("  PASS test_no_double_count_on_re_record âœ“")
 
 
 def test_duplicate_pass_across_rounds():
@@ -181,7 +181,7 @@ def test_duplicate_pass_across_rounds():
     entry = record_attempt(mf, f"r027_full_{base_id}", "full", "initial", "completed", "PASS", "PASS", {})
     assert entry["status"] == "PASS"
 
-    print("  PASS test_duplicate_pass_across_rounds ✓")
+    print("  PASS test_duplicate_pass_across_rounds âœ“")
 
 
 def test_auto_fail_prevented_on_pass_entry():
@@ -201,7 +201,7 @@ def test_auto_fail_prevented_on_pass_entry():
     )
     assert entry["status"] == "PASS", f"PASS must not be overwritten: {entry['status']}"
 
-    print("  PASS test_auto_fail_prevented_on_pass_entry ✓")
+    print("  PASS test_auto_fail_prevented_on_pass_entry âœ“")
 
 
 def test_real_manifest_boundary_crossattn_nc32():
@@ -210,17 +210,17 @@ def test_real_manifest_boundary_crossattn_nc32():
     base_id = "boundary_crossattn_unet_nc32_lr0.00025_masked_l1_gradient"
 
     # Reproduce the exact sequence from the manifest:
-    # 0: r025_smoke, failed, CUDA_OOM → RETRY
+    # 0: r025_smoke, failed, CUDA_OOM â†’ RETRY
     record_attempt(mf, f"r025_smoke_{base_id}", "smoke", "initial", "failed", "CUDA_OOM", "RETRY", {})
-    # 1: r025_smoke_retry1, completed → PASS (smoke passed)
+    # 1: r025_smoke_retry1, completed â†’ PASS (smoke passed)
     entry = record_attempt(mf, f"r025_smoke_{base_id}_retry1", "smoke", "retry", "completed", "PASS", "PASS", {})
     assert entry["status"] == "PASS", "Smoke retry should be PASS"
 
-    # 2: r025_full, failed, CUDA_OOM → RETRY
+    # 2: r025_full, failed, CUDA_OOM â†’ RETRY
     record_attempt(mf, f"r025_full_{base_id}", "full", "initial", "failed", "CUDA_OOM", "RETRY", {})
     assert entry["status"] == "PASS", "Full fail should not override PASS"
 
-    # 3: r025_full_retry2, completed with metrics → should be PASS not AUTO_FAIL
+    # 3: r025_full_retry2, completed with metrics â†’ should be PASS not AUTO_FAIL
     limit = check_limit(entry, "PASS", "retry", current_classification="PASS")
     assert limit is None, f"Full retry pass should not trigger limit: {limit}"
 
@@ -228,7 +228,7 @@ def test_real_manifest_boundary_crossattn_nc32():
                            metrics_path="/some/metrics.json")
     assert entry["status"] == "PASS", f"Full retry with metrics must be PASS: {entry['status']}"
 
-    print("  PASS test_real_manifest_boundary_crossattn_nc32 ✓")
+    print("  PASS test_real_manifest_boundary_crossattn_nc32 âœ“")
 
 
 if __name__ == "__main__":
@@ -257,4 +257,7 @@ if __name__ == "__main__":
     if failures:
         sys.exit(1)
     else:
-        print("All tests passed ✓")
+        print("All tests passed âœ“")
+
+
+

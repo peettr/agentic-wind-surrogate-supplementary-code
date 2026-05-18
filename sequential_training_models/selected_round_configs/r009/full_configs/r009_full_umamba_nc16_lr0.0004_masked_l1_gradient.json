@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r009_full_umamba_nc16_lr0.0004_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "umamba",
   "arch_kwargs": {
     "n_c": 16,
@@ -23,3 +23,5 @@
   "heartbeat_interval_epochs": 10,
   "script_path": "umamba.py"
 }
+
+

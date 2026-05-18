@@ -1,4 +1,4 @@
-﻿"""Candidate Library for Auto V6 Explorer.
+﻿"""Candidate Library for Hybrid Explorer.
 
 The library defines the SEARCH SPACE for the Explorer:
   1. Model catalog: ALL architectures from V3 (code + architecture details only)
@@ -6,7 +6,7 @@ The library defines the SEARCH SPACE for the Explorer:
 
 CRITICAL CONSTRAINT: No V3 results (R2, rankings, priorities) are included.
 The Explorer has NO prior knowledge about which models or HPs are better.
-V4 discovers everything through its own experiments.
+Sequential discovers everything through its own experiments.
 
 What transfers from V3:
   - Model implementation code (shared/models/*.py)
@@ -249,7 +249,7 @@ class CandidateLibrary:
     """The Explorer's reference library for experiment suggestions.
 
     Contains model details and HP search space only.
-    NO V3 performance data - V4 discovers everything fresh.
+    NO V3 performance data - Sequential discovers everything fresh.
     """
 
     def __init__(self):
@@ -313,4 +313,7 @@ if __name__ == "__main__":
     out = Path(__file__).parent.parent / "configs" / "candidate_library.json"
     lib.save(out)
     print(f"\nLibrary saved to {out}")
+
+
+
 

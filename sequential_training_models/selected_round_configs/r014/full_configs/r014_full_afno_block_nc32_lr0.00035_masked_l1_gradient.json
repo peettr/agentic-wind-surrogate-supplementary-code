@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r014_full_afno_block_nc32_lr0.00035_masked_l1_gradient",
-  "strategy": "v4_full",
+  "strategy": "sequential_full",
   "arch_name": "afno_block",
   "arch_kwargs": {
     "n_c": 32,
@@ -23,3 +23,5 @@
   "heartbeat_interval_epochs": 10,
   "script_path": "afno_block.py"
 }
+
+

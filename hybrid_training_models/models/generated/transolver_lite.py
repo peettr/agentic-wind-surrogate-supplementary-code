@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -133,3 +133,5 @@ class transolver_lite(nn.Module):
 
         nan_fill = torch.full_like(y, float("nan"))
         return torch.where(valid_out, y, nan_fill)
+
+

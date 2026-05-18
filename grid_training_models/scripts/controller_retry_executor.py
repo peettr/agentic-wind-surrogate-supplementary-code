@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Materialize controller-planned Auto V5 retry attempts.
+﻿#!/usr/bin/env python3
+"""Materialize controller-planned Grid retry attempts.
 
 This executor is deliberately opt-in and local-first. By default it only writes a
 retry control file that can be inspected. It does not submit Condor jobs, does
@@ -100,7 +100,7 @@ def materialize_retry_run(*, local_root: Path, campaign: str, run: dict[str, Any
     retry_cfg = prepare_retry_config(source_cfg, new_run_id=new_run_id, batch_size=run.get("batch_size"))
     if remote_root:
         # Never inherit a stale results_dir from the source config. Earlier retry
-        # materialization preserved an auto_v3 results root; retries must write
+        # materialization preserved an baseline_source results root; retries must write
         # under the controller-selected remote_root.
         retry_cfg["results_dir"] = str(Path(str(remote_root)) / "campaigns" / campaign / "runs" / new_run_id)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -182,3 +182,6 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

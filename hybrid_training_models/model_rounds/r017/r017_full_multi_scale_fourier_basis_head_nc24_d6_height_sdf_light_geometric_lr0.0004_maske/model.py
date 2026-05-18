@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -104,3 +104,5 @@ class multi_scale_fourier_basis_head(nn.Module):
             valid = valid[:, :1].expand(-1, y.shape[1], -1, -1)
 
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

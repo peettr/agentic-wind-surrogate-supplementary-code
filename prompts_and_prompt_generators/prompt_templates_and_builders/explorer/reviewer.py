@@ -1,4 +1,4 @@
-﻿"""V4 Result Reviewer â€” Analyzes experiment results between rounds.
+﻿"""Sequential Result Reviewer â€” Analyzes experiment results between rounds.
 
 Called after each round to:
 1. Validate result quality (metrics completeness, anomalies)
@@ -15,7 +15,7 @@ from typing import Optional
 
 from explorer.explorer import ExperimentResult, summarize_results
 
-LOGGER = logging.getLogger("auto_v6.reviewer")
+LOGGER = logging.getLogger("hybrid.reviewer")
 
 
 # RÂ² thresholds based on V3 observations
@@ -186,4 +186,7 @@ def build_review_context(review: dict) -> str:
         for entry in review["model_ranking"][:10]:
             lines.append(f"  {entry['arch']}: R2={entry['best_r2']:.4f}")
     return "\n".join(lines)
+
+
+
 

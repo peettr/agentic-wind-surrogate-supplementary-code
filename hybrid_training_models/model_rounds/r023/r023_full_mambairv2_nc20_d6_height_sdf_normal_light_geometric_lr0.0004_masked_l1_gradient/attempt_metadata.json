@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\mambairv2.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\mambairv2.py",
   "model_source_kind": "generated",
   "model_sha256": "508012dbd0ef1cc1676e4bba08bc789fdb89a2cef8633febf36839a5cb7f62c1",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_mambairv2_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_mambairv2_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

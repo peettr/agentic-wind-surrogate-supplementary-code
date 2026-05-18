@@ -1,4 +1,4 @@
-"""v2's exact UNetLu7Level, wrapped as a BaseSurrogate.
+﻿"""v2's exact UNetLu7Level, wrapped as a BaseSurrogate.
 
 This is auto_v2's final model (unet_lu_7level.py) verbatim,
 with a thin adapter to satisfy v3's BaseSurrogate contract.
@@ -97,7 +97,7 @@ class UNetV2Baseline(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self._model(x)
 
-# Wrapper for Auto V6 script_path loading by registry arch_name.
+# Wrapper for Hybrid script_path loading by registry arch_name.
 class unet_v2_baseline(UNetV2Baseline):
     def __init__(self, in_channels=1, out_channels=1, n_c=16, depth=7, **kwargs):
         import inspect
@@ -117,3 +117,6 @@ class unet_v2_baseline(UNetV2Baseline):
             if _k in sig.parameters:
                 call_kwargs[_k] = _v
         super().__init__(**call_kwargs)
+
+
+

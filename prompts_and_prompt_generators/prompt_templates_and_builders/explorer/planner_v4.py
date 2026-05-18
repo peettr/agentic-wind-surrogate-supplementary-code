@@ -1,4 +1,4 @@
-﻿"""V4 Planner â€” uses V3 Model Scout architecture for per-round experiment suggestion.
+﻿"""Sequential Planner â€” uses V3 Model Scout architecture for per-round experiment suggestion.
 
 Flow per round:
   1. Build context (history + review + constraints + libraries)
@@ -18,7 +18,7 @@ from explorer.candidate_library import CandidateLibrary
 from explorer.explorer import ExperimentConfig, ExperimentResult
 from explorer.ai_callers import get_caller, CALLERS
 
-LOGGER = logging.getLogger("auto_v6.planner")
+LOGGER = logging.getLogger("hybrid.planner")
 
 # ======================================================================
 # Hard constraints
@@ -213,7 +213,7 @@ def validate_proposal(prop: dict, library: CandidateLibrary) -> list[str]:
 # ======================================================================
 
 class V4Planner:
-    """V4 Planner using V3 Model Scout architecture.
+    """Sequential Planner using V3 Model Scout architecture.
     
     Per round:
       Phase 1: 7 AI scouts propose in parallel
@@ -415,4 +415,7 @@ class V4Planner:
 
 
 __all__ = ["V4Planner"]
+
+
+
 

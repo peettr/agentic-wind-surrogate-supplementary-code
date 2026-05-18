@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -85,3 +85,5 @@ class liif_head_unet(nn.Module):
 
         output = torch.where(valid, output, torch.full_like(output, float("nan")))
         return output
+
+

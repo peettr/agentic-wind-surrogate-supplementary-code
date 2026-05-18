@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -98,3 +98,5 @@ class distilled_compact_inr_pressure_head_unet(nn.Module):
         if restore_valid.shape[1] != out.shape[1]:
             restore_valid = restore_valid.expand(-1, out.shape[1], -1, -1)
         return torch.where(restore_valid, out, torch.full_like(out, float("nan")))
+
+

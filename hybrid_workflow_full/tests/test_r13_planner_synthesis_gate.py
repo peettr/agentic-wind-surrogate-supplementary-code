@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 """R13 planner synthesis/gate diagnostic.
 
 Uses existing R13 scout/context artifacts and writes only under
@@ -17,12 +17,12 @@ import time
 from pathlib import Path
 from typing import Any
 
-AUTO_V6_ROOT = Path(__file__).resolve().parents[1]
-ENGINE = AUTO_V6_ROOT / "workflow_engine"
+hybrid_ROOT = Path(__file__).resolve().parents[1]
+ENGINE = hybrid_ROOT / "workflow_engine"
 if str(ENGINE) not in sys.path:
     sys.path.insert(0, str(ENGINE))
-if str(AUTO_V6_ROOT) not in sys.path:
-    sys.path.insert(0, str(AUTO_V6_ROOT))
+if str(hybrid_ROOT) not in sys.path:
+    sys.path.insert(0, str(hybrid_ROOT))
 
 import workflow_planner as planner  # noqa: E402
 
@@ -201,7 +201,7 @@ def write_md(path: Path, summary: dict[str, Any]) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--base", type=Path, default=AUTO_V6_ROOT / "campaigns" / "auto_v6" / "artifacts" / "r013")
+    ap.add_argument("--base", type=Path, default=hybrid_ROOT / "campaigns" / "hybrid" / "artifacts" / "r013")
     ap.add_argument("--out-dir", type=Path, default=None)
     ap.add_argument("--target-count", type=int, default=12)
     ap.add_argument("--live", action="store_true", help="Actually call Claude synthesis and Codex gate")
@@ -234,3 +234,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

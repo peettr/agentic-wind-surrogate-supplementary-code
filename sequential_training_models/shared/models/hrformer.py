@@ -1,4 +1,4 @@
-"""HRFormer — Multi-Resolution Transformer for dense field regression.
+﻿"""HRFormer â€” Multi-Resolution Transformer for dense field regression.
 
 Maintains parallel streams at multiple resolutions with cross-resolution
 attention, similar to HRNet but using window-based self-attention instead
@@ -169,3 +169,6 @@ class HRFormer(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

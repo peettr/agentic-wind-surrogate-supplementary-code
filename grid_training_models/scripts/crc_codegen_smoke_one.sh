@@ -1,17 +1,17 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 CTL="${CRC_CONTROL_PATH:-<SSH_CONTROL_PATH>"
 HOST="${CRC_HOST:-<HPC_USER>@<HPC_LOGIN>}"
 LOCAL="<LOCAL_HOME_PATH>"
 REMOTE="${REMOTE:-<BASELINE_HPC_SOURCE_ROOT>}"
-CAMPAIGN="${CAMPAIGN:-v5_codegen_smoke_test_001}"
+CAMPAIGN="${CAMPAIGN:-grid_codegen_smoke_test_001}"
 RUN_ID="${RUN_ID:-r_codegen_unet_v2_baseline_smoke20}"
-MODEL_FILE="${MODEL_FILE:-generated_models/v5_codegen_test_001/unet_v2_baseline.py}"
+MODEL_FILE="${MODEL_FILE:-generated_models/grid_codegen_test_001/unet_v2_baseline.py}"
 MODULE_NAME="${MODULE_NAME:-codegen_unet_v2_baseline}"
 STAGE="${STAGE:-smoke20}"
 USER_BUNDLE="/users/lhu1/${CAMPAIGN}"
-LOG_ROOT="/users/lhu1/condor_v5_logs"
+LOG_ROOT="/users/lhu1/condor_grid_logs"
 SUBMIT_TIER="${SUBMIT_TIER:-a40_rtx6k_16gb}"
 TAR="$LOCAL/tmp_${CAMPAIGN}.tar"
 SSH="ssh -o BatchMode=yes -o ConnectTimeout=120 -o ServerAliveInterval=10 -o ControlPath=$CTL $HOST"
@@ -40,10 +40,10 @@ python scripts/generate_tiered_condor_submits.py \
 # Keep the legacy submit filename as the selected tier alias for manual use.
 cp "campaigns/$CAMPAIGN/codegen_smoke_${SUBMIT_TIER}.submit" "campaigns/$CAMPAIGN/codegen_smoke.submit"
 
-echo "=== Pack Auto V5 smoke test code ==="
+echo "=== Pack Grid smoke test code ==="
 tar --exclude='__pycache__' --exclude='.pytest_cache' --exclude='shared/data' -cf "$TAR" \
   shared scripts templates generated_models \
-  campaigns/$CAMPAIGN AUTO_V5_PROTOCOL.md
+  campaigns/$CAMPAIGN grid_PROTOCOL.md
 
 echo "=== Create remote project root, user wrapper, and log dir ==="
 $SSH "mkdir -p '$REMOTE' '$USER_BUNDLE' '$LOG_ROOT/$CAMPAIGN/$RUN_ID'"
@@ -115,7 +115,7 @@ x=torch.randn(1,1,128,128)
 with torch.no_grad():
     y=m(x)
 params=sum(p.numel() for p in m.parameters())
-limit=int(os.environ.get('AUTO_V5_PARAM_LIMIT', '150000000'))
+limit=int(os.environ.get('grid_PARAM_LIMIT', '150000000'))
 print('FRONTEND_DYNAMIC_OK', tuple(y.shape), 'params', params, 'limit', limit)
 if tuple(y.shape) != (1, 1, 128, 128):
     raise SystemExit(f'shape contract failed: {tuple(y.shape)}')
@@ -129,3 +129,6 @@ $SSH "cd '$REMOTE' && condor_submit 'campaigns/$CAMPAIGN/codegen_smoke_${SUBMIT_
 
 echo "=== Query jobs ==="
 $SSH "condor_q lhu1 -name <HPC_FILE_LOGIN> -nobatch | tail -20"
+
+
+

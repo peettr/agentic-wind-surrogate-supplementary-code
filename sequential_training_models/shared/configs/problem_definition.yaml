@@ -1,10 +1,10 @@
-# auto_v3 problem definition — declarative input to SearchSpaceBuilder.
+﻿# baseline_source problem definition â€” declarative input to SearchSpaceBuilder.
 # Non-engineer reviewable. Changes here may invalidate a campaign's config_hash.
 
 task: 2D_spatial_field_prediction
 
 # ---------------------------------------------------------------------------
-# I/O spatial contract (v2 locked — Appendix A.4)
+# I/O spatial contract (v2 locked â€” Appendix A.4)
 # ---------------------------------------------------------------------------
 input:
   channels: 1               # single-channel: building height pre-rotation
@@ -27,7 +27,7 @@ data:
   raw_path_crc: <PROJECT_HPC_ROOT>/data/urbantales/raw
   data_formatter: DataFormatterFixed
   data_formatter_path_crc: <PROJECT_HPC_ROOT>/auto_v2/full_dataset/references/data_formatter.py
-  n_patches_total: 878      # DataFormatter produces 1–9 patches per case
+  n_patches_total: 878      # DataFormatter produces 1â€“9 patches per case
   wind_angle_parse: "re.search(r'_d(\\d+)$', case_name)"
 
 # ---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ training:
   grad_cleanup: zero_grad_set_to_none
 
 # ---------------------------------------------------------------------------
-# Evaluation contract (LOCKED — mirrored verbatim in eval_module.py)
+# Evaluation contract (LOCKED â€” mirrored verbatim in eval_module.py)
 # ---------------------------------------------------------------------------
 evaluation:
   domain: raw_wind_speed
@@ -94,7 +94,7 @@ masking:
   loss_nan_safety: "torch.where(mask, ...); NEVER mask * ..."
 
 # ---------------------------------------------------------------------------
-# Data preprocessing (LOCKED — Appendix A.1)
+# Data preprocessing (LOCKED â€” Appendix A.1)
 # ---------------------------------------------------------------------------
 preprocessing:
   topo_flipud: true
@@ -102,3 +102,6 @@ preprocessing:
   x_nan_handling: "np.nan_to_num(X, nan=0.0)"
   y_nan_handling: preserve
   wind_angle_encoding: rot90_plus_ndimage_rotate
+
+
+

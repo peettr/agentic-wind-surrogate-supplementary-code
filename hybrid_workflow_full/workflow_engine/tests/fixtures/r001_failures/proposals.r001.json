@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "experiment_id": "r1_exploit_sdf_grad_ema",
     "arch_name": "unet_sdf_7level",
@@ -276,3 +276,5 @@
     "estimated_params": null
   }
 ]
+
+

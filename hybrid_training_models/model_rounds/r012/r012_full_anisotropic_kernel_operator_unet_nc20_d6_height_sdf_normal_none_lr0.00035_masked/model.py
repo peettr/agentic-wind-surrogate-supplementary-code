@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -92,3 +92,5 @@ class anisotropic_kernel_operator_unet(nn.Module):
         if out_valid.shape[1] != y.shape[1]:
             out_valid = out_valid.all(dim=1, keepdim=True).expand(-1, y.shape[1], -1, -1)
         return torch.where(out_valid, y, torch.full_like(y, float("nan")))
+
+

@@ -1,4 +1,4 @@
-"""preprocess_sdf.py — Precompute SDF + normal channels for UrbanTALES.
+﻿"""preprocess_sdf.py â€” Precompute SDF + normal channels for UrbanTALES.
 
 Reads raw topo files, computes SDF and boundary normal angle,
 saves as 3-channel numpy arrays (height, sdf, normal_angle).
@@ -55,3 +55,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+

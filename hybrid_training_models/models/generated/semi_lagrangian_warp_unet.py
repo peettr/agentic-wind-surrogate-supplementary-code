@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -91,3 +91,5 @@ class semi_lagrangian_warp_unet(nn.Module):
         output_valid = valid if valid.shape[1] == output.shape[1] else valid.all(dim=1, keepdim=True)
         output = torch.where(output_valid, output, torch.full_like(output, float("nan")))
         return output
+
+

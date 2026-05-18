@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -117,3 +117,5 @@ class msca_unet(nn.Module):
             x = F.interpolate(x, size=x_masked.shape[-2:], mode="bilinear", align_corners=False)
 
         return torch.where(valid, x, torch.full_like(x, float("nan")))
+
+

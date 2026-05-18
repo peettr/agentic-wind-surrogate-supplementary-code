@@ -1,4 +1,4 @@
-"""FNO-2d — Fourier Neural Operator for 2D dense regression.
+﻿"""FNO-2d â€” Fourier Neural Operator for 2D dense regression.
 
 Applies spectral convolution layers in frequency domain, followed by
 pointwise MLP layers. Known for resolution-invariant learning and strong
@@ -23,7 +23,7 @@ def _gn(ch: int) -> nn.GroupNorm:
 
 
 class SpectralConv2d(nn.Module):
-    """2D Fourier layer: FFT → linear transform on modes → iFFT."""
+    """2D Fourier layer: FFT â†’ linear transform on modes â†’ iFFT."""
 
     def __init__(self, in_ch: int, out_ch: int, modes1: int, modes2: int) -> None:
         super().__init__()
@@ -34,7 +34,7 @@ class SpectralConv2d(nn.Module):
         self.weight2 = nn.Parameter(scale * torch.rand(in_ch, out_ch, modes1, modes2, dtype=torch.cfloat))
 
     def compl_mul2d(self, x: torch.Tensor, w: torch.Tensor) -> torch.Tensor:
-        # (B, in_ch, m1, m2) × (in_ch, out_ch, m1, m2) → (B, out_ch, m1, m2)
+        # (B, in_ch, m1, m2) Ã— (in_ch, out_ch, m1, m2) â†’ (B, out_ch, m1, m2)
         return torch.einsum("bixy,ioxy->boxy", x, w)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -149,3 +149,6 @@ class FNO2d(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return self.output_proj(x)
+
+
+

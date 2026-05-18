@@ -1,0 +1,22 @@
+﻿{
+  "experiment_id": "baseline_unet_v3_masked_l1_s1",
+  "strategy": "baseline",
+  "seed": 1,
+  "epochs": 500,
+  "lr": 0.001,
+  "batch_size": 16,
+  "checkpoint_interval": 50,
+  "arch_name": "unet_v3",
+  "arch_kwargs": {"depth": 7, "n_c": 16},
+  "loss_name": "masked_l1",
+  "loss_kwargs": {},
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<BASELINE_HPC_SOURCE_ROOT>/campaigns/baseline/runs/baseline_s1",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 50,
+  "phase": "search",
+  "eval_splits": ["val"]
+}
+
+
+

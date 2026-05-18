@@ -1,11 +1,11 @@
-"""Masked loss functions for the UrbanTALES surrogate.
+﻿"""Masked loss functions for the UrbanTALES surrogate.
 
 Every loss is NaN-safe. The target tensor ``Y`` contains NaN on building interior
 pixels; the input ``X`` encodes buildings as positive values. Valid pixels are
 those where ``(~isnan(Y)) & (X <= 0)``.
 
-Appendix A.1 #12 (LOCKED): use ``torch.where(mask, op, zeros)`` — never
-``mask * op`` — because ``0 * NaN = NaN`` in PyTorch, which silently corrupts
+Appendix A.1 #12 (LOCKED): use ``torch.where(mask, op, zeros)`` â€” never
+``mask * op`` â€” because ``0 * NaN = NaN`` in PyTorch, which silently corrupts
 gradients.
 
 Every loss signature is ``forward(pred, target, x)`` so that the mask can be
@@ -43,7 +43,7 @@ def _masked_reduce(per_pixel: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
 # Masked L1
 # ---------------------------------------------------------------------------
 class MaskedL1Loss(nn.Module):
-    """Masked L1 loss — identical to auto_v2's inline masked_l1()."""
+    """Masked L1 loss â€” identical to auto_v2's inline masked_l1()."""
 
     def forward(
         self, pred: torch.Tensor, target: torch.Tensor, x: torch.Tensor,
@@ -77,7 +77,7 @@ def _sobel_grad(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
 class MaskedL1GradientLoss(nn.Module):
     """Masked L1 + ``grad_weight`` * Sobel gradient L1.
 
-    Encourages smooth spatial derivatives — useful where abrupt jumps in the
+    Encourages smooth spatial derivatives â€” useful where abrupt jumps in the
     predicted wind field would be unphysical.
     """
 
@@ -125,7 +125,7 @@ class MaskedHuberLoss(nn.Module):
 # Loss library
 # ---------------------------------------------------------------------------
 class LossLibrary:
-    """name → loss-constructor registry."""
+    """name â†’ loss-constructor registry."""
 
     def __init__(self) -> None:
         self._entries: dict[str, Callable[..., nn.Module]] = {}
@@ -161,3 +161,6 @@ __all__ = [
     "LIBRARY",
     "building_mask",
 ]
+
+
+

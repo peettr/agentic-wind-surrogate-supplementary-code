@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -141,3 +141,5 @@ class boundary_strip_graph_mixer_unet(nn.Module):
         if valid.shape[1] != y.shape[1]:
             valid = valid.all(dim=1, keepdim=True)
         return torch.where(valid, y, torch.full_like(y, float("nan")))
+
+

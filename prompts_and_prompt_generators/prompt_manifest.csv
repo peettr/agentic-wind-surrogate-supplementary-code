@@ -1,4 +1,4 @@
-round_or_artifact,relative_path,prompt_type,bytes,kept_as_representative_full_prompt
+﻿round_or_artifact,relative_path,prompt_type,bytes,kept_as_representative_full_prompt
 r000,r000/external_ideas_codex_web_prompt.txt,scout_or_external_ideas,18327,yes
 r000,r000/external_ideas_review_claude_prompt.txt,review_or_quality_gate,69296,yes
 r000,r000/planner_prompt.txt,planner,199264,yes
@@ -302,3 +302,6 @@ r024,r024/planner_prompt_mimo.txt,planner,92623,no
 r024,r024/quality_gate_codex_prompt.txt,review_or_quality_gate,44945,yes
 r024,r024/synthesis_claude_prompt.txt,synthesis,1028179,yes
 r024,r024/synthesis_claude_raw.txt,synthesis,13783,no
+
+
+

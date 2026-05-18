@@ -1,4 +1,4 @@
-"""Perceiver IO — latent-space attention for dense regression.
+﻿"""Perceiver IO â€” latent-space attention for dense regression.
 
 Compresses the 640x640 input into a small latent array, applies multiple rounds
 of cross-attention and self-attention, then decodes back to full resolution.
@@ -161,7 +161,7 @@ class PerceiverIO(BaseSurrogate):
         # Project latent -> enc_dim channels
         latent_proj = self.latent_proj(latent)  # (B, n_latents, enc_dim)
 
-        # Reshape to 2D grid (n_latents = latent_side²)
+        # Reshape to 2D grid (n_latents = latent_sideÂ²)
         latent_2d = latent_proj.permute(0, 2, 1).reshape(B, enc.size(1), self.latent_side, self.latent_side)
 
         # Progressive upsampling to full resolution
@@ -171,3 +171,6 @@ class PerceiverIO(BaseSurrogate):
         if out.shape[2] != orig_h or out.shape[3] != orig_w:
             out = F.interpolate(out, size=(orig_h, orig_w), mode='bilinear', align_corners=False)
         return out
+
+
+

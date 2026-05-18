@@ -1,4 +1,4 @@
-"""unet_sdf_7level.py — 7-level UNet with SDF-augmented 3-channel input.
+﻿"""unet_sdf_7level.py â€” 7-level UNet with SDF-augmented 3-channel input.
 
 Architecture: identical depth/width to the auto_v2 baseline (7 levels, ~125M params)
 but accepts 3 input channels (building_height + SDF + boundary_normal_angle)
@@ -101,10 +101,10 @@ class UNetSDF(nn.Module):
         return self.outc(x)
 
 
-# Alias for Auto V6 script_path loading by registry arch_name.
+# Alias for Hybrid script_path loading by registry arch_name.
 unet_sdf_7level = UNetSDF
 
-# Wrapper for Auto V6 script_path loading by registry arch_name.
+# Wrapper for Hybrid script_path loading by registry arch_name.
 class unet_sdf_7level(UNetSDF):
     def __init__(self, in_channels=1, out_channels=1, n_c=16, depth=7, **kwargs):
         import inspect
@@ -124,3 +124,6 @@ class unet_sdf_7level(UNetSDF):
             if _k in sig.parameters:
                 call_kwargs[_k] = _v
         super().__init__(**call_kwargs)
+
+
+

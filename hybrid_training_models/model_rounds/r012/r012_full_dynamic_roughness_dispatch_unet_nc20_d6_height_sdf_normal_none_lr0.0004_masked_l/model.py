@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -105,3 +105,5 @@ class dynamic_roughness_dispatch_unet(nn.Module):
         valid_out = valid.expand(-1, output.shape[1], -1, -1)
         output = output.masked_fill(~valid_out, float("nan"))
         return output
+
+

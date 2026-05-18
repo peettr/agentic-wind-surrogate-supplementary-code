@@ -1,4 +1,4 @@
-You are the Codex scout for Auto V6 candidate generation.
+﻿You are the Codex scout for Hybrid candidate generation.
 You run in the project workspace and MUST inspect the required local context files listed in COMPACT_CONTEXT_JSON.required_context_files before proposing.
 Do not read unrelated workspace memory/persona files. Use only the listed context files and the compact context embedded here.
 If you cannot read the required files, return only {"proposals": [], "status": "blocked", "reason": "..."}.
@@ -14,7 +14,7 @@ Important scientific policy:
 - Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include topic_cluster/query_tier, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.
 - If external_web_scout.missing_clusters_for_next_round or quality_report.retry_hints are present, prefer those under-covered topic clusters in the next web-scout/planner pass; do not launch extra web passes here.
 - Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.
-- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.
+- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the grid_controller initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.
 - Do not use V3 performance, ranking, tier, or conclusion information.
 - Include evidence_refs for every proposal. Each evidence_refs list must include at least one required context file path and at least one round id or exp_id.
 - Do not rely only on the compact summary. Use the required files to verify recent results, family trends, failure taxonomy, and hypotheses before proposing.
@@ -32,14 +32,14 @@ COMPACT_CONTEXT_JSON:
     "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
     "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
     "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
-    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
-    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the grid_controller initial knowledge package.",
+    "initial_knowledge_policy": "Hybrid experimental priors may come only from the Grid/grid_controller initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
     "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
     "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
     "planner_split": "Use two tracks only with an adaptive explorer target of 4-6 per 12-experiment round, defaulting to 5. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value. This target is planning guidance, not a hard scientific rule.",
     "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
     "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
-    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "batch_size_policy": "Ordinary Hybrid candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
     "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
     "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
     "review_soft_policy": "Reviewer outputs, including round_review, cross_round_audit, cooldowns, soft_advisories, contradicted_patterns, and search_policy_notes, are soft evidence unless they identify a schema-invalid config, resource-infeasible config, locked train/data/eval contract violation, or explicit user/controller rule. Following a review requires evidence; departing from a review requires only concise rationale plus a valid paired comparison/decision rule. Do not hard-ban EMA, model family, input feature contract, or loss solely because a reviewer recommended against it.",
@@ -454,25 +454,25 @@ COMPACT_CONTEXT_JSON:
   "candidate_library_count": 41,
   "v3_arch_hp_context_note": "V3 architecture definitions and HP ranges are legal search-space context; V3 performance/ranking/tier conclusions remain forbidden.",
   "knowledge_files": {
-    "all_results_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\all_results_summary.jsonl",
-    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
-    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
-    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
-    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
-    "initial_knowledge_auto11": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\initial_knowledge_auto11.md",
-    "model_results": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\model_results.csv",
-    "initial_knowledge_csv_digest": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\initial_knowledge_csv_digest.json"
+    "all_results_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\all_results_summary.jsonl",
+    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\hypothesis_registry.json",
+    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\knowledge_summary.json",
+    "initial_knowledge_grid_controller": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\initial_knowledge_grid_controller.md",
+    "model_results": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\model_results.csv",
+    "initial_knowledge_csv_digest": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\initial_knowledge_csv_digest.json"
   },
   "required_context_files": {
-    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
-    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
-    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
-    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
-    "planner_context": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\planner_context.json"
+    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\knowledge_summary.json",
+    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\hypothesis_registry.json",
+    "planner_context": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\planner_context.json"
   },
-  "full_planner_context_file": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\planner_context.json",
+  "full_planner_context_file": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\planner_context.json",
   "knowledge_summary_compact": {
     "timestamp": "2026-05-12T15:00:02+00:00",
     "total_results": 632,
@@ -713,14 +713,14 @@ COMPACT_CONTEXT_JSON:
     {
       "round": 19,
       "review_action": "continue",
-      "summary": "claude: Round 19 produced no new all-time best (ATB still 0.7573 at r017). New best is r019 hypernet_coord_lowrank_residual_unet nc20 d6 light_geometric = 0.7544 (2nd all-time), with anisotropic_boundary_hybrid family producing 0.7345-0.7435 across three aug variants. Crucially the r017 anchor recipe was repeated (r019 e01) and dropped to 0.7345, a -0.023 swing under identical config (same seed=1, same recipe). Together with hypernet jumping +0.018 (r018 0.7367 -> r019 0.7544) under identical config, the same-config run-to-run dispersion appears to be ~0.02-0.025, which means r017's 0.7573 sits within the noise band of the underlying anisotropic frontier and may not be a real >0.755 plateau. H18-A (light_geometric drives the anchor uplift) and H18-C (hypernet nc24 capacity headroom) are both refuted in r019. Hard-case tail (UA-KY-V14_d90 ~0.16-0.18, KO-SE-V4_d45 ~0.21-0.33, KO-SE-V6 ~0.28-0.50) persists unchanged. Three OOM failures on L40S all retried successfully on H100, so they are resource-allocation issues, not architecture failures. Trend stagnating at 0.75-0.76 ceiling. | codex: Round 19 did not beat the all-time Auto V6/V4 best of 0.7573, but it produced the #2 all-time run: r019 hypernet_coord_lowrank_residual_unet at 0.7544. The frontier is therefore stagnant, not declining. Continue search, with emphasis on replication, hard-case generalization, and resource-gated near-frontier variants.",
+      "summary": "claude: Round 19 produced no new all-time best (ATB still 0.7573 at r017). New best is r019 hypernet_coord_lowrank_residual_unet nc20 d6 light_geometric = 0.7544 (2nd all-time), with anisotropic_boundary_hybrid family producing 0.7345-0.7435 across three aug variants. Crucially the r017 anchor recipe was repeated (r019 e01) and dropped to 0.7345, a -0.023 swing under identical config (same seed=1, same recipe). Together with hypernet jumping +0.018 (r018 0.7367 -> r019 0.7544) under identical config, the same-config run-to-run dispersion appears to be ~0.02-0.025, which means r017's 0.7573 sits within the noise band of the underlying anisotropic frontier and may not be a real >0.755 plateau. H18-A (light_geometric drives the anchor uplift) and H18-C (hypernet nc24 capacity headroom) are both refuted in r019. Hard-case tail (UA-KY-V14_d90 ~0.16-0.18, KO-SE-V4_d45 ~0.21-0.33, KO-SE-V6 ~0.28-0.50) persists unchanged. Three OOM failures on L40S all retried successfully on H100, so they are resource-allocation issues, not architecture failures. Trend stagnating at 0.75-0.76 ceiling. | codex: Round 19 did not beat the all-time Hybrid/Sequential best of 0.7573, but it produced the #2 all-time run: r019 hypernet_coord_lowrank_residual_unet at 0.7544. The frontier is therefore stagnant, not declining. Continue search, with emphasis on replication, hard-case generalization, and resource-gated near-frontier variants.",
       "top_performers": [
         {
           "exp_id": "r019_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
           "arch_name": "hypernet_coord_lowrank_residual_unet",
           "val_r2_median": 0.7544485948615524,
           "round": 19,
-          "reason": "Round-best, 2nd all-time. Same arch jumped +0.018 over r018 repeat under identical config — strong evidence of high run-to-run variance for this family.",
+          "reason": "Round-best, 2nd all-time. Same arch jumped +0.018 over r018 repeat under identical config â€” strong evidence of high run-to-run variance for this family.",
           "source": "claude"
         },
         {
@@ -736,7 +736,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "anisotropic_boundary_hybrid",
           "val_r2_median": 0.7345347806983332,
           "round": 19,
-          "reason": "Direct r017 anchor repeat under identical config (seed=1, same recipe) — fell -0.023 vs r017 0.7573, the dominant evidence that the r017 frontier was an upper-tail draw.",
+          "reason": "Direct r017 anchor repeat under identical config (seed=1, same recipe) â€” fell -0.023 vs r017 0.7573, the dominant evidence that the r017 frontier was an upper-tail draw.",
           "source": "claude"
         },
         {
@@ -744,7 +744,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "terrain_conditioned_local_attention_unet",
           "val_r2_median": 0.7331290132323833,
           "round": 19,
-          "reason": "New near-frontier family; first-try without augmentation already reaches anchor noise band — worth a paired aug ablation.",
+          "reason": "New near-frontier family; first-try without augmentation already reaches anchor noise band â€” worth a paired aug ablation.",
           "source": "claude"
         },
         {
@@ -752,7 +752,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "anisotropic_kernel_operator_unet",
           "val_r2_median": 0.732610770374365,
           "round": 19,
-          "reason": "Below historical r011 0.7531 on the same family — supports anisotropic_kernel_operator saturation.",
+          "reason": "Below historical r011 0.7531 on the same family â€” supports anisotropic_kernel_operator saturation.",
           "source": "claude"
         }
       ],
@@ -797,7 +797,7 @@ COMPACT_CONTEXT_JSON:
         },
         {
           "id": "R19-3",
-          "recommendation": "Tail-weighted masked_l1_gradient (per-sample weight ~ 1/max(r2_proxy, eps) using an initial pass r2, or a smoothed inverse-mae weight) at the anchor recipe. Hard-case tail (UA-KY-V14_d90, KO-SE-V4_d00/d45, KO-SE-V6_d00, FI-MS-V1, CH-Bas-U1) is now a stable blocker across 4 rounds and 2 different architectures; tail-weighted loss has still not been tested.",
+          "recommendation": "Tail-weighted masked_l1_gradient (per-sample weight ~ 1/max(r2_proxy, eps) using an initial pass r2, or a smoothed inverse-mae weight) at the anchor recipe. Hard-case tail (UA-KY-V14_d90, KO-SE-V4_d00/d45, KO-SE-hybrid_d00, FI-MS-V1, CH-Bas-U1) is now a stable blocker across 4 rounds and 2 different architectures; tail-weighted loss has still not been tested.",
           "hardness": "soft",
           "hardness_reason": "Loss-design proposal; soft and reversible.",
           "confidence": "high",
@@ -1088,7 +1088,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N19-3",
-            "pattern": "Hard-case tail (UA-KY-V14_d90 ~0.15-0.19, KO-SE-V4_d45 ~0.21-0.33, KO-SE-V6_d00 ~0.25-0.51, FI-MS-V1 ~0.43-0.48, CH-Bas-U1 ~0.50-0.58) is stable across r017-r019 regardless of which top architecture is used. The blocker is data-distribution, not mechanism.",
+            "pattern": "Hard-case tail (UA-KY-V14_d90 ~0.15-0.19, KO-SE-V4_d45 ~0.21-0.33, KO-SE-hybrid_d00 ~0.25-0.51, FI-MS-V1 ~0.43-0.48, CH-Bas-U1 ~0.50-0.58) is stable across r017-r019 regardless of which top architecture is used. The blocker is data-distribution, not mechanism.",
             "evidence_run_ids": [
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r018_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
@@ -1147,8 +1147,8 @@ COMPACT_CONTEXT_JSON:
         "recommended_hypotheses": [
           {
             "id": "H19-B",
-            "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the 5 stable hard cases (KO-SE-V4_d45, KO-SE-V6_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00) without hurting easy cases.",
-            "source": "V4-result-driven",
+            "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the 5 stable hard cases (KO-SE-V4_d45, KO-SE-hybrid_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00) without hurting easy cases.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Hard-case tail stable across 4 rounds and 4 different best-architectures",
               "Architectures alone have not moved tail R2 above 0.55 for the 5 stable cases",
@@ -1159,7 +1159,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H19-C",
             "claim": "Depth scaling (nc20 d7) on anisotropic_boundary_hybrid or hypernet_coord_lowrank_residual_unet may pay where width scaling (nc24 d6) does not, because deeper receptive field can better handle the hard-case tail geometry.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "nc24 d6 refuted twice (anisotropic and hypernet)",
               "planar_multigrid d7 nc24 worked relatively well at r016 (0.7350) suggesting depth is a viable axis at this dataset",
@@ -1170,7 +1170,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H19-D",
             "claim": "terrain_conditioned_local_attention_unet has a higher r2_mean (0.7289) than the anchor (0.7170) at first observation, suggesting it may generalize better on the median-case distribution; with augmentation and replication it could enter the frontier band.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 terrain_conditioned_local_attention_unet nc20 d6 none = 0.7331 median / 0.7289 mean",
               "Anchor anisotropic_boundary_hybrid nc20 d6 in r019: 0.7345 median / 0.7170 mean (light_geometric), 0.7435 / 0.7264 (flip_rot)"
@@ -1180,7 +1180,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H19-A",
             "claim": "Hypernet nc20 d6 light_geometric is a real near-frontier family rather than a one-run fluctuation.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 hypernet nc20 d6 = 0.7544",
               "r018 hypernet nc20 d6 = 0.7367"
@@ -1190,7 +1190,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H19-B",
             "claim": "Hard-case weighting can raise the current frontier more efficiently than another architecture novelty sweep.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 top models still have low UA-KY, KO-SE, and FI-MS per-case R2",
               "H17-D/H18-B remain untested"
@@ -1200,7 +1200,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H19-C",
             "claim": "Anisotropic augmentation response is not monotonic; flip_rot may be more stable than light_geometric for the current implementation.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 anisotropic flip_rot = 0.7435",
               "r019 anisotropic light_geometric = 0.7345",
@@ -1315,7 +1315,7 @@ COMPACT_CONTEXT_JSON:
             "hypothesis_id": "H016-C",
             "outcome": "supported",
             "evidence": [
-              "r019 hypernet UA-KY-V14_d90 = 0.1802, KO-SE-V4_d45 = 0.2498, KO-SE-V6_d00 = 0.3423",
+              "r019 hypernet UA-KY-V14_d90 = 0.1802, KO-SE-V4_d45 = 0.2498, KO-SE-hybrid_d00 = 0.3423",
               "r019 anisotropic flip_rot UA-KY-V14_d90 = 0.1619, KO-SE-V4_d45 = 0.2856"
             ],
             "reason": "The same hard-case tail persists across different strong architectures."
@@ -1447,7 +1447,7 @@ COMPACT_CONTEXT_JSON:
             "reason": "Statistical-rigor policy; not a locked contract."
           },
           {
-            "note": "Schedule at least one tail-weighted loss run per future round until the hard-case tail mean R2 (mean of {KO-SE-V4_d45, KO-SE-V6_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00}) moves above 0.45 sustained.",
+            "note": "Schedule at least one tail-weighted loss run per future round until the hard-case tail mean R2 (mean of {KO-SE-V4_d45, KO-SE-hybrid_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00}) moves above 0.45 sustained.",
             "hardness": "soft",
             "reason": "Search-strategy recommendation; reversible."
           },
@@ -1616,7 +1616,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "R19-3",
-            "recommendation": "Tail-weighted masked_l1_gradient (per-sample weight ~ 1/max(r2_proxy, eps) using an initial pass r2, or a smoothed inverse-mae weight) at the anchor recipe. Hard-case tail (UA-KY-V14_d90, KO-SE-V4_d00/d45, KO-SE-V6_d00, FI-MS-V1, CH-Bas-U1) is now a stable blocker across 4 rounds and 2 different architectures; tail-weighted loss has still not been tested.",
+            "recommendation": "Tail-weighted masked_l1_gradient (per-sample weight ~ 1/max(r2_proxy, eps) using an initial pass r2, or a smoothed inverse-mae weight) at the anchor recipe. Hard-case tail (UA-KY-V14_d90, KO-SE-V4_d00/d45, KO-SE-hybrid_d00, FI-MS-V1, CH-Bas-U1) is now a stable blocker across 4 rounds and 2 different architectures; tail-weighted loss has still not been tested.",
             "hardness": "soft",
             "hardness_reason": "Loss-design proposal; soft and reversible.",
             "confidence": "high",
@@ -1736,7 +1736,7 @@ COMPACT_CONTEXT_JSON:
               "hypothesis_status_table",
               "recent_rounds_summary"
             ],
-            "next_test": "Use per-case or targeted sampling weights for UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00, FI-MS-V1_d00, and UA-KY-V11_d00; report median plus per-case deltas.",
+            "next_test": "Use per-case or targeted sampling weights for UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00, FI-MS-V1_d00, and UA-KY-V11_d00; report median plus per-case deltas.",
             "source": "codex"
           },
           {
@@ -1781,8 +1781,8 @@ COMPACT_CONTEXT_JSON:
             "source_section": "knowledge_update.recommended_hypotheses",
             "item": {
               "id": "H19-B",
-              "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the 5 stable hard cases (KO-SE-V4_d45, KO-SE-V6_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00) without hurting easy cases.",
-              "source": "V4-result-driven",
+              "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the 5 stable hard cases (KO-SE-V4_d45, KO-SE-hybrid_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00) without hurting easy cases.",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "Hard-case tail stable across 4 rounds and 4 different best-architectures",
                 "Architectures alone have not moved tail R2 above 0.55 for the 5 stable cases",
@@ -1796,7 +1796,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H19-C",
               "claim": "Depth scaling (nc20 d7) on anisotropic_boundary_hybrid or hypernet_coord_lowrank_residual_unet may pay where width scaling (nc24 d6) does not, because deeper receptive field can better handle the hard-case tail geometry.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "nc24 d6 refuted twice (anisotropic and hypernet)",
                 "planar_multigrid d7 nc24 worked relatively well at r016 (0.7350) suggesting depth is a viable axis at this dataset",
@@ -1810,7 +1810,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H19-D",
               "claim": "terrain_conditioned_local_attention_unet has a higher r2_mean (0.7289) than the anchor (0.7170) at first observation, suggesting it may generalize better on the median-case distribution; with augmentation and replication it could enter the frontier band.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 terrain_conditioned_local_attention_unet nc20 d6 none = 0.7331 median / 0.7289 mean",
                 "Anchor anisotropic_boundary_hybrid nc20 d6 in r019: 0.7345 median / 0.7170 mean (light_geometric), 0.7435 / 0.7264 (flip_rot)"
@@ -1823,7 +1823,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H19-A",
               "claim": "Hypernet nc20 d6 light_geometric is a real near-frontier family rather than a one-run fluctuation.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 hypernet nc20 d6 = 0.7544",
                 "r018 hypernet nc20 d6 = 0.7367"
@@ -1836,7 +1836,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H19-B",
               "claim": "Hard-case weighting can raise the current frontier more efficiently than another architecture novelty sweep.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 top models still have low UA-KY, KO-SE, and FI-MS per-case R2",
                 "H17-D/H18-B remain untested"
@@ -1849,7 +1849,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H19-C",
               "claim": "Anisotropic augmentation response is not monotonic; flip_rot may be more stable than light_geometric for the current implementation.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 anisotropic flip_rot = 0.7435",
                 "r019 anisotropic light_geometric = 0.7345",
@@ -1926,7 +1926,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H19-A",
             "claim": "The true validation R2_median frontier for the current recipe envelope on this dataset is ~0.745-0.755, with per-run noise of ~0.020-0.025. r017's 0.7573 and r019's 0.7544 are both upper-tail draws of the same underlying distribution.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r017 anisotropic anchor 0.7573 vs r019 identical-config repeat 0.7345 = -0.023",
               "r018 hypernet 0.7367 vs r019 identical-config 0.7544 = +0.018",
@@ -2012,7 +2012,7 @@ COMPACT_CONTEXT_JSON:
     {
       "round": 20,
       "review_action": "continue",
-      "summary": "claude: Round 20 produced 12 scored runs (1 OOM, recovered via retry). Best = r020 terrain_conditioned_local_attention_unet @ 0.7499 (4th all-time), but r017 anchor 0.7573 still unbeaten for the 3rd consecutive round. Top3-mean dipped slightly to 0.7402 (r019 = 0.7442). Depth scaling (nc20 d7) refuted on both anisotropic_boundary_hybrid (0.7222) and hypernet (0.7200). Hypernet recipe replicate dropped 0.035 (0.7544 -> 0.7198) confirming a large run-to-run noise band. Hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00, FI-MS-V1, CH-Bas-U1) unchanged. Frontier appears plateaued in the 0.745-0.757 band; further architecture exploration alone unlikely to break it without (a) seed replication discipline or (b) addressing the hard-case data-distribution issue. | codex: Round 20 did not beat the all-time V4/Auto V6 best, but produced a credible new near-frontier family: terrain_conditioned_local_attention_unet reached 0.7499 median R2 and the best mean R2 in the provided top band. The frontier remains stochastic and effectively stagnant around 0.75, with the r017 anisotropic_boundary_hybrid anchor still strongest at 0.7573.",
+      "summary": "claude: Round 20 produced 12 scored runs (1 OOM, recovered via retry). Best = r020 terrain_conditioned_local_attention_unet @ 0.7499 (4th all-time), but r017 anchor 0.7573 still unbeaten for the 3rd consecutive round. Top3-mean dipped slightly to 0.7402 (r019 = 0.7442). Depth scaling (nc20 d7) refuted on both anisotropic_boundary_hybrid (0.7222) and hypernet (0.7200). Hypernet recipe replicate dropped 0.035 (0.7544 -> 0.7198) confirming a large run-to-run noise band. Hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00, FI-MS-V1, CH-Bas-U1) unchanged. Frontier appears plateaued in the 0.745-0.757 band; further architecture exploration alone unlikely to break it without (a) seed replication discipline or (b) addressing the hard-case data-distribution issue. | codex: Round 20 did not beat the all-time Sequential/Hybrid best, but produced a credible new near-frontier family: terrain_conditioned_local_attention_unet reached 0.7499 median R2 and the best mean R2 in the provided top band. The frontier remains stochastic and effectively stagnant around 0.75, with the r017 anisotropic_boundary_hybrid anchor still strongest at 0.7573.",
       "top_performers": [
         {
           "exp_id": "r020_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -2042,7 +2042,7 @@ COMPACT_CONTEXT_JSON:
       "recommendations": [
         {
           "id": "R20-1",
-          "recommendation": "Run the still-untested tail-weighted masked_l1_gradient at the anchor recipe (anisotropic_boundary_hybrid nc20 d6 lr0.0004 EMA height_sdf_normal light_geometric) to test whether the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00) can be lifted without harming easy cases.",
+          "recommendation": "Run the still-untested tail-weighted masked_l1_gradient at the anchor recipe (anisotropic_boundary_hybrid nc20 d6 lr0.0004 EMA height_sdf_normal light_geometric) to test whether the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00) can be lifted without harming easy cases.",
           "hardness": "soft",
           "hardness_reason": "Open hypothesis (H19-B) carried over 2 rounds without test; tail is the dominant remaining error mass.",
           "confidence": "medium",
@@ -2184,7 +2184,7 @@ COMPACT_CONTEXT_JSON:
             "hypothesis_status_table",
             "recent_rounds_summary"
           ],
-          "next_test": "Run masked_l1_gradient_tail_weighted or hard-case oversampling on terrain nc20 d6 and anisotropic_boundary_hybrid nc20 d6; monitor KO-SE-V4_d45, KO-SE-V6_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00.",
+          "next_test": "Run masked_l1_gradient_tail_weighted or hard-case oversampling on terrain nc20 d6 and anisotropic_boundary_hybrid nc20 d6; monitor KO-SE-V4_d45, KO-SE-hybrid_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00.",
           "source": "codex"
         }
       ],
@@ -2295,7 +2295,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "P20-2",
-            "pattern": "anisotropic_boundary_hybrid replicates produce a tight 0.7345-0.7465-0.7573 distribution at the anchor recipe — three seeds within 0.023 of each other. The family is reproducibly near-frontier.",
+            "pattern": "anisotropic_boundary_hybrid replicates produce a tight 0.7345-0.7465-0.7573 distribution at the anchor recipe â€” three seeds within 0.023 of each other. The family is reproducibly near-frontier.",
             "evidence_run_ids": [
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r019_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -2356,7 +2356,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N20-2",
-            "pattern": "Hypernet recipe variance is high: r018=0.7367, r019=0.7544, r020=0.7198 — 0.035 swings across three seeds.",
+            "pattern": "Hypernet recipe variance is high: r018=0.7367, r019=0.7544, r020=0.7198 â€” 0.035 swings across three seeds.",
             "evidence_run_ids": [
               "r018_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r019_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -2408,8 +2408,8 @@ COMPACT_CONTEXT_JSON:
         "recommended_hypotheses": [
           {
             "id": "H20-A",
-            "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00, FI-MS-V1, CH-Bas-U1) without harming easy cases.",
-            "source": "V4-result-driven",
+            "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00, FI-MS-V1, CH-Bas-U1) without harming easy cases.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Hard-case tail unchanged across r017/r019/r020 anchor replicates and across r019/r020 family rotation",
               "No weighted-loss run has been scheduled in 2 rounds since H19-B"
@@ -2419,7 +2419,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H20-C",
             "claim": "The r017 anchor of 0.7573 is the upper-edge of a ~0.023 noise band rather than a stable frontier; the true expected mean for the dominant recipe is closer to 0.745.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r017=0.7573, r019=0.7345, r020=0.7465: mean=0.7461, std~0.011 across 3 seeds"
             ],
@@ -2428,7 +2428,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H20-D",
             "claim": "Augmentation effect (light_geometric vs none vs flip_rot) on terrain_conditioned_local_attention_unet is mechanism-dependent and may not transfer to anisotropic family.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "terrain_conditioned: none=0.7331 -> light_geometric=0.7499 (+0.017)",
               "anisotropic_boundary_hybrid: light_geometric=0.7345-0.7573 vs flip_rot=0.7435 vs none=0.7431 (no consistent ranking)"
@@ -2438,7 +2438,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H20-A",
             "claim": "Terrain_conditioned_local_attention_unet is a stable near-frontier family whose r020 score is not a one-run fluctuation.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 terrain none = 0.7331",
               "r020 terrain light_geometric = 0.7499"
@@ -2448,7 +2448,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H20-B",
             "claim": "Tail-weighted loss or hard-case sampling can lift the frontier more efficiently than more architecture novelty.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r020 terrain still has UA-KY-V14_d90 = 0.1604 and KO-SE-V4_d45 = 0.3351",
               "r020 anisotropic still has UA-KY-V14_d90 = 0.1338 and KO-SE-V4_d45 = 0.2354"
@@ -2458,7 +2458,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H20-C",
             "claim": "Hypernet's r019 near-frontier score is high-variance rather than stable.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 hypernet nc20 d6 = 0.7544",
               "r020 hypernet nc20 d6 = 0.7198"
@@ -2659,7 +2659,7 @@ COMPACT_CONTEXT_JSON:
           {
             "note": "Within current search budget, prefer 1-2 seed-replication slots per round (anchor and one near-frontier challenger) over net-new architecture exploration. The frontier band is converging.",
             "hardness": "soft",
-            "reason": "Audit finding A2/A3 — top3-mean stagnant and within-family variance dominates apparent gains."
+            "reason": "Audit finding A2/A3 â€” top3-mean stagnant and within-family variance dominates apparent gains."
           },
           {
             "note": "Reserve at least one slot per round for a tail-weighted loss test at the anchor recipe until H19-B/H20-A is resolved.",
@@ -2773,7 +2773,7 @@ COMPACT_CONTEXT_JSON:
         "soft_evidence": [
           {
             "id": "R20-1",
-            "recommendation": "Run the still-untested tail-weighted masked_l1_gradient at the anchor recipe (anisotropic_boundary_hybrid nc20 d6 lr0.0004 EMA height_sdf_normal light_geometric) to test whether the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00) can be lifted without harming easy cases.",
+            "recommendation": "Run the still-untested tail-weighted masked_l1_gradient at the anchor recipe (anisotropic_boundary_hybrid nc20 d6 lr0.0004 EMA height_sdf_normal light_geometric) to test whether the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00) can be lifted without harming easy cases.",
             "hardness": "soft",
             "hardness_reason": "Open hypothesis (H19-B) carried over 2 rounds without test; tail is the dominant remaining error mass.",
             "confidence": "medium",
@@ -2898,7 +2898,7 @@ COMPACT_CONTEXT_JSON:
               "hypothesis_status_table",
               "recent_rounds_summary"
             ],
-            "next_test": "Run masked_l1_gradient_tail_weighted or hard-case oversampling on terrain nc20 d6 and anisotropic_boundary_hybrid nc20 d6; monitor KO-SE-V4_d45, KO-SE-V6_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00.",
+            "next_test": "Run masked_l1_gradient_tail_weighted or hard-case oversampling on terrain nc20 d6 and anisotropic_boundary_hybrid nc20 d6; monitor KO-SE-V4_d45, KO-SE-hybrid_d00, UA-KY-V14_d90, FI-MS-V1_d00, CH-Bas-U1_d00.",
             "source": "codex"
           },
           {
@@ -2925,8 +2925,8 @@ COMPACT_CONTEXT_JSON:
             "source_section": "knowledge_update.recommended_hypotheses",
             "item": {
               "id": "H20-A",
-              "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00, FI-MS-V1, CH-Bas-U1) without harming easy cases.",
-              "source": "V4-result-driven",
+              "claim": "Tail-weighted masked_l1_gradient at the anchor recipe lifts val_r2_median by +0.01 to +0.03 by improving the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00, FI-MS-V1, CH-Bas-U1) without harming easy cases.",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "Hard-case tail unchanged across r017/r019/r020 anchor replicates and across r019/r020 family rotation",
                 "No weighted-loss run has been scheduled in 2 rounds since H19-B"
@@ -2939,7 +2939,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H20-C",
               "claim": "The r017 anchor of 0.7573 is the upper-edge of a ~0.023 noise band rather than a stable frontier; the true expected mean for the dominant recipe is closer to 0.745.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r017=0.7573, r019=0.7345, r020=0.7465: mean=0.7461, std~0.011 across 3 seeds"
               ],
@@ -2951,7 +2951,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H20-D",
               "claim": "Augmentation effect (light_geometric vs none vs flip_rot) on terrain_conditioned_local_attention_unet is mechanism-dependent and may not transfer to anisotropic family.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "terrain_conditioned: none=0.7331 -> light_geometric=0.7499 (+0.017)",
                 "anisotropic_boundary_hybrid: light_geometric=0.7345-0.7573 vs flip_rot=0.7435 vs none=0.7431 (no consistent ranking)"
@@ -2964,7 +2964,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H20-A",
               "claim": "Terrain_conditioned_local_attention_unet is a stable near-frontier family whose r020 score is not a one-run fluctuation.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 terrain none = 0.7331",
                 "r020 terrain light_geometric = 0.7499"
@@ -2977,7 +2977,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H20-B",
               "claim": "Tail-weighted loss or hard-case sampling can lift the frontier more efficiently than more architecture novelty.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r020 terrain still has UA-KY-V14_d90 = 0.1604 and KO-SE-V4_d45 = 0.3351",
                 "r020 anisotropic still has UA-KY-V14_d90 = 0.1338 and KO-SE-V4_d45 = 0.2354"
@@ -2990,7 +2990,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H20-C",
               "claim": "Hypernet's r019 near-frontier score is high-variance rather than stable.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 hypernet nc20 d6 = 0.7544",
                 "r020 hypernet nc20 d6 = 0.7198"
@@ -3084,7 +3084,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H20-B",
             "claim": "terrain_conditioned_local_attention_unet has a higher reliable expectation than the anisotropic anchor on r2_mean and is competitive on r2_median; with seed replication it could establish a new frontier or at least diversify the top band.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 (none aug, seed=1) = 0.7331",
               "r020 (light_geometric, seed=1) = 0.7499 with r2_mean = 0.7391"
@@ -3121,7 +3121,7 @@ COMPACT_CONTEXT_JSON:
     {
       "round": 21,
       "review_action": "continue",
-      "summary": "claude: Round 21 produced 12 completed runs and 2 OOM failures. Best r021 score is 0.7412 (hypernet_coord_lowrank_residual_unet nc20 d6 light_geometric), well below the r017 all-time best of 0.7573. Four consecutive rounds (18-21) have failed to break the r017 frontier despite covering anisotropic, hypernet, terrain, and learned-warp families at the dominant recipe. Anchor recipe is now replicated four times at 0.7345/0.7465/0.7573/0.7334 (mean ~0.7429), strongly supporting prior H20-C that 0.7573 was an upper-tail draw rather than a stable frontier. light_geometric_gradient_emphasis on anisotropic delivered 0.7347 (essentially tied with baseline 0.7334), and masked_huber on the same anchor regressed to 0.7273, providing weak evidence that the tail problem is not solved by these augmentation/loss tweaks. Hard-case tail (UA-KY-V14_d90 ~0.13-0.16, KO-SE-V4_d45 ~0.24-0.35, FI-MS-V1_d00 ~0.41-0.48, KO-SE-V6_d00 ~0.30-0.55) continues to dominate the limiter across top runs. Two OOM failures (terrain_conditioned flip_rot and anisotropic_boundary_hybrid_wtconv) cleared on H100 retry, indicating an L40S 48GB headroom problem on these variants, not architecture invalidity. Variant architectures (geomtok hypernet, wtconv anisotropic, unet_v3_lrbasis, tensorized_fourier, multiwavelet) all underperformed their parent baselines. | codex: Round 21 did not improve the all-time Auto V6 best. Best current result was hypernet_coord_lowrank_residual_unet at 0.7412, below the r017 anchor 0.7573 and below r020 terrain 0.7499. Evidence favors continued search, but with more replication, hard-case interventions, and fewer unvalidated architecture variants.",
+      "summary": "claude: Round 21 produced 12 completed runs and 2 OOM failures. Best r021 score is 0.7412 (hypernet_coord_lowrank_residual_unet nc20 d6 light_geometric), well below the r017 all-time best of 0.7573. Four consecutive rounds (18-21) have failed to break the r017 frontier despite covering anisotropic, hypernet, terrain, and learned-warp families at the dominant recipe. Anchor recipe is now replicated four times at 0.7345/0.7465/0.7573/0.7334 (mean ~0.7429), strongly supporting prior H20-C that 0.7573 was an upper-tail draw rather than a stable frontier. light_geometric_gradient_emphasis on anisotropic delivered 0.7347 (essentially tied with baseline 0.7334), and masked_huber on the same anchor regressed to 0.7273, providing weak evidence that the tail problem is not solved by these augmentation/loss tweaks. Hard-case tail (UA-KY-V14_d90 ~0.13-0.16, KO-SE-V4_d45 ~0.24-0.35, FI-MS-V1_d00 ~0.41-0.48, KO-SE-hybrid_d00 ~0.30-0.55) continues to dominate the limiter across top runs. Two OOM failures (terrain_conditioned flip_rot and anisotropic_boundary_hybrid_wtconv) cleared on H100 retry, indicating an L40S 48GB headroom problem on these variants, not architecture invalidity. Variant architectures (geomtok hypernet, wtconv anisotropic, unet_v3_lrbasis, tensorized_fourier, multiwavelet) all underperformed their parent baselines. | codex: Round 21 did not improve the all-time Hybrid best. Best current result was hypernet_coord_lowrank_residual_unet at 0.7412, below the r017 anchor 0.7573 and below r020 terrain 0.7499. Evidence favors continued search, but with more replication, hard-case interventions, and fewer unvalidated architecture variants.",
       "top_performers": [
         {
           "exp_id": "r021_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -3152,7 +3152,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "anisotropic_boundary_hybrid",
           "val_r2_median": 0.7346936551017516,
           "round": 21,
-          "reason": "Augmentation variant ties baseline anchor (0.7334); +0.0012 is within seed noise — does not establish gradient_emphasis as superior.",
+          "reason": "Augmentation variant ties baseline anchor (0.7334); +0.0012 is within seed noise â€” does not establish gradient_emphasis as superior.",
           "source": "claude"
         }
       ],
@@ -3245,7 +3245,7 @@ COMPACT_CONTEXT_JSON:
           "id": "R21-5",
           "recommendation": {
             "action": "Re-baseline the search target from 0.7573 to 0.745 (mean of the 4 anisotropic anchor replicates is 0.7429) so termination and stagnation thresholds reflect the true expected mean rather than an upper-tail draw.",
-            "rationale": "Four anchor replicates: 0.7573, 0.7431, 0.7465, 0.7334 (r017-r018 was wider augmentation set but recipe-equivalent). r017's 0.7573 is now well-characterized as +2σ above family mean. Continuing to chase that exact number distorts hypothesis evaluation."
+            "rationale": "Four anchor replicates: 0.7573, 0.7431, 0.7465, 0.7334 (r017-r018 was wider augmentation set but recipe-equivalent). r017's 0.7573 is now well-characterized as +2Ïƒ above family mean. Continuing to chase that exact number distorts hypothesis evaluation."
           },
           "hardness": "soft",
           "hardness_reason": "Search-policy interpretation; does not modify locked contracts.",
@@ -3321,7 +3321,7 @@ COMPACT_CONTEXT_JSON:
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "The all-time best (r017 anisotropic_boundary_hybrid 0.7573) survives because: (a) 4 anchor replicates establish the family mean at ~0.7429 with std ~0.01, and a single +2σ draw at 0.7573 has not been re-rolled; (b) no architectural variant tested in r018-r021 has lifted the family-mean across hypernet, terrain, learned_warp, boundary-spectral, multiwavelet, tensorized_fourier, geomtok, wtconv, or lrbasis lines; (c) every credible alternative family lands within 0.745-0.755 in its best seed, i.e., they sample from the same plateau; (d) the persistent hard-case tail (UA-KY, KO-SE, FI-MS, CH-Bas) is unaddressed by the augmentation and loss interventions attempted, capping median R2 from the bottom.",
+          "summary": "The all-time best (r017 anisotropic_boundary_hybrid 0.7573) survives because: (a) 4 anchor replicates establish the family mean at ~0.7429 with std ~0.01, and a single +2Ïƒ draw at 0.7573 has not been re-rolled; (b) no architectural variant tested in r018-r021 has lifted the family-mean across hypernet, terrain, learned_warp, boundary-spectral, multiwavelet, tensorized_fourier, geomtok, wtconv, or lrbasis lines; (c) every credible alternative family lands within 0.745-0.755 in its best seed, i.e., they sample from the same plateau; (d) the persistent hard-case tail (UA-KY, KO-SE, FI-MS, CH-Bas) is unaddressed by the augmentation and loss interventions attempted, capping median R2 from the bottom.",
           "cited_failed_attempts": [
             "r021_full_anisotropic_boundary_hybrid_wtconv_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2",
             "r021_full_hypernet_coord_lowrank_residual_unet_geomtok_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -3358,7 +3358,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r021_full_hypernet_coord_lowrank_residual_unet_geomtok_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
             ],
-            "planner_implication": "0.7075 vs 0.7412 parent (same round, same recipe) is a 0.034 regression. geomtok mechanism not promising — deprioritize follow-up geometry-token augmentations on this family."
+            "planner_implication": "0.7075 vs 0.7412 parent (same round, same recipe) is a 0.034 regression. geomtok mechanism not promising â€” deprioritize follow-up geometry-token augmentations on this family."
           },
           {
             "id": "F21-4",
@@ -3488,7 +3488,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N21-4",
-            "pattern": "Hard-case R2 tail unchanged across r021 top-5: UA-KY-V14_d90 0.13-0.23, KO-SE-V4_d45 0.17-0.35, FI-MS-V1_d00 0.41-0.48, KO-SE-V6_d00 0.30-0.55.",
+            "pattern": "Hard-case R2 tail unchanged across r021 top-5: UA-KY-V14_d90 0.13-0.23, KO-SE-V4_d45 0.17-0.35, FI-MS-V1_d00 0.41-0.48, KO-SE-hybrid_d00 0.30-0.55.",
             "evidence_run_ids": [
               "r021_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r021_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_light_geometric_flip_rot_lr0.0004_masked_l1_gradient_retry2",
@@ -3496,7 +3496,7 @@ COMPACT_CONTEXT_JSON:
               "r021_full_learned_height_warp_fourier_adapter_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r021_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_gradient_emphasis_lr0.0004_masked_l1_gradient"
             ],
-            "planner_implication": "Persistent across 5 rounds and many architectures — strong signal that data-side (sampling/loss-weighting) is the dominant unexamined lever."
+            "planner_implication": "Persistent across 5 rounds and many architectures â€” strong signal that data-side (sampling/loss-weighting) is the dominant unexamined lever."
           },
           {
             "id": "N21-1",
@@ -3523,7 +3523,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H21-A",
             "claim": "Tail-weighted masked_l1_gradient (per-sample weight inversely proportional to running per-case R2) will lift val_r2_median by +0.010 to +0.025 by improving the persistent hard-case tail without significantly hurting easy cases.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r017-r021: 5 rounds of top-5 runs all showing UA-KY-V14_d90 <0.25, KO-SE-V4_d45 <0.36, FI-MS-V1_d00 <0.50",
               "r020 round_review recommended H20-A/H20-B (tail-weighted loss); not executed in r020 or r021",
@@ -3534,7 +3534,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H21-B",
             "claim": "An EMA-merged ensemble of the three frontier-family best seeds (anisotropic 0.7465, hypernet 0.7544, terrain 0.7499 / their next replicate analogs) will exceed the anchor mean (~0.7429) and the single-best (0.7573 upper-tail) on val_r2_median.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Three uncorrelated families saturated at ~0.745 plateau",
               "all_time_top_k spans 4+ families with similar configs"
@@ -3544,7 +3544,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H21-C",
             "claim": "learned_height_warp_fourier_adapter_unet's 0.7347 is a stable family signal (not a one-seed fluke) and will replicate within +/-0.015 on seed=2.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r021_full_learned_height_warp_fourier_adapter_unet single seed at 0.7347",
               "No prior cross-round evidence for this family"
@@ -3554,7 +3554,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H21-D",
             "claim": "Hard-case oversampling (over-weighting batches containing UA-KY, KO-SE, FI-MS, CH-Bas samples) is a more efficient frontier lever than further architecture exploration at the current plateau.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "5 rounds of architectural variants have not lifted the plateau",
               "Tail cases identical magnitude across architectures"
@@ -3564,7 +3564,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H21-A",
             "claim": "Hard-case weighted masked_l1_gradient improves frontier-family median by lifting persistent UA/KO/FI tail cases.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "H20-A continued in hypothesis_status_table",
               "r021 top runs still weak on UA-KY-V14_d90 and KO-SE-V4_d45"
@@ -3574,7 +3574,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H21-B",
             "claim": "Terrain is near-frontier but augmentation-sensitive rather than strictly improved by more geometric augmentation.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r020 terrain light_geometric = 0.7499",
               "r021 terrain light_geometric_flip_rot = 0.7389"
@@ -3610,7 +3610,7 @@ COMPACT_CONTEXT_JSON:
               "r020_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient = 0.7465",
               "r021_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient = 0.7334"
             ],
-            "reason": "4-seed mean 0.7429, range 0.024. r017's 0.7573 is now best characterized as +~1.4σ from family mean. True frontier expectation closer to 0.745."
+            "reason": "4-seed mean 0.7429, range 0.024. r017's 0.7573 is now best characterized as +~1.4Ïƒ from family mean. True frontier expectation closer to 0.745."
           },
           {
             "hypothesis_id": "H20-D_augmentation_mechanism_dependent",
@@ -3786,7 +3786,7 @@ COMPACT_CONTEXT_JSON:
           {
             "note": "Route models with model_params>=5.0M or attention-heavy modules to H100 queue.",
             "hardness": "soft",
-            "reason": "Operational efficiency only — does not modify a locked-contract; the retry mechanism currently recovers these runs."
+            "reason": "Operational efficiency only â€” does not modify a locked-contract; the retry mechanism currently recovers these runs."
           },
           {
             "note": "Continue search, but allocate more next-round budget to replication, paired ablations, and hard-case interventions than broad architecture novelty.",
@@ -3957,7 +3957,7 @@ COMPACT_CONTEXT_JSON:
             "id": "R21-5",
             "recommendation": {
               "action": "Re-baseline the search target from 0.7573 to 0.745 (mean of the 4 anisotropic anchor replicates is 0.7429) so termination and stagnation thresholds reflect the true expected mean rather than an upper-tail draw.",
-              "rationale": "Four anchor replicates: 0.7573, 0.7431, 0.7465, 0.7334 (r017-r018 was wider augmentation set but recipe-equivalent). r017's 0.7573 is now well-characterized as +2σ above family mean. Continuing to chase that exact number distorts hypothesis evaluation."
+              "rationale": "Four anchor replicates: 0.7573, 0.7431, 0.7465, 0.7334 (r017-r018 was wider augmentation set but recipe-equivalent). r017's 0.7573 is now well-characterized as +2Ïƒ above family mean. Continuing to chase that exact number distorts hypothesis evaluation."
             },
             "hardness": "soft",
             "hardness_reason": "Search-policy interpretation; does not modify locked contracts.",
@@ -4054,7 +4054,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H21-A",
               "claim": "Tail-weighted masked_l1_gradient (per-sample weight inversely proportional to running per-case R2) will lift val_r2_median by +0.010 to +0.025 by improving the persistent hard-case tail without significantly hurting easy cases.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r017-r021: 5 rounds of top-5 runs all showing UA-KY-V14_d90 <0.25, KO-SE-V4_d45 <0.36, FI-MS-V1_d00 <0.50",
                 "r020 round_review recommended H20-A/H20-B (tail-weighted loss); not executed in r020 or r021",
@@ -4068,7 +4068,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H21-B",
               "claim": "An EMA-merged ensemble of the three frontier-family best seeds (anisotropic 0.7465, hypernet 0.7544, terrain 0.7499 / their next replicate analogs) will exceed the anchor mean (~0.7429) and the single-best (0.7573 upper-tail) on val_r2_median.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "Three uncorrelated families saturated at ~0.745 plateau",
                 "all_time_top_k spans 4+ families with similar configs"
@@ -4081,7 +4081,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H21-C",
               "claim": "learned_height_warp_fourier_adapter_unet's 0.7347 is a stable family signal (not a one-seed fluke) and will replicate within +/-0.015 on seed=2.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r021_full_learned_height_warp_fourier_adapter_unet single seed at 0.7347",
                 "No prior cross-round evidence for this family"
@@ -4094,7 +4094,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H21-D",
               "claim": "Hard-case oversampling (over-weighting batches containing UA-KY, KO-SE, FI-MS, CH-Bas samples) is a more efficient frontier lever than further architecture exploration at the current plateau.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "5 rounds of architectural variants have not lifted the plateau",
                 "Tail cases identical magnitude across architectures"
@@ -4107,7 +4107,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H21-A",
               "claim": "Hard-case weighted masked_l1_gradient improves frontier-family median by lifting persistent UA/KO/FI tail cases.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "H20-A continued in hypothesis_status_table",
                 "r021 top runs still weak on UA-KY-V14_d90 and KO-SE-V4_d45"
@@ -4120,7 +4120,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H21-B",
               "claim": "Terrain is near-frontier but augmentation-sensitive rather than strictly improved by more geometric augmentation.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r020 terrain light_geometric = 0.7499",
                 "r021 terrain light_geometric_flip_rot = 0.7389"
@@ -4210,7 +4210,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "A4",
-            "finding": "Terrain_conditioned_local_attention_unet over 3 different augmentations (none 0.7331 r019, light_geometric 0.7499 r020, light_geometric_flip_rot 0.7389 r021) and highest r2_mean cluster (0.7289, 0.7391, 0.7307). Strong support for H20-A as a stable near-frontier family — though only 3 seeds across 3 augmentations confounds variance estimate.",
+            "finding": "Terrain_conditioned_local_attention_unet over 3 different augmentations (none 0.7331 r019, light_geometric 0.7499 r020, light_geometric_flip_rot 0.7389 r021) and highest r2_mean cluster (0.7289, 0.7391, 0.7307). Strong support for H20-A as a stable near-frontier family â€” though only 3 seeds across 3 augmentations confounds variance estimate.",
             "table": "family_summary_recent",
             "evidence_run_ids": [
               "r019_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient_retry2",
@@ -4260,7 +4260,7 @@ COMPACT_CONTEXT_JSON:
     {
       "round": 22,
       "review_action": "continue",
-      "summary": "claude: Round 22 produced no top-12 all-time entries; best 0.7316 (hypernet_coord_lowrank_residual_unet nc20 d6 anchor recipe) sits 0.026 below the r017 anchor (0.7573) and is the lowest round-best since r018. Top-3 mean 0.7291 continues a 3-round decline from r019's 0.7442. The single explicit hard-case intervention this round (hard_case_focal_residual_unet, 0.6745) underperformed baseline rather than improving the persistent UA-KY/KO-SE/FI-MS tail — the H21-A tail-weighted-loss hypothesis remains effectively untested as a loss/training change. Three failures (terrain_cla, multiscale_fpn, attentive_ssm) are all RESOURCE_EVICTED+OOM on L40S restart after successful H100 training, an infrastructure-resume issue rather than architecture or codegen. Plateau at the anchor recipe is now strongly multi-family confirmed; width=nc24, lr=0.0003 anneal, and masked_huber all regress at the anchor. | codex: Round 22 did not improve the Auto V6 best. Current-round best was hypernet_coord_lowrank_residual_unet at 0.7316 R2_median, well below the all-time r017 anisotropic_boundary_hybrid anchor at 0.7573 and below recent round bests from r019-r021. Evidence supports a plateau/decline signal, persistent hard-case tail, and low value for several width/loss/architecture variants. Recommendations are soft except resource infeasibility notes for OOM-at-batch-8 runs.",
+      "summary": "claude: Round 22 produced no top-12 all-time entries; best 0.7316 (hypernet_coord_lowrank_residual_unet nc20 d6 anchor recipe) sits 0.026 below the r017 anchor (0.7573) and is the lowest round-best since r018. Top-3 mean 0.7291 continues a 3-round decline from r019's 0.7442. The single explicit hard-case intervention this round (hard_case_focal_residual_unet, 0.6745) underperformed baseline rather than improving the persistent UA-KY/KO-SE/FI-MS tail â€” the H21-A tail-weighted-loss hypothesis remains effectively untested as a loss/training change. Three failures (terrain_cla, multiscale_fpn, attentive_ssm) are all RESOURCE_EVICTED+OOM on L40S restart after successful H100 training, an infrastructure-resume issue rather than architecture or codegen. Plateau at the anchor recipe is now strongly multi-family confirmed; width=nc24, lr=0.0003 anneal, and masked_huber all regress at the anchor. | codex: Round 22 did not improve the Hybrid best. Current-round best was hypernet_coord_lowrank_residual_unet at 0.7316 R2_median, well below the all-time r017 anisotropic_boundary_hybrid anchor at 0.7573 and below recent round bests from r019-r021. Evidence supports a plateau/decline signal, persistent hard-case tail, and low value for several width/loss/architecture variants. Recommendations are soft except resource infeasibility notes for OOM-at-batch-8 runs.",
       "top_performers": [
         {
           "exp_id": "r022_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -4290,7 +4290,7 @@ COMPACT_CONTEXT_JSON:
       "recommendations": [
         {
           "id": "R22-1",
-          "recommendation": "Test a true loss-level tail-weighted masked_l1_gradient (per-sample weight from running per-case R2 of the hold-out case ID) on the anchor recipe — H21-A remains untested as a loss change; the architectural focal_residual variant this round is not a substitute. Pair with same-seed baseline to attribute effect.",
+          "recommendation": "Test a true loss-level tail-weighted masked_l1_gradient (per-sample weight from running per-case R2 of the hold-out case ID) on the anchor recipe â€” H21-A remains untested as a loss change; the architectural focal_residual variant this round is not a substitute. Pair with same-seed baseline to attribute effect.",
           "hardness": "soft",
           "hardness_reason": "Scientific recommendation; not a contract violation.",
           "confidence": "medium",
@@ -4302,7 +4302,7 @@ COMPACT_CONTEXT_JSON:
             "hypothesis_status_table",
             "full_results"
           ],
-          "next_test": "anisotropic_boundary_hybrid nc20 d6 light_geometric lr0.0004 EMA seed=1 with new tail_weighted_masked_l1_gradient loss; report per-case R2 delta on UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00, FI-MS-V1_d00 plus no-regression check on the top-15 easy cases.",
+          "next_test": "anisotropic_boundary_hybrid nc20 d6 light_geometric lr0.0004 EMA seed=1 with new tail_weighted_masked_l1_gradient loss; report per-case R2 delta on UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00, FI-MS-V1_d00 plus no-regression check on the top-15 easy cases.",
           "source": "claude"
         },
         {
@@ -4381,7 +4381,7 @@ COMPACT_CONTEXT_JSON:
           "id": "R22-6",
           "recommendation": "Down-weight masked_huber for any anisotropic/boundary-family run at the anchor recipe; now n=3 regressions across rounds (r020 boundary_assimilated_spectral_residual_unet -0.050, r021 anisotropic_boundary_hybrid -0.006, r022 anisotropic_boundary_hybrid -0.015 vs envelope mean).",
           "hardness": "soft",
-          "hardness_reason": "Loss-policy advisory; do not hard-ban — different family may still benefit.",
+          "hardness_reason": "Loss-policy advisory; do not hard-ban â€” different family may still benefit.",
           "confidence": "high",
           "evidence_run_ids": [
             "r022_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber",
@@ -4411,7 +4411,7 @@ COMPACT_CONTEXT_JSON:
             "hypothesis_status_table",
             "recent_rounds_summary"
           ],
-          "next_test": "Same-seed anisotropic_boundary_hybrid or terrain_conditioned_local_attention_unet anchor baseline versus explicit tail-weighted masked_l1_gradient or hard-case oversampling; report per-case deltas for UA-KY-V14_d90, KO-SE-V4_d45, FI-MS-V1_d00, KO-SE-V6_d00, CH-Bas-U1_d00.",
+          "next_test": "Same-seed anisotropic_boundary_hybrid or terrain_conditioned_local_attention_unet anchor baseline versus explicit tail-weighted masked_l1_gradient or hard-case oversampling; report per-case deltas for UA-KY-V14_d90, KO-SE-V4_d45, FI-MS-V1_d00, KO-SE-hybrid_d00, CH-Bas-U1_d00.",
           "source": "codex"
         },
         {
@@ -4438,7 +4438,7 @@ COMPACT_CONTEXT_JSON:
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "The current best (r017 anchor 0.7573, anisotropic_boundary_hybrid nc20 d6 lr0.0004 light_geometric masked_l1_gradient EMA, batch=16, height_sdf_normal) remains strong because 5 rounds of focused replication and exploit attempts could not beat it. Family-wide same-recipe mean is 0.7406 (+/-0.012), so 0.7573 is a +1.4σ upper-tail draw rather than a recipe lift. R022 attempts to extract more lift via width (nc24), lr-anneal, masked_huber, focal hard-case targeting, and 4 new explorer architectures all stayed at or below the anchor envelope.",
+          "summary": "The current best (r017 anchor 0.7573, anisotropic_boundary_hybrid nc20 d6 lr0.0004 light_geometric masked_l1_gradient EMA, batch=16, height_sdf_normal) remains strong because 5 rounds of focused replication and exploit attempts could not beat it. Family-wide same-recipe mean is 0.7406 (+/-0.012), so 0.7573 is a +1.4Ïƒ upper-tail draw rather than a recipe lift. R022 attempts to extract more lift via width (nc24), lr-anneal, masked_huber, focal hard-case targeting, and 4 new explorer architectures all stayed at or below the anchor envelope.",
           "cited_failed_attempts": [
             "r022_full_anisotropic_boundary_hybrid_nc24_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient = 0.7162 (width)",
             "r022_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0003_masked_l1_gradient = 0.7137 (lr-anneal)",
@@ -4551,7 +4551,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "P22-2",
-            "pattern": "warped_anisotropic_boundary_hybrid_unet 0.7272 first-seed lands in the same band as the parent family — variants of anisotropic remain a productive design space at single-seed level.",
+            "pattern": "warped_anisotropic_boundary_hybrid_unet 0.7272 first-seed lands in the same band as the parent family â€” variants of anisotropic remain a productive design space at single-seed level.",
             "evidence_run_ids": [
               "r022_full_warped_anisotropic_boundary_hybrid_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
             ],
@@ -4578,7 +4578,7 @@ COMPACT_CONTEXT_JSON:
         "negative_patterns": [
           {
             "id": "N22-1",
-            "pattern": "Architectural hard-case focal weighting (hard_case_focal_residual_unet) regresses both median (0.6745) and the hard-case tail vs the anchor family — refutes the architecture-side route for H21-D.",
+            "pattern": "Architectural hard-case focal weighting (hard_case_focal_residual_unet) regresses both median (0.6745) and the hard-case tail vs the anchor family â€” refutes the architecture-side route for H21-D.",
             "evidence_run_ids": [
               "r022_full_hard_case_focal_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
             ],
@@ -4651,9 +4651,9 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H22-A",
             "claim": "A loss-level tail-weighted masked_l1_gradient (per-sample weight inversely proportional to running per-case R2) on the anchor recipe will lift val_r2_median by +0.005 to +0.025 by reducing the persistent UA-KY/KO-SE/FI-MS hard-case tail without significantly hurting easy cases.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
-              "r022_full_hard_case_focal_residual_unet shows architectural focal does NOT work — leaves loss-level intervention as the highest-value untested lever.",
+              "r022_full_hard_case_focal_residual_unet shows architectural focal does NOT work â€” leaves loss-level intervention as the highest-value untested lever.",
               "Hard-case tail unchanged across 6+ rounds of architectural variation."
             ],
             "next_test": "anisotropic_boundary_hybrid nc20 d6 light_geometric lr0.0004 EMA seed=1 with new tail_weighted_masked_l1_gradient loss; pair with same-seed baseline."
@@ -4661,7 +4661,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H22-B",
             "claim": "A post-hoc averaged-prediction ensemble of best anisotropic_boundary_hybrid (r017 0.7573), hypernet_coord_lowrank_residual_unet (r019 0.7544), and terrain_conditioned_local_attention_unet (r020 0.7499) will exceed 0.76 on val_r2_median.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Three architecturally distinct families all reach 0.7499-0.7573; their per-case error patterns differ on tail cases (e.g., terrain has highest r2_mean 0.7391)."
             ],
@@ -4670,7 +4670,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H22-A",
             "claim": "Explicit hard-case loss weighting or oversampling will outperform architecture-only hard-case focal variants on median R2.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r021 hard-case tail persisted across top runs",
               "r022_full_hard_case_focal_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient = 0.6745"
@@ -4680,7 +4680,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H22-B",
             "claim": "A three-family prediction ensemble will beat the expected single-seed frontier mean more reliably than further single architecture tweaks.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r017 anisotropic 0.7573",
               "r019 hypernet 0.7544",
@@ -4692,7 +4692,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H22-C",
             "claim": "Terrain remains near-frontier if resource execution is controlled.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r019 terrain none 0.7331",
               "r020 terrain light_geometric 0.7499",
@@ -4750,13 +4750,13 @@ COMPACT_CONTEXT_JSON:
             "evidence": [
               "5 anisotropic replicates: 0.7573/0.7345/0.7465/0.7334/(plus huber/nc24 variants regressing); mean ~0.7406."
             ],
-            "reason": "r017 anchor confirmed as +1.4σ upper-tail draw; further single-seed attempts unlikely to match without seed lottery."
+            "reason": "r017 anchor confirmed as +1.4Ïƒ upper-tail draw; further single-seed attempts unlikely to match without seed lottery."
           },
           {
             "hypothesis_id": "H20-C_hypernet_high_variance",
             "outcome": "supported",
             "evidence": [
-              "4-seed hypernet range 0.035, std ~0.014 — wider than anisotropic envelope."
+              "4-seed hypernet range 0.035, std ~0.014 â€” wider than anisotropic envelope."
             ],
             "reason": "Confirmed across 4 rounds."
           },
@@ -4904,7 +4904,7 @@ COMPACT_CONTEXT_JSON:
           {
             "note": "Pin GPU class to A6000/H100 or set automatic_batch_size_floor=4 for >6M-param d6 architectures to avoid L40S-resume OOM.",
             "hardness": "hard",
-            "reason": "Documented resource-infeasibility for these architectures at batch=8 on L40S (45GB) — 3 reproducible failures in r022 alone."
+            "reason": "Documented resource-infeasibility for these architectures at batch=8 on L40S (45GB) â€” 3 reproducible failures in r022 alone."
           },
           {
             "note": "Continue search, but shift emphasis from broad architecture exploration to controlled ablations, hard-tail interventions, and ensembling.",
@@ -5028,7 +5028,7 @@ COMPACT_CONTEXT_JSON:
         "soft_evidence": [
           {
             "id": "R22-1",
-            "recommendation": "Test a true loss-level tail-weighted masked_l1_gradient (per-sample weight from running per-case R2 of the hold-out case ID) on the anchor recipe — H21-A remains untested as a loss change; the architectural focal_residual variant this round is not a substitute. Pair with same-seed baseline to attribute effect.",
+            "recommendation": "Test a true loss-level tail-weighted masked_l1_gradient (per-sample weight from running per-case R2 of the hold-out case ID) on the anchor recipe â€” H21-A remains untested as a loss change; the architectural focal_residual variant this round is not a substitute. Pair with same-seed baseline to attribute effect.",
             "hardness": "soft",
             "hardness_reason": "Scientific recommendation; not a contract violation.",
             "confidence": "medium",
@@ -5040,7 +5040,7 @@ COMPACT_CONTEXT_JSON:
               "hypothesis_status_table",
               "full_results"
             ],
-            "next_test": "anisotropic_boundary_hybrid nc20 d6 light_geometric lr0.0004 EMA seed=1 with new tail_weighted_masked_l1_gradient loss; report per-case R2 delta on UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-V6_d00, FI-MS-V1_d00 plus no-regression check on the top-15 easy cases.",
+            "next_test": "anisotropic_boundary_hybrid nc20 d6 light_geometric lr0.0004 EMA seed=1 with new tail_weighted_masked_l1_gradient loss; report per-case R2 delta on UA-KY-V14_d90, KO-SE-V4_d45, KO-SE-hybrid_d00, FI-MS-V1_d00 plus no-regression check on the top-15 easy cases.",
             "source": "claude"
           },
           {
@@ -5083,7 +5083,7 @@ COMPACT_CONTEXT_JSON:
             "id": "R22-6",
             "recommendation": "Down-weight masked_huber for any anisotropic/boundary-family run at the anchor recipe; now n=3 regressions across rounds (r020 boundary_assimilated_spectral_residual_unet -0.050, r021 anisotropic_boundary_hybrid -0.006, r022 anisotropic_boundary_hybrid -0.015 vs envelope mean).",
             "hardness": "soft",
-            "hardness_reason": "Loss-policy advisory; do not hard-ban — different family may still benefit.",
+            "hardness_reason": "Loss-policy advisory; do not hard-ban â€” different family may still benefit.",
             "confidence": "high",
             "evidence_run_ids": [
               "r022_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber",
@@ -5113,7 +5113,7 @@ COMPACT_CONTEXT_JSON:
               "hypothesis_status_table",
               "recent_rounds_summary"
             ],
-            "next_test": "Same-seed anisotropic_boundary_hybrid or terrain_conditioned_local_attention_unet anchor baseline versus explicit tail-weighted masked_l1_gradient or hard-case oversampling; report per-case deltas for UA-KY-V14_d90, KO-SE-V4_d45, FI-MS-V1_d00, KO-SE-V6_d00, CH-Bas-U1_d00.",
+            "next_test": "Same-seed anisotropic_boundary_hybrid or terrain_conditioned_local_attention_unet anchor baseline versus explicit tail-weighted masked_l1_gradient or hard-case oversampling; report per-case deltas for UA-KY-V14_d90, KO-SE-V4_d45, FI-MS-V1_d00, KO-SE-hybrid_d00, CH-Bas-U1_d00.",
             "source": "codex"
           },
           {
@@ -5161,9 +5161,9 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H22-A",
               "claim": "A loss-level tail-weighted masked_l1_gradient (per-sample weight inversely proportional to running per-case R2) on the anchor recipe will lift val_r2_median by +0.005 to +0.025 by reducing the persistent UA-KY/KO-SE/FI-MS hard-case tail without significantly hurting easy cases.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
-                "r022_full_hard_case_focal_residual_unet shows architectural focal does NOT work — leaves loss-level intervention as the highest-value untested lever.",
+                "r022_full_hard_case_focal_residual_unet shows architectural focal does NOT work â€” leaves loss-level intervention as the highest-value untested lever.",
                 "Hard-case tail unchanged across 6+ rounds of architectural variation."
               ],
               "next_test": "anisotropic_boundary_hybrid nc20 d6 light_geometric lr0.0004 EMA seed=1 with new tail_weighted_masked_l1_gradient loss; pair with same-seed baseline."
@@ -5174,7 +5174,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H22-B",
               "claim": "A post-hoc averaged-prediction ensemble of best anisotropic_boundary_hybrid (r017 0.7573), hypernet_coord_lowrank_residual_unet (r019 0.7544), and terrain_conditioned_local_attention_unet (r020 0.7499) will exceed 0.76 on val_r2_median.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "Three architecturally distinct families all reach 0.7499-0.7573; their per-case error patterns differ on tail cases (e.g., terrain has highest r2_mean 0.7391)."
               ],
@@ -5186,7 +5186,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H22-A",
               "claim": "Explicit hard-case loss weighting or oversampling will outperform architecture-only hard-case focal variants on median R2.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r021 hard-case tail persisted across top runs",
                 "r022_full_hard_case_focal_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient = 0.6745"
@@ -5199,7 +5199,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H22-B",
               "claim": "A three-family prediction ensemble will beat the expected single-seed frontier mean more reliably than further single architecture tweaks.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r017 anisotropic 0.7573",
                 "r019 hypernet 0.7544",
@@ -5214,7 +5214,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H22-C",
               "claim": "Terrain remains near-frontier if resource execution is controlled.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r019 terrain none 0.7331",
                 "r020 terrain light_geometric 0.7499",
@@ -5306,7 +5306,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H22-C",
             "claim": "Multi-seed replication of frontier families at anchor (3 new seeds each of anisotropic, hypernet, terrain) will produce at least one >0.75 result and tighten the upper-tail estimate, plausibly recovering an entry into all_time_top_k.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Anchor family mean 0.7406, sigma ~0.012; 3 new seeds yields ~22% chance of >0.755 per family under Gaussian assumption."
             ],
@@ -5381,14 +5381,14 @@ COMPACT_CONTEXT_JSON:
     {
       "round": 23,
       "review_action": "continue",
-      "summary": "claude: Round 23 is a strong rebound round. Best val_r2_median=0.7563 (r023 anisotropic_boundary_hybrid anchor replicate) lands within 0.001 of the all-time r017 anchor (0.7573) and re-establishes anisotropic anchor as reproducibly near-frontier rather than a single upper-tail draw. Top3 mean=0.7463 reverses the r019->r022 decline (0.7442->0.7402->0.7382->0.7291) and is the second-best top3-mean ever, just below r019. Terrain retries also confirmed near-frontier (0.7444 d6, 0.7383 d7). 5 explorer architectures (segformer_allmlp_decoder, corrdiff_mean, mambairv2, beno_film, boundary_saliency_gated) all landed in 0.63-0.71, none broke into the >0.74 frontier band. heavy_geometric regressed anchor by -0.021. masked_huber on hypernet regressed by ~0.006. Two terrain runs OOM'd on A6000 then succeeded on H100 retry (infra, not arch). The r017 upper-tail hypothesis (H20-C) is now substantially weakened — anisotropic anchor has been shown to be replicable. | codex: Round 23 is a strong rebound: best val_r2_median 0.756324736 is second all-time and only 0.000965 below the r017 workflow best 0.757289591. It does not beat the benchmark, but it refutes the simple recent-decline narrative from r019-r022. Evidence still points to a saturated near-frontier around anisotropic/terrain/hypernet anchors, with hard-case tail errors unresolved and resource constraints affecting terrain runs.",
+      "summary": "claude: Round 23 is a strong rebound round. Best val_r2_median=0.7563 (r023 anisotropic_boundary_hybrid anchor replicate) lands within 0.001 of the all-time r017 anchor (0.7573) and re-establishes anisotropic anchor as reproducibly near-frontier rather than a single upper-tail draw. Top3 mean=0.7463 reverses the r019->r022 decline (0.7442->0.7402->0.7382->0.7291) and is the second-best top3-mean ever, just below r019. Terrain retries also confirmed near-frontier (0.7444 d6, 0.7383 d7). 5 explorer architectures (segformer_allmlp_decoder, corrdiff_mean, mambairv2, beno_film, boundary_saliency_gated) all landed in 0.63-0.71, none broke into the >0.74 frontier band. heavy_geometric regressed anchor by -0.021. masked_huber on hypernet regressed by ~0.006. Two terrain runs OOM'd on A6000 then succeeded on H100 retry (infra, not arch). The r017 upper-tail hypothesis (H20-C) is now substantially weakened â€” anisotropic anchor has been shown to be replicable. | codex: Round 23 is a strong rebound: best val_r2_median 0.756324736 is second all-time and only 0.000965 below the r017 workflow best 0.757289591. It does not beat the benchmark, but it refutes the simple recent-decline narrative from r019-r022. Evidence still points to a saturated near-frontier around anisotropic/terrain/hypernet anchors, with hard-case tail errors unresolved and resource constraints affecting terrain runs.",
       "top_performers": [
         {
           "exp_id": "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
           "arch_name": "anisotropic_boundary_hybrid",
           "val_r2_median": 0.7563247361188981,
           "round": 23,
-          "reason": "Replicates r017 anchor (0.7573) within 0.001 — strongest reproducibility evidence for the frontier recipe to date; contradicts H20-C upper-tail framing.",
+          "reason": "Replicates r017 anchor (0.7573) within 0.001 â€” strongest reproducibility evidence for the frontier recipe to date; contradicts H20-C upper-tail framing.",
           "source": "claude"
         },
         {
@@ -5396,7 +5396,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "terrain_conditioned_local_attention_unet",
           "val_r2_median": 0.744382384398578,
           "round": 23,
-          "reason": "4th near-frontier replicate of terrain family (r019 0.7331, r020 0.7499, r021 0.7389, r023 0.7444); also has highest val_r2_mean=0.7363 — most stable family by mean.",
+          "reason": "4th near-frontier replicate of terrain family (r019 0.7331, r020 0.7499, r021 0.7389, r023 0.7444); also has highest val_r2_mean=0.7363 â€” most stable family by mean.",
           "source": "claude"
         },
         {
@@ -5404,7 +5404,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "terrain_conditioned_local_attention_unet",
           "val_r2_median": 0.7383279655785097,
           "round": 23,
-          "reason": "First successful d7 terrain run lands near-frontier — depth scaling neither helps nor regresses this family vs d6 (-0.006).",
+          "reason": "First successful d7 terrain run lands near-frontier â€” depth scaling neither helps nor regresses this family vs d6 (-0.006).",
           "source": "claude"
         },
         {
@@ -5412,7 +5412,7 @@ COMPACT_CONTEXT_JSON:
           "arch_name": "anisotropic_boundary_hybrid",
           "val_r2_median": 0.7355176722826199,
           "round": 23,
-          "reason": "Heavy_geometric ablation: regresses anchor by -0.021 but stays within family envelope — establishes that light_geometric is the productive augmentation lever.",
+          "reason": "Heavy_geometric ablation: regresses anchor by -0.021 but stays within family envelope â€” establishes that light_geometric is the productive augmentation lever.",
           "source": "claude"
         }
       ],
@@ -5513,7 +5513,7 @@ COMPACT_CONTEXT_JSON:
         },
         {
           "id": "R23-6",
-          "recommendation": "For terrain_conditioned_local_attention_unet, request H100 explicitly (>=40GB VRAM) — the d6 and d7 retries both required ~52GB peak. A6000 (48GB) consistently OOMs at batch=16 and batch=8 for this family. Treat as resource constraint, not architecture-bias.",
+          "recommendation": "For terrain_conditioned_local_attention_unet, request H100 explicitly (>=40GB VRAM) â€” the d6 and d7 retries both required ~52GB peak. A6000 (48GB) consistently OOMs at batch=16 and batch=8 for this family. Treat as resource constraint, not architecture-bias.",
           "hardness": "hard",
           "hardness_reason": "Locked-resource constraint: confirmed RESOURCE_OOM at batch_floor on A6000 for two configs; needs explicit GPU class routing.",
           "confidence": "high",
@@ -5568,7 +5568,7 @@ COMPACT_CONTEXT_JSON:
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "The r017 anisotropic_boundary_hybrid anchor (val_r2_median=0.7573) remains all-time best by 0.001, but it is no longer an isolated upper-tail draw — r023 same-recipe replicate reached 0.7563. The anchor recipe (anisotropic_boundary_hybrid, nc20, d6, height_sdf_normal, light_geometric, lr=0.0004, masked_l1_gradient, EMA=0.999) is now demonstrably reproducible at the frontier band. No r023 explorer breached 0.74, so the anchor's leadership is preserved.",
+          "summary": "The r017 anisotropic_boundary_hybrid anchor (val_r2_median=0.7573) remains all-time best by 0.001, but it is no longer an isolated upper-tail draw â€” r023 same-recipe replicate reached 0.7563. The anchor recipe (anisotropic_boundary_hybrid, nc20, d6, height_sdf_normal, light_geometric, lr=0.0004, masked_l1_gradient, EMA=0.999) is now demonstrably reproducible at the frontier band. No r023 explorer breached 0.74, so the anchor's leadership is preserved.",
           "cited_failed_attempts": [
             "r022 hard_case_focal_residual_unet 0.6745 (architectural focal weighting refuted)",
             "r022 anisotropic_boundary_hybrid nc24 (-0.027 width regression)",
@@ -5639,7 +5639,7 @@ COMPACT_CONTEXT_JSON:
         "positive_patterns": [
           {
             "id": "P23-1",
-            "pattern": "anisotropic_boundary_hybrid anchor recipe is reproducibly near-frontier (0.7573 r017, 0.7563 r023) — strongest reproducibility signal across all V4/V6 history.",
+            "pattern": "anisotropic_boundary_hybrid anchor recipe is reproducibly near-frontier (0.7573 r017, 0.7563 r023) â€” strongest reproducibility signal across all Sequential/V6 history.",
             "evidence_run_ids": [
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
@@ -5669,7 +5669,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "P23-1",
-            "pattern": "Anisotropic anchor remains the strongest reproducible V4/Auto V6 family.",
+            "pattern": "Anisotropic anchor remains the strongest reproducible Sequential/Hybrid family.",
             "evidence_run_ids": [
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
@@ -5708,7 +5708,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N23-2",
-            "pattern": "masked_huber regresses masked_l1_gradient on hypernet (0.7079 vs 0.7135 same-seed) — second family (after anisotropic in r021/r022) showing this pattern. masked_huber should be considered refuted as a productive loss substitution on the anchor recipe.",
+            "pattern": "masked_huber regresses masked_l1_gradient on hypernet (0.7079 vs 0.7135 same-seed) â€” second family (after anisotropic in r021/r022) showing this pattern. masked_huber should be considered refuted as a productive loss substitution on the anchor recipe.",
             "evidence_run_ids": [
               "r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber",
               "r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -5731,7 +5731,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N23-4",
-            "pattern": "terrain_conditioned_local_attention_unet depth7 vs depth6 same-anchor: -0.006 — depth scaling does not help in this family.",
+            "pattern": "terrain_conditioned_local_attention_unet depth7 vs depth6 same-anchor: -0.006 â€” depth scaling does not help in this family.",
             "evidence_run_ids": [
               "r023_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2",
               "r023_full_terrain_conditioned_local_attention_unet_nc20_d7_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2"
@@ -5773,7 +5773,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H23-A",
             "claim": "Anisotropic_boundary_hybrid anchor recipe has true mean val_r2_median >= 0.75 with std <= 0.015; the r017/r023 0.7573/0.7563 pair are not upper-tail outliers but the genuine frontier.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -5785,7 +5785,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H23-B",
             "claim": "A tail-weighted masked_l1_gradient (per-sample weight inversely proportional to running per-case R2) applied at the anchor recipe will lift val_r2_median to >=0.76 by reducing the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, FI-MS-V1_d00) without hurting easy-case (~0.95+) cases.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
@@ -5794,8 +5794,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H23-C",
-            "claim": "A weighted average ensemble of anisotropic_boundary_hybrid (r017+r023) + terrain_conditioned_local_attention_unet (r020+r023_d6) + hypernet_coord_lowrank_residual_unet (r019) will exceed val_r2_median=0.76 on the d510fc05 split — the cheapest available frontier lift.",
-            "source": "V4-result-driven",
+            "claim": "A weighted average ensemble of anisotropic_boundary_hybrid (r017+r023) + terrain_conditioned_local_attention_unet (r020+r023_d6) + hypernet_coord_lowrank_residual_unet (r019) will exceed val_r2_median=0.76 on the d510fc05 split â€” the cheapest available frontier lift.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -5808,7 +5808,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H23-A_tail_loss_or_sampling",
             "claim": "Explicit hard-case loss weighting or hard-case oversampling will improve frontier median R2 more than additional architecture-only variants.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Persistent low cases in r023 include UA-KY-V14_d90, KO-SE-V4_d45, and FI-MS-V1_d00 across top runs.",
               "r022 architectural hard-case focal residual was reported as underperforming.",
@@ -5819,7 +5819,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H23-B_ensemble_frontier",
             "claim": "A prediction ensemble of anisotropic, terrain, and hypernet checkpoints can beat the single-run frontier more reliably than another single architecture tweak.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "All-time top includes anisotropic r017 0.7573, hypernet r019 0.7544, terrain r020 0.7499, and terrain r023 0.7444.",
               "Families show different per-case strengths, but no ensemble has been tested."
@@ -5829,7 +5829,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H23-C_resource_gated_terrain",
             "claim": "Terrain remains a near-frontier family if scheduled on adequate GPU memory.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "A6000 terrain d6/d7 failed with OOM at batch=8.",
               "H100 retry2 completed at about 52 GB VRAM and scored 0.7444 for d6."
@@ -5845,13 +5845,13 @@ COMPACT_CONTEXT_JSON:
               "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient (0.7573)",
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient (0.7563)"
             ],
-            "reason": "r023 replicates r017 within 0.001 same-recipe — two near-identical upper-end draws make the 'r017 = isolated +1.4σ outlier' framing untenable."
+            "reason": "r023 replicates r017 within 0.001 same-recipe â€” two near-identical upper-end draws make the 'r017 = isolated +1.4Ïƒ outlier' framing untenable."
           },
           {
             "hypothesis_id": "H22-A_tail_weighted_loss",
             "outcome": "continued",
             "evidence": [
-              "Still untested in r023 — no tail-weighted loss variant submitted."
+              "Still untested in r023 â€” no tail-weighted loss variant submitted."
             ],
             "reason": "Highest-priority unrefuted intervention; recommend explicit test in r024."
           },
@@ -5859,7 +5859,7 @@ COMPACT_CONTEXT_JSON:
             "hypothesis_id": "H22-B_frontier_ensemble",
             "outcome": "continued",
             "evidence": [
-              "Still untested in r023 — no ensemble experiment run."
+              "Still untested in r023 â€” no ensemble experiment run."
             ],
             "reason": "Cheapest unrefuted lever; recommend in r024."
           },
@@ -5889,7 +5889,7 @@ COMPACT_CONTEXT_JSON:
             "evidence": [
               "r019 0.7544, r020 0.7198, r021 0.7411, r022 0.7316, r023 0.7135"
             ],
-            "reason": "5-seed range now 0.041, std ~0.016 — clearly higher variance than anisotropic. Family is near-frontier but not reliably so."
+            "reason": "5-seed range now 0.041, std ~0.016 â€” clearly higher variance than anisotropic. Family is near-frontier but not reliably so."
           },
           {
             "hypothesis_id": "H016-C_persistent_hard_case_tail",
@@ -5993,7 +5993,7 @@ COMPACT_CONTEXT_JSON:
             "planner_use": "soft evidence only"
           },
           {
-            "advisory": "Discontinue masked_huber loss substitution on anchor — refuted on 2 families now (anisotropic r021+r022, hypernet r023).",
+            "advisory": "Discontinue masked_huber loss substitution on anchor â€” refuted on 2 families now (anisotropic r021+r022, hypernet r023).",
             "confidence": "high",
             "evidence_run_ids": [
               "r021_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber",
@@ -6037,7 +6037,7 @@ COMPACT_CONTEXT_JSON:
             "contradicting_evidence_run_ids": [
               "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
             ],
-            "interpretation": "r023 (0.7563) is within 0.001 of r017 (0.7573) at same recipe — the anchor's frontier band IS reproducible."
+            "interpretation": "r023 (0.7563) is within 0.001 of r017 (0.7573) at same recipe â€” the anchor's frontier band IS reproducible."
           },
           {
             "pattern": "heavy_geometric augmentation could lift anisotropic anchor beyond light_geometric.",
@@ -6193,7 +6193,7 @@ COMPACT_CONTEXT_JSON:
         "planner_actionable": [
           {
             "id": "R23-6",
-            "recommendation": "For terrain_conditioned_local_attention_unet, request H100 explicitly (>=40GB VRAM) — the d6 and d7 retries both required ~52GB peak. A6000 (48GB) consistently OOMs at batch=16 and batch=8 for this family. Treat as resource constraint, not architecture-bias.",
+            "recommendation": "For terrain_conditioned_local_attention_unet, request H100 explicitly (>=40GB VRAM) â€” the d6 and d7 retries both required ~52GB peak. A6000 (48GB) consistently OOMs at batch=16 and batch=8 for this family. Treat as resource constraint, not architecture-bias.",
             "hardness": "hard",
             "hardness_reason": "Locked-resource constraint: confirmed RESOURCE_OOM at batch_floor on A6000 for two configs; needs explicit GPU class routing.",
             "confidence": "high",
@@ -6404,7 +6404,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H23-A",
               "claim": "Anisotropic_boundary_hybrid anchor recipe has true mean val_r2_median >= 0.75 with std <= 0.015; the r017/r023 0.7573/0.7563 pair are not upper-tail outliers but the genuine frontier.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
                 "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -6419,7 +6419,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H23-B",
               "claim": "A tail-weighted masked_l1_gradient (per-sample weight inversely proportional to running per-case R2) applied at the anchor recipe will lift val_r2_median to >=0.76 by reducing the persistent hard-case tail (UA-KY-V14_d90, KO-SE-V4_d45, FI-MS-V1_d00) without hurting easy-case (~0.95+) cases.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
                 "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient"
@@ -6431,8 +6431,8 @@ COMPACT_CONTEXT_JSON:
             "source_section": "knowledge_update.recommended_hypotheses",
             "item": {
               "id": "H23-C",
-              "claim": "A weighted average ensemble of anisotropic_boundary_hybrid (r017+r023) + terrain_conditioned_local_attention_unet (r020+r023_d6) + hypernet_coord_lowrank_residual_unet (r019) will exceed val_r2_median=0.76 on the d510fc05 split — the cheapest available frontier lift.",
-              "source": "V4-result-driven",
+              "claim": "A weighted average ensemble of anisotropic_boundary_hybrid (r017+r023) + terrain_conditioned_local_attention_unet (r020+r023_d6) + hypernet_coord_lowrank_residual_unet (r019) will exceed val_r2_median=0.76 on the d510fc05 split â€” the cheapest available frontier lift.",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "r017_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
                 "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
@@ -6448,7 +6448,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H23-A_tail_loss_or_sampling",
               "claim": "Explicit hard-case loss weighting or hard-case oversampling will improve frontier median R2 more than additional architecture-only variants.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "Persistent low cases in r023 include UA-KY-V14_d90, KO-SE-V4_d45, and FI-MS-V1_d00 across top runs.",
                 "r022 architectural hard-case focal residual was reported as underperforming.",
@@ -6462,7 +6462,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H23-B_ensemble_frontier",
               "claim": "A prediction ensemble of anisotropic, terrain, and hypernet checkpoints can beat the single-run frontier more reliably than another single architecture tweak.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "All-time top includes anisotropic r017 0.7573, hypernet r019 0.7544, terrain r020 0.7499, and terrain r023 0.7444.",
                 "Families show different per-case strengths, but no ensemble has been tested."
@@ -6475,7 +6475,7 @@ COMPACT_CONTEXT_JSON:
             "item": {
               "id": "H23-C_resource_gated_terrain",
               "claim": "Terrain remains a near-frontier family if scheduled on adequate GPU memory.",
-              "source": "V4-result-driven",
+              "source": "Sequential-result-driven",
               "evidence_so_far": [
                 "A6000 terrain d6/d7 failed with OOM at batch=8.",
                 "H100 retry2 completed at about 52 GB VRAM and scored 0.7444 for d6."
@@ -6513,7 +6513,7 @@ COMPACT_CONTEXT_JSON:
           {
             "source_section": "knowledge_update.soft_advisories",
             "item": {
-              "advisory": "Discontinue masked_huber loss substitution on anchor — refuted on 2 families now (anisotropic r021+r022, hypernet r023).",
+              "advisory": "Discontinue masked_huber loss substitution on anchor â€” refuted on 2 families now (anisotropic r021+r022, hypernet r023).",
               "confidence": "high",
               "evidence_run_ids": [
                 "r021_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber",
@@ -6590,7 +6590,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "A4",
-            "finding": "Terrain family: 4 same-recipe results 0.7331/0.7499/0.7389/0.7444 (mean 0.7416, range 0.017) — the most tightly clustered near-frontier family. Highest val_r2_mean=0.7363 in r023.",
+            "finding": "Terrain family: 4 same-recipe results 0.7331/0.7499/0.7389/0.7444 (mean 0.7416, range 0.017) â€” the most tightly clustered near-frontier family. Highest val_r2_mean=0.7363 in r023.",
             "table": "family_summary_recent",
             "evidence_run_ids": [
               "r019_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient_retry2",
@@ -6680,7 +6680,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r022_full_hard_case_focal_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "hard_case_focal_residual_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -6724,13 +6724,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6531900313036092,
             "KO-SE-V4_d00": 0.34544314498375694,
             "KO-SE-V4_d45": 0.22487770394376883,
-            "KO-SE-V6_d00": 0.2749786918381508,
+            "KO-SE-hybrid_d00": 0.2749786918381508,
             "KO-SE-V8_d00": 0.5189665355581612,
             "SG-Boo-U1_d15": 0.6645333669194546,
             "SG-Boo-U1_d90": 0.5350659580318713,
             "UA-KY-V11_d00": 0.38136585534563183,
             "UA-KY-V14_d90": 0.18925009939558035,
-            "UA-KY-V6_d00": 0.564256498026735,
+            "UA-KY-hybrid_d00": 0.564256498026735,
             "UA0625_d45": 0.9881306533829654,
             "UA1111_d45": 0.9881226475923996,
             "UA25_d45": 0.965549388547667,
@@ -6767,7 +6767,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r022_full_hard_case_focal_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r022_full_hard_case_focal_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T09:59:13.002194Z"
       },
       "val_r2_median": 0.6745442980677999
@@ -6810,7 +6810,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "anisotropic_boundary_hybrid",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -6854,13 +6854,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6875771247224436,
             "KO-SE-V4_d00": 0.3852984932943663,
             "KO-SE-V4_d45": 0.23524587411776288,
-            "KO-SE-V6_d00": 0.46820007122594587,
+            "KO-SE-hybrid_d00": 0.46820007122594587,
             "KO-SE-V8_d00": 0.5747177268082218,
             "SG-Boo-U1_d15": 0.6267457479062073,
             "SG-Boo-U1_d90": 0.5867291723611024,
             "UA-KY-V11_d00": 0.41870945882135935,
             "UA-KY-V14_d90": 0.14573959836108918,
-            "UA-KY-V6_d00": 0.5457296826251925,
+            "UA-KY-hybrid_d00": 0.5457296826251925,
             "UA0625_d45": 0.994141861275105,
             "UA1111_d45": 0.9909546489565473,
             "UA25_d45": 0.9657774722238813,
@@ -6897,7 +6897,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T13:16:08.108687Z"
       },
       "val_r2_median": 0.7563247361188981
@@ -6940,7 +6940,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_heavy_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "anisotropic_boundary_hybrid",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -6984,13 +6984,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6864683266242413,
             "KO-SE-V4_d00": 0.35902990307793337,
             "KO-SE-V4_d45": 0.26929041197392956,
-            "KO-SE-V6_d00": 0.45673797982073916,
+            "KO-SE-hybrid_d00": 0.45673797982073916,
             "KO-SE-V8_d00": 0.583792197412129,
             "SG-Boo-U1_d15": 0.6308019431175171,
             "SG-Boo-U1_d90": 0.6339501607889113,
             "UA-KY-V11_d00": 0.40758269476584696,
             "UA-KY-V14_d90": 0.1648054155314338,
-            "UA-KY-V6_d00": 0.5513524970433492,
+            "UA-KY-hybrid_d00": 0.5513524970433492,
             "UA0625_d45": 0.9931590105421871,
             "UA1111_d45": 0.9897534642286698,
             "UA25_d45": 0.9613850225967443,
@@ -7027,7 +7027,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_heavy_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_anisotropic_boundary_hybrid_nc20_d6_height_sdf_normal_heavy_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T13:16:09.914608Z"
       },
       "val_r2_median": 0.7355176722826199
@@ -7070,7 +7070,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "hypernet_coord_lowrank_residual_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -7114,13 +7114,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6661494538998642,
             "KO-SE-V4_d00": 0.42019078441920854,
             "KO-SE-V4_d45": 0.32686380105414414,
-            "KO-SE-V6_d00": 0.4338397369943683,
+            "KO-SE-hybrid_d00": 0.4338397369943683,
             "KO-SE-V8_d00": 0.5543164957125353,
             "SG-Boo-U1_d15": 0.6612661263916779,
             "SG-Boo-U1_d90": 0.6304947274327453,
             "UA-KY-V11_d00": 0.33325271290504854,
             "UA-KY-V14_d90": 0.23371623045632972,
-            "UA-KY-V6_d00": 0.6310431659830881,
+            "UA-KY-hybrid_d00": 0.6310431659830881,
             "UA0625_d45": 0.9847828813226382,
             "UA1111_d45": 0.9879228407723347,
             "UA25_d45": 0.9580196356301002,
@@ -7157,7 +7157,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T14:28:42.995260Z"
       },
       "val_r2_median": 0.7135230857420806
@@ -7200,7 +7200,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "hypernet_coord_lowrank_residual_unet",
         "loss_name": "masked_huber",
         "arch_kwargs": {
@@ -7244,13 +7244,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.667690983807435,
             "KO-SE-V4_d00": 0.3983728450623566,
             "KO-SE-V4_d45": 0.28341693712145555,
-            "KO-SE-V6_d00": 0.24440644066221973,
+            "KO-SE-hybrid_d00": 0.24440644066221973,
             "KO-SE-V8_d00": 0.5479225731001309,
             "SG-Boo-U1_d15": 0.6325942258877797,
             "SG-Boo-U1_d90": 0.6475251124616758,
             "UA-KY-V11_d00": 0.2874929210368308,
             "UA-KY-V14_d90": 0.18161130712540974,
-            "UA-KY-V6_d00": 0.5705291654967688,
+            "UA-KY-hybrid_d00": 0.5705291654967688,
             "UA0625_d45": 0.9872476358328469,
             "UA1111_d45": 0.9874298374769193,
             "UA25_d45": 0.959005583266755,
@@ -7287,7 +7287,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_hypernet_coord_lowrank_residual_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber/model.py",
         "timestamp": "2026-05-12T14:37:03.386735Z"
       },
       "val_r2_median": 0.7079196740525266
@@ -7330,7 +7330,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_segformer_allmlp_decoder_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "segformer_allmlp_decoder",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -7374,13 +7374,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6625142520622664,
             "KO-SE-V4_d00": 0.2978170688466769,
             "KO-SE-V4_d45": 0.14691322884481406,
-            "KO-SE-V6_d00": 0.3600137860114164,
+            "KO-SE-hybrid_d00": 0.3600137860114164,
             "KO-SE-V8_d00": 0.40482673389664803,
             "SG-Boo-U1_d15": 0.566816944918352,
             "SG-Boo-U1_d90": 0.5273739416582417,
             "UA-KY-V11_d00": 0.27048982792868514,
             "UA-KY-V14_d90": 0.1329778001552232,
-            "UA-KY-V6_d00": 0.46901483631953955,
+            "UA-KY-hybrid_d00": 0.46901483631953955,
             "UA0625_d45": 0.9859677276397681,
             "UA1111_d45": 0.9787961863690594,
             "UA25_d45": 0.9432620865423256,
@@ -7417,7 +7417,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_segformer_allmlp_decoder_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_segformer_allmlp_decoder_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T13:35:06.886176Z"
       },
       "val_r2_median": 0.632843604695319
@@ -7460,7 +7460,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_corrdiff_mean_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "corrdiff_mean",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -7504,13 +7504,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.695923628545731,
             "KO-SE-V4_d00": 0.2805233403745061,
             "KO-SE-V4_d45": 0.2865776906658568,
-            "KO-SE-V6_d00": 0.4334557095462167,
+            "KO-SE-hybrid_d00": 0.4334557095462167,
             "KO-SE-V8_d00": 0.4824862234866547,
             "SG-Boo-U1_d15": 0.5946422771193812,
             "SG-Boo-U1_d90": 0.576113723576446,
             "UA-KY-V11_d00": 0.39531409750444635,
             "UA-KY-V14_d90": 0.13148690454656486,
-            "UA-KY-V6_d00": 0.45915041460283257,
+            "UA-KY-hybrid_d00": 0.45915041460283257,
             "UA0625_d45": 0.9859468275201099,
             "UA1111_d45": 0.9885102579853632,
             "UA25_d45": 0.958604715036075,
@@ -7547,7 +7547,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_corrdiff_mean_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_corrdiff_mean_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T14:09:10.805128Z"
       },
       "val_r2_median": 0.7018254663815364
@@ -7590,7 +7590,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_mambairv2_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "mambairv2",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -7634,13 +7634,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6494461449521927,
             "KO-SE-V4_d00": 0.29667338702437074,
             "KO-SE-V4_d45": 0.17046492532700674,
-            "KO-SE-V6_d00": 0.3579693771146871,
+            "KO-SE-hybrid_d00": 0.3579693771146871,
             "KO-SE-V8_d00": 0.360696408810002,
             "SG-Boo-U1_d15": 0.6004080991982133,
             "SG-Boo-U1_d90": 0.5281973364859924,
             "UA-KY-V11_d00": 0.3362144279139666,
             "UA-KY-V14_d90": 0.16068581350387057,
-            "UA-KY-V6_d00": 0.5243746252408645,
+            "UA-KY-hybrid_d00": 0.5243746252408645,
             "UA0625_d45": 0.9813569829604627,
             "UA1111_d45": 0.9838986257418834,
             "UA25_d45": 0.9582641861269975,
@@ -7677,7 +7677,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_mambairv2_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_mambairv2_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T13:57:46.215927Z"
       },
       "val_r2_median": 0.697078142855531
@@ -7720,7 +7720,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_beno_film_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "beno_film",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -7764,13 +7764,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6869204842954157,
             "KO-SE-V4_d00": 0.1479909194967225,
             "KO-SE-V4_d45": 0.29836717929073053,
-            "KO-SE-V6_d00": 0.4795080355218493,
+            "KO-SE-hybrid_d00": 0.4795080355218493,
             "KO-SE-V8_d00": 0.5386495510129921,
             "SG-Boo-U1_d15": 0.5796069228983285,
             "SG-Boo-U1_d90": 0.5090342909316041,
             "UA-KY-V11_d00": 0.3710895144170804,
             "UA-KY-V14_d90": 0.19848623083577777,
-            "UA-KY-V6_d00": 0.5968766638857803,
+            "UA-KY-hybrid_d00": 0.5968766638857803,
             "UA0625_d45": 0.9888197660487678,
             "UA1111_d45": 0.9836636581184649,
             "UA25_d45": 0.9588345123802396,
@@ -7807,7 +7807,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_beno_film_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_beno_film_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T14:30:06.236020Z"
       },
       "val_r2_median": 0.707966985633427
@@ -7850,7 +7850,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_boundary_saliency_gated_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "boundary_saliency_gated",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -7894,13 +7894,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6939321401211526,
             "KO-SE-V4_d00": 0.43396733815178434,
             "KO-SE-V4_d45": 0.24535015532867788,
-            "KO-SE-V6_d00": 0.5193587030826667,
+            "KO-SE-hybrid_d00": 0.5193587030826667,
             "KO-SE-V8_d00": 0.4862187207129943,
             "SG-Boo-U1_d15": 0.6091047686481741,
             "SG-Boo-U1_d90": 0.5505394208635344,
             "UA-KY-V11_d00": 0.32251543000772886,
             "UA-KY-V14_d90": 0.12171124063818595,
-            "UA-KY-V6_d00": 0.5271430848850993,
+            "UA-KY-hybrid_d00": 0.5271430848850993,
             "UA0625_d45": 0.9874763456049841,
             "UA1111_d45": 0.9894464051470633,
             "UA25_d45": 0.9668273458533893,
@@ -7937,7 +7937,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_boundary_saliency_gated_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_boundary_saliency_gated_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-12T14:12:10.952889Z"
       },
       "val_r2_median": 0.6939321401211526
@@ -7979,7 +7979,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r023_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "terrain_conditioned_local_attention_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -8023,13 +8023,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.695852580433485,
             "KO-SE-V4_d00": 0.4433126335781823,
             "KO-SE-V4_d45": 0.35896544270771724,
-            "KO-SE-V6_d00": 0.5233213359794786,
+            "KO-SE-hybrid_d00": 0.5233213359794786,
             "KO-SE-V8_d00": 0.5789680053510345,
             "SG-Boo-U1_d15": 0.6557317817592826,
             "SG-Boo-U1_d90": 0.6348767758406634,
             "UA-KY-V11_d00": 0.38214011940983006,
             "UA-KY-V14_d90": 0.1703714156445062,
-            "UA-KY-V6_d00": 0.5687465826668834,
+            "UA-KY-hybrid_d00": 0.5687465826668834,
             "UA0625_d45": 0.9887782890270121,
             "UA1111_d45": 0.9895952590687559,
             "UA25_d45": 0.9614765786400207,
@@ -8066,7 +8066,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_terrain_conditioned_local_attention_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2/model.py",
         "timestamp": "2026-05-12T14:19:26.136373Z"
       },
       "val_r2_median": 0.744382384398578
@@ -8108,7 +8108,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 7,
       "metrics": {
         "experiment_id": "r023_full_terrain_conditioned_local_attention_unet_nc20_d7_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "terrain_conditioned_local_attention_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -8152,13 +8152,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6667246677502452,
             "KO-SE-V4_d00": 0.3145989296747007,
             "KO-SE-V4_d45": 0.2944355532883054,
-            "KO-SE-V6_d00": 0.5805488562469265,
+            "KO-SE-hybrid_d00": 0.5805488562469265,
             "KO-SE-V8_d00": 0.5674582268155178,
             "SG-Boo-U1_d15": 0.7027836748536112,
             "SG-Boo-U1_d90": 0.6211352876499626,
             "UA-KY-V11_d00": 0.39271624041280184,
             "UA-KY-V14_d90": 0.22036255423707096,
-            "UA-KY-V6_d00": 0.5954227439779929,
+            "UA-KY-hybrid_d00": 0.5954227439779929,
             "UA0625_d45": 0.9914255235785877,
             "UA1111_d45": 0.9912906992758129,
             "UA25_d45": 0.9712454517236521,
@@ -8195,14 +8195,14 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r023_full_terrain_conditioned_local_attention_unet_nc20_d7_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r023_full_terrain_conditioned_local_attention_unet_nc20_d7_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2/model.py",
         "timestamp": "2026-05-12T14:20:09.772460Z"
       },
       "val_r2_median": 0.7383279655785097
     }
   ],
   "novelty_index": {
-    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "policy": "Use this Sequential-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
     "seen_arch_names": [
       "adaptive_afno_unet",
       "afno_differential_detail_unet",
@@ -13770,7 +13770,7 @@ COMPACT_CONTEXT_JSON:
         "excluded_examples": [],
         "kept_weak_examples": [
           {
-            "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+            "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
             "url": "https://www.researchgate.net/publication/TVI-Derain",
             "flags": [
               "suspicious_non_paper_source"
@@ -13887,7 +13887,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
         },
         {
           "query": "image restoration lightweight state space model U-Net dense prediction 2025",
@@ -13902,7 +13902,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
         },
         {
           "query": "novel peft test time adaptation neural field operator adapter 2025",
@@ -13926,7 +13926,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
         },
         {
           "query": "climate downscaling super resolution dense field prediction neural network 2025",
@@ -13940,7 +13940,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
         },
         {
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
@@ -13955,7 +13955,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
         }
       ],
       "adaptive_policy": {
@@ -14226,20 +14226,20 @@ COMPACT_CONTEXT_JSON:
       "reuse_hints": {
         "enabled": true,
         "scanned_artifacts": [
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r021\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r020\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r019\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r018\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r017\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r016\\external_sources_gemini.json"
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r021\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r020\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r019\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r018\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r017\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r016\\external_sources_gemini.json"
         ],
         "cache_candidate_count": 5,
         "cluster_cache_candidate_count": 5,
         "by_query": {
           "airfoil building wind pressure field prediction neural operator 2025": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "airfoil building wind pressure field prediction neural operator 2025",
             "topic_cluster": "cfd_pressure_surrogate",
             "source_count": 2,
@@ -14257,7 +14257,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14274,14 +14274,14 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "image restoration lightweight state space model U-Net dense prediction 2025": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "image restoration lightweight state space model U-Net dense prediction 2025",
             "topic_cluster": "image_restoration",
             "source_count": 2,
@@ -14299,7 +14299,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14316,20 +14316,20 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "dense prediction transformer lightweight decoder adapter segmentation restoration 2025": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
             "topic_cluster": "dense_prediction_transformer",
             "source_count": 2,
             "sources": [
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -14343,12 +14343,12 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -14362,14 +14362,14 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "climate downscaling super resolution dense field prediction neural network 2025": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "climate downscaling super resolution dense field prediction neural network 2025",
             "topic_cluster": "climate_downscaling",
             "source_count": 2,
@@ -14389,7 +14389,7 @@ COMPACT_CONTEXT_JSON:
                   "unrecognized_publication_domain"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14408,14 +14408,14 @@ COMPACT_CONTEXT_JSON:
                   "unrecognized_publication_domain"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "implicit neural representation hypernetwork image to field prediction architecture": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "implicit neural representation hypernetwork image to field prediction architecture",
             "topic_cluster": "inr_hypernetwork",
             "source_count": 2,
@@ -14433,7 +14433,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14450,7 +14450,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
@@ -14459,7 +14459,7 @@ COMPACT_CONTEXT_JSON:
         },
         "by_topic_cluster": {
           "cfd_pressure_surrogate": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "airfoil building wind pressure field prediction neural operator 2025",
             "topic_cluster": "cfd_pressure_surrogate",
             "source_count": 2,
@@ -14477,7 +14477,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14494,14 +14494,14 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "image_restoration": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "image restoration lightweight state space model U-Net dense prediction 2025",
             "topic_cluster": "image_restoration",
             "source_count": 2,
@@ -14519,7 +14519,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14536,20 +14536,20 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "dense_prediction_transformer": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
             "topic_cluster": "dense_prediction_transformer",
             "source_count": 2,
             "sources": [
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -14563,12 +14563,12 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -14582,14 +14582,14 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "climate_downscaling": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "climate downscaling super resolution dense field prediction neural network 2025",
             "topic_cluster": "climate_downscaling",
             "source_count": 2,
@@ -14609,7 +14609,7 @@ COMPACT_CONTEXT_JSON:
                   "unrecognized_publication_domain"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14628,14 +14628,14 @@ COMPACT_CONTEXT_JSON:
                   "unrecognized_publication_domain"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "inr_hypernetwork": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
             "query": "implicit neural representation hypernetwork image to field prediction architecture",
             "topic_cluster": "inr_hypernetwork",
             "source_count": 2,
@@ -14653,7 +14653,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -14670,7 +14670,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
@@ -14709,17 +14709,17 @@ COMPACT_CONTEXT_JSON:
         "climate_downscaling": 1,
         "inr_hypernetwork": 2
       },
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\external_sources_gemini.json"
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\external_sources_gemini.json"
     },
     "codex_web_ideas": {
       "status": "ok",
       "idea_count": 12,
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\external_ideas_codex_web.json"
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\external_ideas_codex_web.json"
     },
     "claude_local_review": {
       "status": "ok",
       "reviewed_count": 12,
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\external_ideas_review.json",
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\external_ideas_review.json",
       "topic_cluster_counts": {
         "cfd_pressure_surrogate": 3,
         "image_restoration": 2,
@@ -14754,7 +14754,7 @@ COMPACT_CONTEXT_JSON:
       "summary": "Top explorer candidates by 7-axis rubric: r24_ext_05 (texture-boundary dual-branch fusion, score 4), r24_ext_08 (internal backprojection ladder, 4), r24_ext_06 (multi-scale linear attention skip mixer, 4), r24_ext_09 (frequency-adaptive spectral bottlenecks, 4), and r24_ext_01 (height-derived boundary all-to-all mixer with FiLM, 4). Mid-tier (3) are r24_ext_02/10/12 which retain novel axes but overlap existing families and need tight capacity/risk control. Low-value (3) are r24_ext_03/04/07/11 which mostly duplicate seen architectures and should not occupy explorer slots; use only as cheap exploit refinements or skip. All 12 satisfy the locked height-only single-frame 2D contract; no hard rejections."
     },
     "quality_report": {
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\web_scout_quality_report.json",
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\web_scout_quality_report.json",
       "status": "ok",
       "query_mode": "routine",
       "query_rotation": 24,
@@ -14935,7 +14935,7 @@ COMPACT_CONTEXT_JSON:
         "excluded_examples": [],
         "kept_weak_examples": [
           {
-            "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+            "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
             "url": "https://www.researchgate.net/publication/TVI-Derain",
             "flags": [
               "suspicious_non_paper_source"
@@ -15076,8 +15076,8 @@ COMPACT_CONTEXT_JSON:
       ]
     },
     "yield_artifact": {
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\web_query_yield.json",
-      "jsonl_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r024\\web_query_yield.jsonl",
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\web_query_yield.json",
+      "jsonl_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r024\\web_query_yield.jsonl",
       "record_count": 6
     },
     "missing_clusters_for_next_round": [
@@ -15224,7 +15224,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "image restoration lightweight state space model U-Net dense prediction 2025",
@@ -15239,7 +15239,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "novel peft test time adaptation neural field operator adapter 2025",
@@ -15263,7 +15263,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "climate downscaling super resolution dense field prediction neural network 2025",
@@ -15277,7 +15277,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       },
       {
         "query": "implicit neural representation hypernetwork image to field prediction architecture",
@@ -15292,7 +15292,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json"
       }
     ],
     "adaptive_policy": {
@@ -15578,20 +15578,20 @@ COMPACT_CONTEXT_JSON:
     "reuse_hints": {
       "enabled": true,
       "scanned_artifacts": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r021\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r020\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r019\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r018\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r017\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r016\\external_sources_gemini.json"
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r021\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r020\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r019\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r018\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r017\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r016\\external_sources_gemini.json"
       ],
       "cache_candidate_count": 5,
       "cluster_cache_candidate_count": 5,
       "by_query": {
         "airfoil building wind pressure field prediction neural operator 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "airfoil building wind pressure field prediction neural operator 2025",
           "topic_cluster": "cfd_pressure_surrogate",
           "source_count": 2,
@@ -15609,7 +15609,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15626,14 +15626,14 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "image restoration lightweight state space model U-Net dense prediction 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "image restoration lightweight state space model U-Net dense prediction 2025",
           "topic_cluster": "image_restoration",
           "source_count": 2,
@@ -15651,7 +15651,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15668,20 +15668,20 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "dense prediction transformer lightweight decoder adapter segmentation restoration 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
           "topic_cluster": "dense_prediction_transformer",
           "source_count": 2,
           "sources": [
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -15695,12 +15695,12 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -15714,14 +15714,14 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "climate downscaling super resolution dense field prediction neural network 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "climate downscaling super resolution dense field prediction neural network 2025",
           "topic_cluster": "climate_downscaling",
           "source_count": 2,
@@ -15741,7 +15741,7 @@ COMPACT_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15760,14 +15760,14 @@ COMPACT_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "implicit neural representation hypernetwork image to field prediction architecture": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
           "topic_cluster": "inr_hypernetwork",
           "source_count": 2,
@@ -15785,7 +15785,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15802,7 +15802,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
@@ -15811,7 +15811,7 @@ COMPACT_CONTEXT_JSON:
       },
       "by_topic_cluster": {
         "cfd_pressure_surrogate": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "airfoil building wind pressure field prediction neural operator 2025",
           "topic_cluster": "cfd_pressure_surrogate",
           "source_count": 2,
@@ -15829,7 +15829,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15846,14 +15846,14 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "image_restoration": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "image restoration lightweight state space model U-Net dense prediction 2025",
           "topic_cluster": "image_restoration",
           "source_count": 2,
@@ -15871,7 +15871,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15888,20 +15888,20 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "dense_prediction_transformer": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
           "topic_cluster": "dense_prediction_transformer",
           "source_count": 2,
           "sources": [
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -15915,12 +15915,12 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -15934,14 +15934,14 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "climate_downscaling": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "climate downscaling super resolution dense field prediction neural network 2025",
           "topic_cluster": "climate_downscaling",
           "source_count": 2,
@@ -15961,7 +15961,7 @@ COMPACT_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -15980,14 +15980,14 @@ COMPACT_CONTEXT_JSON:
                 "unrecognized_publication_domain"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r022\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r022\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "inr_hypernetwork": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
           "topic_cluster": "inr_hypernetwork",
           "source_count": 2,
@@ -16005,7 +16005,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -16022,7 +16022,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r023\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r023\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
@@ -16067,7 +16067,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Derive boundary saliency tokens via fixed differentiable filters on height; no mesh, no SDF, no extra channels.",
         "ablation_removes_mechanism": "Drop token mixer; keep only local boundary saliency gates on skips.",
         "implementation_risk": "Soft boundary extraction noisy on smooth regions; need bounded token count and residual init near zero to avoid overfit/OOM.",
-        "minimal_implementation_in_auto_v6": "Add a height-gradient/saliency token extractor (~32-64 tokens), 2-4 layer low-width all-to-all token mixer at bottleneck, FiLM gates injected into decoder skips of an existing height-only UNet.",
+        "minimal_implementation_in_hybrid": "Add a height-gradient/saliency token extractor (~32-64 tokens), 2-4 layer low-width all-to-all token mixer at bottleneck, FiLM gates injected into decoder skips of an existing height-only UNet.",
         "expected_parameter_efficiency": "High: tokens are sparse; mixer cost independent of full grid resolution.",
         "recommended_paired_comparison": "vs anisotropic_boundary_hybrid (boundary gating without all-to-all communication) at matched n_c=20/depth=6.",
         "planner_hint": "Distinct from existing boundary_token_alltoall_mixer_unet because tokens are derived internally from height and feed FiLM rather than just summing in decoder; treat as explorer arch.",
@@ -16094,7 +16094,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Block masks and overlap weights derived from height gradients; no new inputs.",
         "ablation_removes_mechanism": "Replace block FFT adapter with depthwise conv of matched channel count.",
         "implementation_risk": "FFT tiling ringing if overlap weights under-regularized; cap channel groups and use shared low-mode weights.",
-        "minimal_implementation_in_auto_v6": "Insert overlap-add spectral adapter at bottleneck + one mid-decoder scale; learned complex low-mode weights with boundary-conditioned gates and residual scale.",
+        "minimal_implementation_in_hybrid": "Insert overlap-add spectral adapter at bottleneck + one mid-decoder scale; learned complex low-mode weights with boundary-conditioned gates and residual scale.",
         "expected_parameter_efficiency": "Moderate-high: shared per channel group; avoids full attention.",
         "recommended_paired_comparison": "vs overlap_add_spectral_adapter_unet / haloed_local_fourier_unet without boundary-conditioned overlap gating.",
         "planner_hint": "Overlaps significantly with existing tiled/haloed spectral work; only worth a slot if boundary gating axis is preserved as the novel mechanism.",
@@ -16121,7 +16121,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Per-pixel Fourier coords + decoder features only; no extra inputs.",
         "ablation_removes_mechanism": "Drop Fourier/coord features; keep plain 1x1 residual head.",
         "implementation_risk": "Low; small narrow MLP shared across pixels.",
-        "minimal_implementation_in_auto_v6": "Tiny shared MLP head over decoder features + normalized x/y + Fourier coords, applied as 1x1 convs.",
+        "minimal_implementation_in_hybrid": "Tiny shared MLP head over decoder features + normalized x/y + Fourier coords, applied as 1x1 convs.",
         "expected_parameter_efficiency": "Very high: weight-shared narrow MLP.",
         "recommended_paired_comparison": "vs same backbone with plain 1x1 residual head.",
         "planner_hint": "Strongly overlaps with coord_field_unet, coord_basis_pressure_head_unet, liif_head_unet; only consider as cheap exploit-style refinement, not explorer novelty.",
@@ -16148,7 +16148,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Similarity keys from height-encoded features only.",
         "ablation_removes_mechanism": "Disable neighbor retrieval; keep bidirectional scans only.",
         "implementation_risk": "SSM family has prior RESOURCE_OOM; restrict channels and pooled tokens; risk class moderate-high.",
-        "minimal_implementation_in_auto_v6": "One compact noncausal scan block at bottleneck + one decoder scale, top-k pooled-token neighbor mixing.",
+        "minimal_implementation_in_hybrid": "One compact noncausal scan block at bottleneck + one decoder scale, top-k pooled-token neighbor mixing.",
         "expected_parameter_efficiency": "Moderate.",
         "recommended_paired_comparison": "vs semantic_neighbor_key_ssm_unet (no noncausal neighbor retrieval).",
         "planner_hint": "Highly redundant with seen noncausal_neighbor_ssm_unet / semantic_neighbor_key_ssm_unet; only worth slot if explicit noncausal+retrieval mechanism is preserved and OOM-bounded.",
@@ -16175,7 +16175,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Smooth/detail split via pooling, depthwise filters, and height-gradient gates from input only.",
         "ablation_removes_mechanism": "Sum branches without high-pass texture branch and gates.",
         "implementation_risk": "High-pass branch may amplify height artifacts; mitigate with gradient-conditioned gating and small residual scale.",
-        "minimal_implementation_in_auto_v6": "Replace final decoder fusion with smoothed low-freq branch + depthwise high-pass detail branch + height-gradient gates before output head.",
+        "minimal_implementation_in_hybrid": "Replace final decoder fusion with smoothed low-freq branch + depthwise high-pass detail branch + height-gradient gates before output head.",
         "expected_parameter_efficiency": "High: mostly depthwise separable.",
         "recommended_paired_comparison": "vs sparse_residual_refinement_unet / iterative_residual_polisher_unet without explicit base/detail decomposition.",
         "planner_hint": "Distinct mechanism axis (explicit dual-branch base/detail fusion under height-gradient gating); good explorer candidate.",
@@ -16202,7 +16202,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Q/K/V learned from height-only encoder features.",
         "ablation_removes_mechanism": "Replace linear attention with matched depthwise multiscale conv.",
         "implementation_risk": "Pool aggressively to bound memory; channel-grouped projections to avoid widening.",
-        "minimal_implementation_in_auto_v6": "Grouped linear attention on pooled skip features at 2 decoder scales with parallel depthwise multi-scale value branches; zero-init residual.",
+        "minimal_implementation_in_hybrid": "Grouped linear attention on pooled skip features at 2 decoder scales with parallel depthwise multi-scale value branches; zero-init residual.",
         "expected_parameter_efficiency": "High vs full attention; lighter than Swin block.",
         "recommended_paired_comparison": "vs terrain_conditioned_local_attention_unet (local-only attention) at matched capacity.",
         "planner_hint": "Adds global-receptive-field axis not present among current top performers; viable explorer.",
@@ -16229,7 +16229,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Cascade conditions only on height-derived encoder features and intermediate mean.",
         "ablation_removes_mechanism": "Remove intermediate mean conditioning; train residual head as plain output.",
         "implementation_risk": "Low; deterministic, no diffusion sampling.",
-        "minimal_implementation_in_auto_v6": "Coarse mean output at mid-decoder scale → upsample → concat into shallow residual refinement head → sum mean+residual.",
+        "minimal_implementation_in_hybrid": "Coarse mean output at mid-decoder scale â†’ upsample â†’ concat into shallow residual refinement head â†’ sum mean+residual.",
         "expected_parameter_efficiency": "Moderate-high.",
         "recommended_paired_comparison": "vs mean_residual_corrector_unet / corrdiff_mean lacking height-gradient residual gating.",
         "planner_hint": "Heavy overlap with seen mean_residual_corrector_unet / corrdiff_mean / coarse_interp_residual_head_unet; treat as low-novelty exploit only.",
@@ -16256,10 +16256,10 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Pyramid built from height-only encoder; no external low-res input.",
         "ablation_removes_mechanism": "Remove downsample-upsample error feedback; keep same conv count.",
         "implementation_risk": "Risk of oversmoothing if residual capacity too small; balance branches.",
-        "minimal_implementation_in_auto_v6": "Two backprojection cycles in decoder: avg-pool → bilinear up → depthwise residual correction → channel projection at 2 scales.",
+        "minimal_implementation_in_hybrid": "Two backprojection cycles in decoder: avg-pool â†’ bilinear up â†’ depthwise residual correction â†’ channel projection at 2 scales.",
         "expected_parameter_efficiency": "High: reuses multi-scale features without a second decoder.",
         "recommended_paired_comparison": "vs coarse_to_fine_ladder_unet / planar_multigrid_vcycle_unet (no explicit backprojection error feedback).",
-        "planner_hint": "Distinct from v-cycle by explicit downsample→upsample→error→inject loop; good explorer for multi-scale refinement axis.",
+        "planner_hint": "Distinct from v-cycle by explicit downsampleâ†’upsampleâ†’errorâ†’inject loop; good explorer for multi-scale refinement axis.",
         "source_urls": [
           "https://arxiv.org/abs/2509.21399"
         ]
@@ -16283,7 +16283,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Static trained spectral adapters on height-only feature maps; no PEFT/test-time loop, no new metric.",
         "ablation_removes_mechanism": "Use uniform rank across all spectral bands.",
         "implementation_risk": "Mode partition thresholds brittle across scales; mitigate with learned soft band masks.",
-        "minimal_implementation_in_auto_v6": "SpectralAdapter2D module: rFFT → grouped low/mid/high mode projections with larger low-mode bottleneck → inverse rFFT → residual scale.",
+        "minimal_implementation_in_hybrid": "SpectralAdapter2D module: rFFT â†’ grouped low/mid/high mode projections with larger low-mode bottleneck â†’ inverse rFFT â†’ residual scale.",
         "expected_parameter_efficiency": "High: capacity concentrated in few low-frequency bottlenecks.",
         "recommended_paired_comparison": "vs band_adaptive_spectral_adapter_unet / fno2d_lora with uniform rank per band.",
         "planner_hint": "PEFT framing dropped; only the static frequency-adaptive bottleneck is reused. Modest novelty over band_adaptive_spectral_adapter_unet via mode-dependent rank allocation.",
@@ -16310,7 +16310,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Routing logits from height-only features and internal roughness/gradient stats; no test-time adaptation.",
         "ablation_removes_mechanism": "Replace mixture with single depthwise separable conv of matched params.",
         "implementation_risk": "Router collapse possible; add entropy regularization or zero-init residual mixing. Source arxiv ID 2602.00884 looks suspicious; treat mechanism as transfer only, not citation.",
-        "minimal_implementation_in_auto_v6": "Decoder mixture block over 3-4 narrow primitives (local conv, anisotropic strip conv, spectral adapter, boundary gate) with softmax routing and residual scale.",
+        "minimal_implementation_in_hybrid": "Decoder mixture block over 3-4 narrow primitives (local conv, anisotropic strip conv, spectral adapter, boundary gate) with softmax routing and residual scale.",
         "expected_parameter_efficiency": "Moderate; routing overhead offsets primitive narrowness.",
         "recommended_paired_comparison": "vs dynamic_hybrid_operation_adapter_unet (no explicit operator-splitting primitives).",
         "planner_hint": "Heavy overlap with dynamic_hybrid_operation_adapter_unet / patchwise_sparse_conv_moe_unet / heterogeneous_micro_adapter_mixture_unet; ensure primitive composition is the distinguishing axis.",
@@ -16337,7 +16337,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Feature grid + relative offsets only; evaluated at fixed grid resolution.",
         "ablation_removes_mechanism": "Drop relative offsets and local unfolding; collapse to 1x1 head.",
         "implementation_risk": "Latency from per-pixel MLP; implement as batched 1x1 over unfolded patches.",
-        "minimal_implementation_in_auto_v6": "Feature unfold + tiny shared MLP residual sampler after decoder; vectorized 1x1.",
+        "minimal_implementation_in_hybrid": "Feature unfold + tiny shared MLP residual sampler after decoder; vectorized 1x1.",
         "expected_parameter_efficiency": "Very high: single small shared MLP.",
         "recommended_paired_comparison": "vs local_implicit_image_function_unet / unet_v3_pointrefine without local ensemble/unfolding.",
         "planner_hint": "Almost fully covered by seen local_implicit_image_function_unet and liif_head_unet; low explorer value.",
@@ -16364,7 +16364,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Hypernet condition is multi-scale pooled height-encoder summary; deterministic single forward.",
         "ablation_removes_mechanism": "Use static low-rank residual MLP without hypernet conditioning.",
         "implementation_risk": "Generated weights unstable; cap rank, zero-init residual, norm-clip hypernet outputs.",
-        "minimal_implementation_in_auto_v6": "Low-rank hypernet emits factorized weights for a 2-layer coord-feature residual MLP with strict rank/channel caps; main backbone shared.",
+        "minimal_implementation_in_hybrid": "Low-rank hypernet emits factorized weights for a 2-layer coord-feature residual MLP with strict rank/channel caps; main backbone shared.",
         "expected_parameter_efficiency": "Moderate-high if heavily factorized.",
         "recommended_paired_comparison": "vs hypernet_coord_lowrank_residual_unet (shared, not sample-generated, low-rank residuals).",
         "planner_hint": "Sample-conditional weight generation is the discriminating axis vs current hypernet_coord_lowrank_residual_unet; keep rank small to stay parameter-efficient.",
@@ -16378,3 +16378,6 @@ COMPACT_CONTEXT_JSON:
 
 Propose exactly 12 experiments.
 Each proposal should use role=exploit or role=explorer and include hypothesis_id/hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, evidence_refs, evidence_relation, evidence_response, belief_update_rule, batch_role, source_note, plus novelty_rationale/new_model_mechanism for explorer, topic_cluster/query_tier/height_only_translation/ablation_removes_mechanism for web-derived explorer, and capacity_rationale for high-capacity configs.
+
+
+

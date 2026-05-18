@@ -1,9 +1,9 @@
-"""V4 Campaign Runner — State machine automation loop.
+﻿"""Sequential Campaign Runner â€” State machine automation loop.
 
 Adapted from V1's proven workflow_runner.py pattern.
-Each phase is a独立函数, transitions are validated, state is persisted atomically.
+Each phase is aç‹¬ç«‹å‡½æ•°, transitions are validated, state is persisted atomically.
 
-Phases: propose → codegen → submit → monitor → collect → review → next_round → ...
+Phases: propose â†’ codegen â†’ submit â†’ monitor â†’ collect â†’ review â†’ next_round â†’ ...
 Terminal: done | failed | blocked
 
 Usage:
@@ -32,7 +32,7 @@ from explorer.planner_v4 import V4Planner
 from explorer.candidate_library import CandidateLibrary
 from explorer.reviewer import review_round, build_review_context
 
-LOGGER = logging.getLogger("auto_v4.runner")
+LOGGER = logging.getLogger("sequential.runner")
 
 # AI binaries
 
@@ -42,7 +42,7 @@ LOGGER = logging.getLogger("auto_v4.runner")
 
 TERMINAL_PHASES = {"done", "failed", "blocked"}
 
-# Valid transitions — any transition not listed here is rejected.
+# Valid transitions â€” any transition not listed here is rejected.
 VALID_TRANSITIONS: dict[str, set[str]] = {
     "propose":    {"codegen", "done", "blocked"},
     "codegen":    {"submit", "blocked", "failed"},
@@ -326,7 +326,7 @@ def collect_results(handles: list[dict]) -> list[ExperimentResult]:
 
 def handle_propose(state: dict, camp: Path, planner: V4Planner,
                    history: list[ExperimentResult]) -> dict:
-    """Phase: PROPOSE — generate AI prompt, get suggestions, propose experiments."""
+    """Phase: PROPOSE â€” generate AI prompt, get suggestions, propose experiments."""
     round_num = state["round_num"] + 1
     state["round_num"] = round_num
     LOGGER.info("=== ROUND %d: PROPOSE ===", round_num)
@@ -337,7 +337,7 @@ def handle_propose(state: dict, camp: Path, planner: V4Planner,
     # Propose (planner handles 7 scouts + Codex synthesis internally)
     proposals = planner.propose_experiments(history, review)
     if not proposals:
-        LOGGER.info("No proposals — campaign complete")
+        LOGGER.info("No proposals â€” campaign complete")
         state["proposals"] = []
         return state
 
@@ -351,7 +351,7 @@ def handle_propose(state: dict, camp: Path, planner: V4Planner,
 
 
 def handle_codegen(state: dict, camp: Path) -> dict:
-    """Phase: CODEGEN — generate model code for new architectures."""
+    """Phase: CODEGEN â€” generate model code for new architectures."""
     LOGGER.info("=== CODEGEN ===")
     proposals = [_dict_to_cfg(d) for d in state["proposals"] if not d.get("_skip")]
     generated = set()
@@ -380,7 +380,7 @@ def handle_codegen(state: dict, camp: Path) -> dict:
 
 
 def handle_submit(state: dict, camp: Path) -> dict:
-    """Phase: SUBMIT — submit jobs to Condor."""
+    """Phase: SUBMIT â€” submit jobs to Condor."""
     LOGGER.info("=== SUBMIT ===")
     configs = [_dict_to_cfg(d) for d in state["proposals"] if not d.get("_skip")]
     if not configs:
@@ -395,7 +395,7 @@ def handle_submit(state: dict, camp: Path) -> dict:
 
 
 def handle_monitor(state: dict, camp: Path) -> dict:
-    """Phase: MONITOR — poll until all jobs done."""
+    """Phase: MONITOR â€” poll until all jobs done."""
     LOGGER.info("=== MONITOR ===")
     handles = state["handles"]
     all_done = True
@@ -419,7 +419,7 @@ def handle_monitor(state: dict, camp: Path) -> dict:
 
 
 def handle_collect(state: dict, camp: Path) -> dict:
-    """Phase: COLLECT — collect metrics from completed jobs."""
+    """Phase: COLLECT â€” collect metrics from completed jobs."""
     LOGGER.info("=== COLLECT ===")
     handles = state["handles"]
     # Mark remaining as failed if metrics not found
@@ -442,7 +442,7 @@ def handle_collect(state: dict, camp: Path) -> dict:
 
 def handle_review(state: dict, camp: Path, planner: V4Planner,
                   history: list[ExperimentResult]) -> dict:
-    """Phase: REVIEW — analyze round results."""
+    """Phase: REVIEW â€” analyze round results."""
     LOGGER.info("=== REVIEW ===")
     round_num = state["round_num"]
     phase_name = planner.phase
@@ -464,7 +464,7 @@ def handle_review(state: dict, camp: Path, planner: V4Planner,
 
 
 def handle_next_round(state: dict, camp: Path) -> dict:
-    """Phase: NEXT_ROUND — prepare for next round."""
+    """Phase: NEXT_ROUND â€” prepare for next round."""
     LOGGER.info("=== NEXT ROUND ===")
     state["proposals"] = []
     state["handles"] = []
@@ -522,7 +522,7 @@ def _dict_to_cfg(d: dict) -> ExperimentConfig:
 
 def run_campaign(campaign_dir: str,
                  max_rounds: int = 12, resume: bool = False, dry_run: bool = False):
-    """Main entry point: V4 campaign state machine."""
+    """Main entry point: Sequential campaign state machine."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
 
     camp = Path(campaign_dir)
@@ -554,7 +554,7 @@ def run_campaign(campaign_dir: str,
         if v3_bl and not any(getattr(r, "arch_name", "") == "unet_v2_baseline" for r in history):
             history.extend(v3_bl)
 
-        LOGGER.info("=== V4 Campaign: %s ===", camp)
+        LOGGER.info("=== Sequential Campaign: %s ===", camp)
         LOGGER.info("max_rounds: %d", max_rounds)
 
         max_iter = 50  # safety limit
@@ -599,7 +599,7 @@ def run_campaign(campaign_dir: str,
             state.setdefault("runner", {})["last_runner_phase"] = phase
             save_state(state, camp)
 
-            # Check if propose produced no proposals → done
+            # Check if propose produced no proposals â†’ done
             if phase == "propose" and not state.get("proposals"):
                 state["phase"] = "done"
                 save_state(state, camp)
@@ -624,7 +624,7 @@ def run_campaign(campaign_dir: str,
             if current in MODEL_PHASES:
                 LOGGER.info("Model phase (%s), stopping for fresh trigger", current)
                 break
-            # Chain fast phases (e.g. collect → review → next_round → propose)
+            # Chain fast phases (e.g. collect â†’ review â†’ next_round â†’ propose)
             LOGGER.info("Chaining: %s -> %s", phase, current)
 
     finally:
@@ -633,7 +633,7 @@ def run_campaign(campaign_dir: str,
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="V4 Campaign Runner (state machine)")
+    parser = argparse.ArgumentParser(description="Sequential Campaign Runner (state machine)")
     parser.add_argument("--campaign-dir", required=True)
     parser.add_argument("--max-rounds", type=int, default=12)
     parser.add_argument("--resume", action="store_true")
@@ -644,3 +644,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+

@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Create a safe Auto V5 retry run from an existing train_config.json.
+﻿#!/usr/bin/env python3
+"""Create a safe Grid retry run from an existing train_config.json.
 
 Retry bookkeeping belongs in sidecars/manifest, never in train_config.json.
 This script sanitizes known metadata fields, updates identity/path fields, and
@@ -57,7 +57,7 @@ def prepare_retry_config(source_cfg: dict[str, Any], *, new_run_id: str, batch_s
         cfg["results_dir"] = new_results_dir(str(cfg["results_dir"]), old_run_id, new_run_id)
     if batch_size is not None:
         if batch_size < 8:
-            raise SystemExit("batch_size below Auto V5 smoke lower bound (8) is not allowed")
+            raise SystemExit("batch_size below Grid smoke lower bound (8) is not allowed")
         cfg["batch_size"] = batch_size
     TrainConfig.model_validate(cfg)
     return cfg
@@ -112,3 +112,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -119,3 +119,5 @@ class boundary_path_message_unet(nn.Module):
             valid_out = valid_out[:, :1].expand(-1, out.shape[1], -1, -1)
 
         return torch.where(valid_out, out, torch.full_like(out, float("nan")))
+
+

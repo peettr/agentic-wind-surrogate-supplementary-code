@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -111,3 +111,5 @@ class physics_state_slice_mixer_unet(nn.Module):
         nan_fill = torch.full_like(y, float("nan"))
         y = torch.where(valid_out, y, nan_fill)
         return y
+
+

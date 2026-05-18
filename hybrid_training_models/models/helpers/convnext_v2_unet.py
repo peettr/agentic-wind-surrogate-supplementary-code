@@ -1,4 +1,4 @@
-"""ConvNeXt V2 UNet conforming to BaseSurrogate contract.
+﻿"""ConvNeXt V2 UNet conforming to BaseSurrogate contract.
 
 Uses ConvNeXt V2 blocks (depthwise conv + LayerNorm + GELU + GroupNorm) as drop-in
 replacement for standard ConvBlock in UNet encoder-decoder. Modernized architecture
@@ -88,7 +88,7 @@ class ConvNeXtV2UNet(BaseSurrogate):
         n_c: base channel width (default 16).
         depth: number of encoder/decoder stages (default 5).
         kernel_size: depthwise conv kernel size (default 7).
-        training: dict of training extras — ignored by model.
+        training: dict of training extras â€” ignored by model.
     """
 
     def __init__(
@@ -177,3 +177,6 @@ if __name__ == "__main__":
             with torch.no_grad():
                 y = m(x)
             print(f"ConvNeXtV2UNet n_c={n_c} depth={depth}: params={n_params:,} ({n_params/1e6:.1f}M) out={tuple(y.shape)} min={y.min():.4f}")
+
+
+

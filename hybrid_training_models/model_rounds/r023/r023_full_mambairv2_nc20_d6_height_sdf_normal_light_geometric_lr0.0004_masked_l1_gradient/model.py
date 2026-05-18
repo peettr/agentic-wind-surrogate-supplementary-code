@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -129,3 +129,5 @@ class mambairv2(nn.Module):
         output = output.clone()
         output[~valid_out] = float("nan")
         return output
+
+

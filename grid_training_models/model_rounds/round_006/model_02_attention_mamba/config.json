@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 6,
+  "slot": 2,
+  "arch_name": "attention_mamba",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.001,
+  "batch_size": 16,
+  "params": 35969713,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "3.0",
+  "metrics": {
+    "r2_median": "0.6586141100200562",
+    "r2_global": "0.6417437506772494",
+    "mae_median": "0.0979017615318298",
+    "mae_mean": "0.0834974367510188"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

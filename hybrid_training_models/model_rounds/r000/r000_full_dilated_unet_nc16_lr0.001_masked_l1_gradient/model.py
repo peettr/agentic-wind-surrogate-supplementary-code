@@ -1,4 +1,4 @@
-"""Dilated Conv UNet — expanded receptive field without extra parameters.
+﻿"""Dilated Conv UNet â€” expanded receptive field without extra parameters.
 
 Uses dilated (atrous) convolutions in encoder blocks to capture larger spatial
 context at each level. Optionally adds a spectral convolution side-branch
@@ -37,10 +37,10 @@ class SpectralConv2d(nn.Module):
     """Lightweight spectral convolution with bottleneck projection.
 
     Projects channels down to `hidden` before spectral mixing to keep
-    weight tensor small. At 40×40 bottleneck with 4096 channels:
-    full mixing = 36GB weights (impossible), but hidden=64 → only 0.5MB.
+    weight tensor small. At 40Ã—40 bottleneck with 4096 channels:
+    full mixing = 36GB weights (impossible), but hidden=64 â†’ only 0.5MB.
 
-    Architecture: 1×1 conv (C→hidden) → FFT → weight multiply → iFFT → 1×1 conv (hidden→C)
+    Architecture: 1Ã—1 conv (Câ†’hidden) â†’ FFT â†’ weight multiply â†’ iFFT â†’ 1Ã—1 conv (hiddenâ†’C)
     """
 
     def __init__(self, channels: int, modes: int = 16, hidden: int = 64) -> None:
@@ -49,7 +49,7 @@ class SpectralConv2d(nn.Module):
         self.scale = 1.0 / (hidden * hidden)
         self.proj_down = nn.Conv2d(channels, hidden, 1, bias=False)
         self.proj_up = nn.Conv2d(hidden, channels, 1, bias=False)
-        # Complex weight: (hidden, hidden, modes_h, modes_w) — small!
+        # Complex weight: (hidden, hidden, modes_h, modes_w) â€” small!
         self.weight = nn.Parameter(
             self.scale * torch.randn(hidden, hidden, modes, modes // 2 + 1, dtype=torch.cfloat)
         )
@@ -155,7 +155,7 @@ class DilatedUNet(nn.Module):
             x = self.dec[k](x)
         return self.head(x)
 
-# Wrapper for Auto V6 script_path loading by registry arch_name.
+# Wrapper for Hybrid script_path loading by registry arch_name.
 class dilated_unet(DilatedUNet):
     def __init__(self, in_channels=1, out_channels=1, n_c=16, depth=7, **kwargs):
         import inspect
@@ -175,3 +175,6 @@ class dilated_unet(DilatedUNet):
             if _k in sig.parameters:
                 call_kwargs[_k] = _v
         super().__init__(**call_kwargs)
+
+
+

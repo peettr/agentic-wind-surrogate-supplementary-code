@@ -1,4 +1,4 @@
-"""SACMamba — Self-Adaptive Conv encoder + SSM bottleneck.
+﻿"""SACMamba â€” Self-Adaptive Conv encoder + SSM bottleneck.
 
 Takes SACUNet's dynamic convolution mechanism for local feature extraction
 and replaces the standard bottleneck with UMamba's SSM for long-range
@@ -21,7 +21,7 @@ def _gn(ch: int) -> nn.GroupNorm:
 
 
 class SelfAdaptiveConv(nn.Module):
-    """Dynamic 1×1 + 3×3 convolution with input-dependent mixing."""
+    """Dynamic 1Ã—1 + 3Ã—3 convolution with input-dependent mixing."""
 
     def __init__(self, ch: int) -> None:
         super().__init__()
@@ -127,7 +127,7 @@ class SACMamba(BaseSurrogate):
             x = blocks(x)
             skips.append(x)
             x = down(x)
-        # SSM bottleneck: flatten spatial → sequence → SSM → reshape
+        # SSM bottleneck: flatten spatial â†’ sequence â†’ SSM â†’ reshape
         B, C, H, W = x.shape
         x_flat = x.flatten(2).permute(0, 2, 1)  # (B, H*W, C)
         x_flat = self.ssm(x_flat)
@@ -144,3 +144,6 @@ class SACMamba(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H_orig, W_orig), mode="bilinear", align_corners=False)
+
+
+

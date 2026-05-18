@@ -1,8 +1,8 @@
-﻿"""Explorer Planner for Auto V6 - AI-driven experiment suggestion.
+﻿"""Explorer Planner for Hybrid - AI-driven experiment suggestion.
 
 Key principles (the human researcher's corrections):
   1. Smoke tests ONLY verify code correctness, NOT for ranking
-  2. No V3 results used - V4 discovers everything from scratch
+  2. No V3 results used - Sequential discovers everything from scratch
   3. Start with baseline (unet_v2_baseline) hyperparameter tuning
   4. Each round calls multi-AI to generate suggestions
   5. No predetermined model assignments per round
@@ -33,7 +33,7 @@ from explorer.candidate_library import CandidateLibrary, ModelSpec, HPSpace
 from explorer.explorer import ExperimentConfig, ExperimentResult
 
 
-LOGGER = logging.getLogger("auto_v6.planner")
+LOGGER = logging.getLogger("hybrid.planner")
 
 MAX_ROUNDS = 12
 MAX_PER_ROUND = 12
@@ -184,7 +184,7 @@ class ExplorerPlanner:
 
         # Try different HPs on baseline
         baseline_configs = [
-            # V3 Grid 18 top performers (as starting points for Explorer to beat)
+            # V3 orthogonal exploratory sweep top performers (as starting points for Explorer to beat)
             {"loss_name": "masked_l1_gradient", "lr": 1e-3, "scheduler": "cosine"},
             {"loss_name": "masked_l1", "lr": 1e-3, "use_ema": True, "ema_decay": 0.999},
             {"loss_name": "masked_l1_gradient", "lr": 1e-3, "use_ema": True, "ema_decay": 0.999},
@@ -417,7 +417,7 @@ class ExplorerPlanner:
         If AI is unavailable, falls back to random exploration from library.
         """
         # For now, return cached or empty (AI integration in next step)
-        # This will be wired to actual AI calls via scripts/generate_v6_round.py
+        # This will be wired to actual AI calls via scripts/generate_hybrid_round.py
         return self._ai_suggestions
 
     def set_ai_suggestions(self, suggestions: list[dict]):
@@ -438,7 +438,7 @@ class ExplorerPlanner:
         completed = [r for r in history if self._is_ok(r)]
         completed.sort(key=lambda r: r.val_r2_median, reverse=True)
 
-        prompt = f"""Auto V6 Explorer - Round {self.round_num} ({self.phase} phase)
+        prompt = f"""Hybrid Explorer - Round {self.round_num} ({self.phase} phase)
 
 Current state:
 - Completed {len(completed)} experiments
@@ -485,4 +485,7 @@ Format each suggestion as:
 
 
 __all__ = ["ExplorerPlanner"]
+
+
+
 

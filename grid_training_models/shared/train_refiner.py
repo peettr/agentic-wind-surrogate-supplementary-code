@@ -1,9 +1,9 @@
-"""PDE-Refiner: iterative refinement on top of a trained base predictor.
+﻿"""PDE-Refiner: iterative refinement on top of a trained base predictor.
 
 Reference: Lippe et al. 2023 "PDE-Refiner: Achieving Accurate Long Rollouts 
 and Uncertainty Quantification for Neural PDE Surrogates"
 
-Stage 1: Base predictor (already trained, e.g. UNet R²=0.702)
+Stage 1: Base predictor (already trained, e.g. UNet RÂ²=0.702)
 Stage 2: Train refiner to denoise noisy base predictions
 
 This script implements Stage 2 training.
@@ -33,11 +33,11 @@ from shared.configs.schema import TrainConfig
 from shared.losses import LIBRARY as LOSS_LIBRARY
 from shared.models import REGISTRY as MODEL_REGISTRY
 
-LOGGER = logging.getLogger("auto_v3.train_refiner")
+LOGGER = logging.getLogger("baseline_source.train_refiner")
 
 
 def _noise_schedule(t: float, schedule: str = "linear", max_noise: float = 0.5) -> float:
-    """Compute noise level at step t ∈ [0, 1]."""
+    """Compute noise level at step t âˆˆ [0, 1]."""
     if schedule == "linear":
         return max_noise * (1 - t)
     elif schedule == "cosine":
@@ -94,7 +94,7 @@ def train_refiner(cfg: TrainConfig) -> dict:
 
     # Refiner input: concatenate (noisy prediction, noise level channel)
     # So refiner needs in_channels=2 (pred + noise_level_map)
-    # But we reuse same architecture — simpler approach: refiner takes noisy pred,
+    # But we reuse same architecture â€” simpler approach: refiner takes noisy pred,
     # and we add noise level as a learnable embedding
     # For simplicity: refiner input = noisy_pred (1ch), target = residual (pred - target)
     
@@ -234,15 +234,15 @@ def train_refiner(cfg: TrainConfig) -> dict:
                     refined_preds.append(refined.cpu())
                 refined_all = torch.cat(refined_preds, dim=0)
 
-            # Compute per-case R²
+            # Compute per-case RÂ²
             from shared.train import _compute_per_case_r2
             r2_med, mae_med = _compute_per_case_r2(
                 refiner, base_preds_va, Y_va, val_b["case_names"], bs=4
             )
             # Actually we need to evaluate the full pipeline, not just refiner
-            # Let's compute R² from refined predictions directly
+            # Let's compute RÂ² from refined predictions directly
             from shared.eval_module import EvalModule
-            # For now, just use the simple R² computation
+            # For now, just use the simple RÂ² computation
             mask = (~torch.isnan(Y_va.cpu())) & (X_va.cpu()[:, 0:1, :, :] <= 0)
             p_flat = refined_all[mask].numpy()
             t_flat = Y_va.cpu()[mask].numpy()
@@ -252,7 +252,7 @@ def train_refiner(cfg: TrainConfig) -> dict:
                 r2_global = 1 - ss_res / ss_tot if ss_tot > 0 else 0.0
                 mae_global = np.mean(np.abs(p_flat - t_flat))
                 val_metrics = {"r2_median": r2_global, "mae_median": mae_global, "r2_global": r2_global}
-            LOGGER.info("Final eval: R²=%.4f MAE=%.4f", val_metrics.get("r2_median", 0), val_metrics.get("mae_median", 0))
+            LOGGER.info("Final eval: RÂ²=%.4f MAE=%.4f", val_metrics.get("r2_median", 0), val_metrics.get("mae_median", 0))
         except Exception as exc:
             LOGGER.exception("Final eval failed: %s", exc)
 
@@ -282,3 +282,6 @@ if __name__ == "__main__":
     with open(args.config) as f:
         cfg = TrainConfig.model_validate(json.load(f))
     train_refiner(cfg)
+
+
+

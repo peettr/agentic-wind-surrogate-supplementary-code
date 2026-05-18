@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -114,3 +114,5 @@ class pseudo_station_bottleneck_fusion_unet(nn.Module):
 
         output = torch.where(valid, output, torch.full_like(output, float("nan")))
         return output
+
+

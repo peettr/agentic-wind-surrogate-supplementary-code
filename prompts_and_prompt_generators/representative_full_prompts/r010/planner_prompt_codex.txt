@@ -1,4 +1,4 @@
-You are the Codex scout for Auto V6 candidate generation.
+﻿You are the Codex scout for Hybrid candidate generation.
 You run in the project workspace and MUST inspect the required local context files listed in COMPACT_CONTEXT_JSON.required_context_files before proposing.
 Do not read unrelated workspace memory/persona files. Use only the listed context files and the compact context embedded here.
 If you cannot read the required files, return only {"proposals": [], "status": "blocked", "reason": "..."}.
@@ -12,7 +12,7 @@ Important scientific policy:
 - Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include topic_cluster/query_tier, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.
 - If external_web_scout.missing_clusters_for_next_round or quality_report.retry_hints are present, prefer those under-covered topic clusters in the next web-scout/planner pass; do not launch extra web passes here.
 - Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.
-- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.
+- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the grid_controller initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.
 - Do not use V3 performance, ranking, tier, or conclusion information.
 - Include evidence_refs for every proposal. Each evidence_refs list must include at least one required context file path and at least one round id or exp_id.
 - Do not rely only on the compact summary. Use the required files to verify recent results, family trends, failure taxonomy, and hypotheses before proposing.
@@ -30,14 +30,14 @@ COMPACT_CONTEXT_JSON:
     "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
     "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
     "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
-    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
-    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the grid_controller initial knowledge package.",
+    "initial_knowledge_policy": "Hybrid experimental priors may come only from the Grid/grid_controller initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
     "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
     "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
     "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
     "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
     "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
-    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "batch_size_policy": "Ordinary Hybrid candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
     "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
     "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
     "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
@@ -128,25 +128,25 @@ COMPACT_CONTEXT_JSON:
   "candidate_library_count": 41,
   "v3_arch_hp_context_note": "V3 architecture definitions and HP ranges are legal search-space context; V3 performance/ranking/tier conclusions remain forbidden.",
   "knowledge_files": {
-    "all_results_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\all_results_summary.jsonl",
-    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
-    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
-    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
-    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
-    "initial_knowledge_auto11": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\initial_knowledge_auto11.md",
-    "model_results": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\model_results.csv",
-    "initial_knowledge_csv_digest": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\initial_knowledge_csv_digest.json"
+    "all_results_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\all_results_summary.jsonl",
+    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\hypothesis_registry.json",
+    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\knowledge_summary.json",
+    "initial_knowledge_grid_controller": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\initial_knowledge_grid_controller.md",
+    "model_results": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\model_results.csv",
+    "initial_knowledge_csv_digest": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\initial_knowledge_csv_digest.json"
   },
   "required_context_files": {
-    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
-    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
-    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
-    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
-    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
-    "planner_context": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json"
+    "knowledge_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\knowledge_summary.json",
+    "recent_knowledge_bundle": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\recent_knowledge_bundle.json",
+    "arch_family_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\knowledge\\hypothesis_registry.json",
+    "planner_context": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json"
   },
-  "full_planner_context_file": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+  "full_planner_context_file": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\planner_context.json",
   "knowledge_summary_compact": {
     "timestamp": "2026-05-09T13:45:02+00:00",
     "total_results": 259,
@@ -424,8 +424,8 @@ COMPACT_CONTEXT_JSON:
       ],
       "recommendations": [
         "Promote bgms_nc28+flip_rot+sdfgrad to a multi-seed run (seeds 1,2,3) to estimate variance and confirm vs the 0.7422 ATB; pure architecture differences below ~0.005 in median are likely seed noise.",
-        "Try bgms nc32 d6 with flip_rot+lr3.5e-4 (cosine warmup) and longer schedule (300 epochs) — capacity ceiling appears near nc28 but not breached.",
-        "Stop running new mid-tier height-only baselines — every 'height_only' run in r004/r005 is dominated by its sdf+normal sibling. Save compute by gating on input_features='height_sdf_normal' for full runs.",
+        "Try bgms nc32 d6 with flip_rot+lr3.5e-4 (cosine warmup) and longer schedule (300 epochs) â€” capacity ceiling appears near nc28 but not breached.",
+        "Stop running new mid-tier height-only baselines â€” every 'height_only' run in r004/r005 is dominated by its sdf+normal sibling. Save compute by gating on input_features='height_sdf_normal' for full runs.",
         "Add an augmentation ablation on the 2nd-best arch (unet_v3_geomtok or derived_feature_aggregate_unet) with flip_rot to confirm the +0.02-0.03 aug uplift is architecture-agnostic.",
         "Investigate KO-SE_*, UA-KY-V14_d90, FI-MS, US-Pho-U3 specifically: even the top model gets 0.17-0.49 there, while VA*/VS*/UA0625-25 are >0.95. Consider per-case loss weighting, harder-case oversampling, or domain-conditioning rather than a new architecture.",
         "Defer: transolver_lite, hrnet, tiled_spectral_mixer, squeeze_axial_detail. These collapsed at small capacity; either lift their capacity floor before re-running or cooldown.",
@@ -437,13 +437,13 @@ COMPACT_CONTEXT_JSON:
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "The all-time best 0.7422 has not been exceeded in r004 or r005 despite trying ~20 architectures. The reigning champion benefits from (a) the height_sdf_normal feature stack (every top-5 in r005 uses it), (b) flip_rot augmentation (top 2 of r005), (c) EMA, and (d) the masked_l1_gradient loss. r005 confirms that swapping the architecture while keeping this recipe yields 0.70-0.73 — i.e., the recipe explains most of the variance, the architecture explains only the last ~0.02. r004 nc24 mean_residual_corrector at 0.7194 is the strongest V4 evidence that the recipe (not the arch) carried prior champions.",
+          "summary": "The all-time best 0.7422 has not been exceeded in r004 or r005 despite trying ~20 architectures. The reigning champion benefits from (a) the height_sdf_normal feature stack (every top-5 in r005 uses it), (b) flip_rot augmentation (top 2 of r005), (c) EMA, and (d) the masked_l1_gradient loss. r005 confirms that swapping the architecture while keeping this recipe yields 0.70-0.73 â€” i.e., the recipe explains most of the variance, the architecture explains only the last ~0.02. r004 nc24 mean_residual_corrector at 0.7194 is the strongest Sequential evidence that the recipe (not the arch) carried prior champions.",
           "cited_failed_attempts": [
-            "r004_full_transolver_lite_nc24_lr0.0005_masked_l1 (0.4964) — transformer-style attention without sdf collapses",
-            "r004_full_hrnet_nc24_lr0.0005_masked_l1 (0.5275) — multi-resolution branching without geometric features underperforms",
-            "r004_full_tiled_spectral_mixer_unet_nc16_lr0.0005_masked_l1 (0.5647) — spectral mixing alone insufficient",
-            "r005_full_squeeze_axial_detail_unet (0.5490) — 458K params is below the data complexity floor",
-            "r005_full_mean_residual_corrector_unet_nc28 (0.6979 vs r004 nc24 0.7194) — scaling capacity without aug hurt"
+            "r004_full_transolver_lite_nc24_lr0.0005_masked_l1 (0.4964) â€” transformer-style attention without sdf collapses",
+            "r004_full_hrnet_nc24_lr0.0005_masked_l1 (0.5275) â€” multi-resolution branching without geometric features underperforms",
+            "r004_full_tiled_spectral_mixer_unet_nc16_lr0.0005_masked_l1 (0.5647) â€” spectral mixing alone insufficient",
+            "r005_full_squeeze_axial_detail_unet (0.5490) â€” 458K params is below the data complexity floor",
+            "r005_full_mean_residual_corrector_unet_nc28 (0.6979 vs r004 nc24 0.7194) â€” scaling capacity without aug hurt"
           ]
         },
         "failure_taxonomy": [
@@ -491,7 +491,7 @@ COMPACT_CONTEXT_JSON:
               "r005_full_mean_residual_corrector_unet_nc28_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
               "r004_full_mean_residual_corrector_unet_nc24_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "Capacity scaling (nc24→nc28) without flip_rot regressed 0.022. Always pair scale-ups with augmentation for this arch."
+            "planner_implication": "Capacity scaling (nc24â†’nc28) without flip_rot regressed 0.022. Always pair scale-ups with augmentation for this arch."
           },
           {
             "id": "F6",
@@ -510,7 +510,7 @@ COMPACT_CONTEXT_JSON:
               "r005_full_boundary_gated_multiscale_unet_nc28_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r004_full_unet_sdf_7level_nc24_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "KO-SE_* and UA-KY-V14_d90 cases score 0.17-0.49 even on the round-best model — generalization gap is dataset-distribution rather than per-arch. Treat as a data/loss problem, not a search problem."
+            "planner_implication": "KO-SE_* and UA-KY-V14_d90 cases score 0.17-0.49 even on the round-best model â€” generalization gap is dataset-distribution rather than per-arch. Treat as a data/loss problem, not a search problem."
           },
           {
             "id": "F001",
@@ -550,7 +550,7 @@ COMPACT_CONTEXT_JSON:
               "r004_full_mean_residual_corrector_unet_nc24_lr0.0005_masked_l1_gradient",
               "r005_full_mean_residual_corrector_unet_nc28_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "Scaling to nc28 hurt versus V4 nc24; deprioritize size scaling for this family."
+            "planner_implication": "Scaling to nc28 hurt versus Sequential nc24; deprioritize size scaling for this family."
           },
           {
             "id": "F005",
@@ -630,7 +630,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "P4",
-            "pattern": "derived_feature_aggregate_unet hits 0.727 at only 5.1M params — best params/R2 ratio",
+            "pattern": "derived_feature_aggregate_unet hits 0.727 at only 5.1M params â€” best params/R2 ratio",
             "evidence_run_ids": [
               "r005_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
             ],
@@ -670,7 +670,7 @@ COMPACT_CONTEXT_JSON:
         "negative_patterns": [
           {
             "id": "N1",
-            "pattern": "Capacity scaling alone (nc24→nc28) without aug change does not reliably improve R2 and can regress",
+            "pattern": "Capacity scaling alone (nc24â†’nc28) without aug change does not reliably improve R2 and can regress",
             "evidence_run_ids": [
               "r005_full_mean_residual_corrector_unet_nc28_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
               "r004_full_mean_residual_corrector_unet_nc24_lr0.0005_masked_l1_gradient"
@@ -709,7 +709,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N003",
-            "pattern": "Scaling mean_residual_corrector_unet from V4 nc24 to R5 nc28 did not help.",
+            "pattern": "Scaling mean_residual_corrector_unet from Sequential nc24 to R5 nc28 did not help.",
             "evidence_run_ids": [
               "r004_full_mean_residual_corrector_unet_nc24_lr0.0005_masked_l1_gradient",
               "r005_full_mean_residual_corrector_unet_nc28_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
@@ -721,7 +721,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H1",
             "claim": "An ensemble of the top-3 r005 architectures (bgms_nc28+fliprot, bgms_nc24+fliprot+lr3.5e-4, derived_feature_aggregate_nc24) achieves R2_median > 0.7422 on val.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Top-3 archs differ in inductive bias (gating vs derived-features), reducing correlated error",
               "Per-case R2 patterns differ on KO-SE and UA-KY cases between archs"
@@ -731,27 +731,27 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H2",
             "claim": "bgms_nc32 d6 + flip_rot + lr3.5e-4 + 300 epochs beats nc28 200ep on R2_median.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
-              "nc24→nc28 with same recipe is monotonic (+0.0024 median) suggesting capacity is not yet saturated",
-              "lr 3.5e-4 vs 5e-4 at nc24 trade is ~0.002 — both viable"
+              "nc24â†’nc28 with same recipe is monotonic (+0.0024 median) suggesting capacity is not yet saturated",
+              "lr 3.5e-4 vs 5e-4 at nc24 trade is ~0.002 â€” both viable"
             ],
             "next_test": "One run: bgms nc32 d6 flip_rot lr3.5e-4 epochs=300 cosine."
           },
           {
             "id": "H3",
-            "claim": "Per-case loss weighting (upweighting KO-SE, UA-KY, FI-MS, US-Pho cases) on bgms_nc28 lifts R2_median by ≥0.005 without hurting easy cases.",
-            "source": "V4-result-driven",
+            "claim": "Per-case loss weighting (upweighting KO-SE, UA-KY, FI-MS, US-Pho cases) on bgms_nc28 lifts R2_median by â‰¥0.005 without hurting easy cases.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Across all r005 archs, those 4 case clusters bottom the per-case R2 distribution at 0.10-0.50",
-              "Easy cluster (UA0625, UA1111, VA*, VS*) is already at 0.95+ — little headroom there"
+              "Easy cluster (UA0625, UA1111, VA*, VS*) is already at 0.95+ â€” little headroom there"
             ],
             "next_test": "Implement weighted masked_l1_gradient with 2x weight on the bottom-quartile cases; train one bgms_nc28 run."
           },
           {
             "id": "H4",
-            "claim": "Adding flip_rot to derived_feature_aggregate_unet nc24 lifts it from 0.727 to ≥0.74, matching bgms-family.",
-            "source": "V4-result-driven",
+            "claim": "Adding flip_rot to derived_feature_aggregate_unet nc24 lifts it from 0.727 to â‰¥0.74, matching bgms-family.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "flip_rot uplift on bgms is +0.022 (no-aug control unavailable directly but inferred from r004 baseline)",
               "Pattern P2 holds across multiple arch families"
@@ -761,7 +761,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H001",
             "claim": "Boundary-gated multiscale UNet can beat the 0.7422 all-time best with seed averaging and lr/augmentation tuning.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r005_full_boundary_gated_multiscale_unet_nc28_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r005_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00035_masked_l1_gradient"
@@ -771,7 +771,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H002",
             "claim": "For strong UNet variants, no-augmentation may be competitive or better than flip_rot on this split.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r004_full_unet_v3_geomtok_nc24_lr0.0005_masked_l1_gradient",
               "r005_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
@@ -783,7 +783,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H003",
             "claim": "Derived feature aggregation is a useful secondary inductive bias but needs boundary gating or recipe tuning to become frontier.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r004_full_derived_feature_aggregate_unet_nc16_lr0.0005_masked_l1",
               "r005_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
@@ -837,7 +837,7 @@ COMPACT_CONTEXT_JSON:
               "r005_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
               "r005_full_boundary_gated_multiscale_unet_nc28_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
             ],
-            "reason": "Some no-augmentation R5 controls improved over V4 flip_rot, but the best R5 run used flip_rot. Needs matched controls."
+            "reason": "Some no-augmentation R5 controls improved over Sequential flip_rot, but the best R5 run used flip_rot. Needs matched controls."
           }
         ],
         "cooldowns": [
@@ -857,7 +857,7 @@ COMPACT_CONTEXT_JSON:
               "r004_full_hrnet_nc24_lr0.0005_masked_l1"
             ],
             "rounds": 2,
-            "auto_thaw_condition": "Retry only with sdf+normal + flip_rot + nc≥24."
+            "auto_thaw_condition": "Retry only with sdf+normal + flip_rot + ncâ‰¥24."
           },
           {
             "arch_family": "spectral_mixer",
@@ -879,7 +879,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "arch_family": "height_only_full_runs",
-            "reason": "Pattern P1 — every height-only full run is dominated by its sdf+normal sibling. Wasting compute.",
+            "reason": "Pattern P1 â€” every height-only full run is dominated by its sdf+normal sibling. Wasting compute.",
             "evidence_run_ids": [
               "r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1",
               "r005_full_squeeze_axial_detail_unet_nc16_d6_height_none_lr0.0005_masked_l1",
@@ -912,7 +912,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "arch_family": "standalone_attention_mixer_variants",
-            "reason": "Prior V4 and R5 attention/mixer-style variants are low-value relative to UNet-like geometry-aware models.",
+            "reason": "Prior Sequential and R5 attention/mixer-style variants are low-value relative to UNet-like geometry-aware models.",
             "evidence_run_ids": [
               "r004_full_transolver_lite_nc24_lr0.0005_masked_l1",
               "r004_full_tiled_spectral_mixer_unet_nc16_lr0.0005_masked_l1",
@@ -972,13 +972,13 @@ COMPACT_CONTEXT_JSON:
         }
       ],
       "recommendations": [
-        "Run multi-seed ensembles (seed 1/2/3) of boundary_gated_multiscale_unet nc24/d6/lr0.00045/flip_rot — ensemble median typically gains ~0.005–0.010 and could break 0.7422.",
-        "Extend training (300–400 epochs with EMA) on the top-3 architectures; the 200-epoch ceiling may be premature for fliprot variants whose effective dataset is 8×.",
-        "Combine top architectures: try iterative_residual_polisher_unet + flip_rot augmentation (currently noaug at 0.7363) — analogues gained from fliprot.",
-        "Stop scaling channels above nc=28 and depth above 6 — nc32/d7 hit OOM on A40 and H100 results show no monotonic gain (nc24 0.7351 > nc28 0.7323 for BGMS).",
-        "Drop dct_spectral_unet and boundary_strip_graph_mixer_unet from active rotation; cool down hilo_attn_unet and unet_v3_geomtok (replicate regression 0.7296→0.6968 indicates seed-fragility).",
-        "Avoid re-exploring height-only architectures; height_sdf_normal lifts every backbone by ≥0.10 R2 in this regime.",
-        "Pre-flight new architectures with parameter probe (>10M @ d=6 or >7M @ d=7 likely OOMs on A40) — route to H100 directly to save a wasted condor cycle.",
+        "Run multi-seed ensembles (seed 1/2/3) of boundary_gated_multiscale_unet nc24/d6/lr0.00045/flip_rot â€” ensemble median typically gains ~0.005â€“0.010 and could break 0.7422.",
+        "Extend training (300â€“400 epochs with EMA) on the top-3 architectures; the 200-epoch ceiling may be premature for fliprot variants whose effective dataset is 8Ã—.",
+        "Combine top architectures: try iterative_residual_polisher_unet + flip_rot augmentation (currently noaug at 0.7363) â€” analogues gained from fliprot.",
+        "Stop scaling channels above nc=28 and depth above 6 â€” nc32/d7 hit OOM on A40 and H100 results show no monotonic gain (nc24 0.7351 > nc28 0.7323 for BGMS).",
+        "Drop dct_spectral_unet and boundary_strip_graph_mixer_unet from active rotation; cool down hilo_attn_unet and unet_v3_geomtok (replicate regression 0.7296â†’0.6968 indicates seed-fragility).",
+        "Avoid re-exploring height-only architectures; height_sdf_normal lifts every backbone by â‰¥0.10 R2 in this regime.",
+        "Pre-flight new architectures with parameter probe (>10M @ d=6 or >7M @ d=7 likely OOMs on A40) â€” route to H100 directly to save a wasted condor cycle.",
         {
           "priority": 1,
           "recommendation": "Exploit boundary_gated_multiscale_unet nc24: run seeds 2-4, lr sweep around 0.00035/0.00040/0.00045/0.00050, and compare no_aug vs flip_rot. It has the best mean/global profile and is closest to benchmark quality."
@@ -986,13 +986,13 @@ COMPACT_CONTEXT_JSON:
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "The V4 best (0.7422) survived Round 6 because all 12 completed runs landed in [0.6052, 0.7363]. Strongest contender boundary_gated_multiscale_unet at lr=0.00045 with flip_rot reached 0.7351 — close but no overtake. Architectural diversification (DCT, graph-mixer, hilo-attn, geomtok, edge-offset-corrector) underperformed plain UNet+SDF baselines. Channel scaling (nc28, nc32) gave flat-to-negative returns, indicating the 0.74 plateau is likely a data/regularization ceiling rather than a capacity ceiling.",
+          "summary": "The Sequential best (0.7422) survived Round 6 because all 12 completed runs landed in [0.6052, 0.7363]. Strongest contender boundary_gated_multiscale_unet at lr=0.00045 with flip_rot reached 0.7351 â€” close but no overtake. Architectural diversification (DCT, graph-mixer, hilo-attn, geomtok, edge-offset-corrector) underperformed plain UNet+SDF baselines. Channel scaling (nc28, nc32) gave flat-to-negative returns, indicating the 0.74 plateau is likely a data/regularization ceiling rather than a capacity ceiling.",
           "cited_failed_attempts": [
-            "r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1 (0.6052 — height-only frequency basis lacks geometric inductive bias)",
-            "r006_full_boundary_strip_graph_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient (0.6960 — graph mixer on boundary strip not competitive with dense conv)",
-            "r006_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient (0.6968 — replicate of r005 0.7296 regressed, seed-fragile)",
-            "r006_full_hilo_attn_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient_retry2 (0.6998 — Hi/Lo attention split adds VRAM cost without accuracy gain)",
-            "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1 (0.7240 — 10.7M params, depth 7 underperforms 7.8M depth-6 BGMS)"
+            "r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1 (0.6052 â€” height-only frequency basis lacks geometric inductive bias)",
+            "r006_full_boundary_strip_graph_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient (0.6960 â€” graph mixer on boundary strip not competitive with dense conv)",
+            "r006_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient (0.6968 â€” replicate of r005 0.7296 regressed, seed-fragile)",
+            "r006_full_hilo_attn_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient_retry2 (0.6998 â€” Hi/Lo attention split adds VRAM cost without accuracy gain)",
+            "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1 (0.7240 â€” 10.7M params, depth 7 underperforms 7.8M depth-6 BGMS)"
           ]
         },
         "failure_taxonomy": [
@@ -1003,7 +1003,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r006_full_unet_sdf_7level_nc32_d7_height_sdf_normal_none_lr0.0005_masked_l1"
             ],
-            "planner_implication": "nc32 d7 (~14M params) OOMs on A40 even at batch=8; route ≥10M-param d=7 configs to H100 directly."
+            "planner_implication": "nc32 d7 (~14M params) OOMs on A40 even at batch=8; route â‰¥10M-param d=7 configs to H100 directly."
           },
           {
             "id": "F2",
@@ -1039,7 +1039,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1"
             ],
-            "planner_implication": "Frequency-basis encoding without geometric features (sdf/normal) loses ≥0.13 R2 vs same-class baselines. Skip height-only configs."
+            "planner_implication": "Frequency-basis encoding without geometric features (sdf/normal) loses â‰¥0.13 R2 vs same-class baselines. Skip height-only configs."
           },
           {
             "id": "F6",
@@ -1058,7 +1058,7 @@ COMPACT_CONTEXT_JSON:
               "r006_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
               "r005_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "Same config replicate dropped 0.7296→0.6968. Seed-fragile; require multi-seed before drawing conclusions."
+            "planner_implication": "Same config replicate dropped 0.7296â†’0.6968. Seed-fragile; require multi-seed before drawing conclusions."
           },
           {
             "id": "F1",
@@ -1109,7 +1109,7 @@ COMPACT_CONTEXT_JSON:
         "positive_patterns": [
           {
             "id": "P1",
-            "pattern": "flip_rot augmentation lifts sdfgrad-loss UNet variants by 0.005–0.008 R2_median",
+            "pattern": "flip_rot augmentation lifts sdfgrad-loss UNet variants by 0.005â€“0.008 R2_median",
             "evidence_run_ids": [
               "r006_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient",
               "r006_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
@@ -1129,14 +1129,14 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "P3",
-            "pattern": "nc24/depth=6 is the sweet spot — capacity above this gives flat returns",
+            "pattern": "nc24/depth=6 is the sweet spot â€” capacity above this gives flat returns",
             "evidence_run_ids": [
               "r006_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient",
               "r006_full_boundary_gated_multiscale_unet_nc28_d6_height_sdf_normal_flip_rot_lr0.00035_masked_l1_gradient",
               "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1",
               "r006_full_unet_sdf_7level_nc32_d7_height_sdf_normal_none_lr0.0005_masked_l1_retry2"
             ],
-            "planner_implication": "Stop sweeping nc≥28 and d≥7."
+            "planner_implication": "Stop sweeping ncâ‰¥28 and dâ‰¥7."
           },
           {
             "id": "P1",
@@ -1184,7 +1184,7 @@ COMPACT_CONTEXT_JSON:
               "r006_full_iterative_residual_polisher_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient_retry2",
               "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1"
             ],
-            "planner_implication": "Median R2 ceiling is data-limited at these specific cases — architectural changes alone won't push past ~0.74. Consider data augmentation or per-case loss reweighting."
+            "planner_implication": "Median R2 ceiling is data-limited at these specific cases â€” architectural changes alone won't push past ~0.74. Consider data augmentation or per-case loss reweighting."
           },
           {
             "id": "N1",
@@ -1219,7 +1219,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H1",
             "claim": "Multi-seed ensembling of boundary_gated_multiscale_unet nc24/d6/lr0.00045/flip_rot will exceed 0.7422",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r006_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient @ 0.7351"
             ],
@@ -1228,7 +1228,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H2",
             "claim": "iterative_residual_polisher_unet + flip_rot will push past 0.7400 (currently 0.7363 noaug)",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r006_full_iterative_residual_polisher_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient_retry2 @ 0.7363",
               "P1 fliprot lift pattern"
@@ -1237,8 +1237,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H3",
-            "claim": "300-epoch training with cosine LR will lift fliprot variants by ≥0.005 (effective dataset 8× — converges later)",
-            "source": "V4-result-driven",
+            "claim": "300-epoch training with cosine LR will lift fliprot variants by â‰¥0.005 (effective dataset 8Ã— â€” converges later)",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r006_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient @ 0.7351"
             ],
@@ -1247,7 +1247,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H4",
             "claim": "Hard-case reweighted loss (mass on KO-SE-* and UA-KY-*) raises r2_median without sacrificing easy-case R2",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "per-case R2<0.4 on KO-SE-V4_d45, UA-KY-V14_d90, UA-KY-V11_d00 across all top-4 archs"
             ],
@@ -1255,8 +1255,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H1",
-            "claim": "Boundary-gated multiscale U-Net can beat the V4 benchmark with seed/learning-rate tuning rather than more width.",
-            "source": "V4-result-driven",
+            "claim": "Boundary-gated multiscale U-Net can beat the Sequential benchmark with seed/learning-rate tuning rather than more width.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "nc24 lr0.00045 reached 0.7351 with best round mean/global",
               "nc28 lr0.00035 reached only 0.7323 despite more parameters"
@@ -1266,7 +1266,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H2",
             "claim": "Residual polishing improves median but over-specializes, lowering mean/global robustness.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "iterative_residual_polisher_unet reached R6-best median 0.7363 but mean/global were 0.7063/0.6968"
             ],
@@ -1275,7 +1275,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H3",
             "claim": "Geometry-derived input features are mandatory for competitive results.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "height_sdf_normal top runs reached 0.733-0.736",
               "height-only dct_spectral_unet reached only 0.605"
@@ -1307,7 +1307,7 @@ COMPACT_CONTEXT_JSON:
             "evidence": [
               "r006_full_dct_spectral_unet @ 0.6052"
             ],
-            "reason": "DCT spectral basis without geometric features (sdf/normal) loses ≥0.13 R2 vs all baselines."
+            "reason": "DCT spectral basis without geometric features (sdf/normal) loses â‰¥0.13 R2 vs all baselines."
           },
           {
             "hypothesis_id": "H_prior_fliprot_helps",
@@ -1316,7 +1316,7 @@ COMPACT_CONTEXT_JSON:
               "BGMS fliprot 0.7351 > prior BGMS noaug analogues",
               "derived_feature_aggregate fliprot 0.7333 > r005 noaug 0.7266"
             ],
-            "reason": "Flip+rot augmentation consistently lifts top architectures by ~0.005–0.008."
+            "reason": "Flip+rot augmentation consistently lifts top architectures by ~0.005â€“0.008."
           },
           {
             "hypothesis_id": "H_prior_geomtok_promising",
@@ -1324,7 +1324,7 @@ COMPACT_CONTEXT_JSON:
             "evidence": [
               "r005_full_unet_v3_geomtok 0.7296 vs r006_full_unet_v3_geomtok replicate 0.6968"
             ],
-            "reason": "Same config dropped 0.033 R2 across replicates — architecture is seed-fragile and not reliably above plain UNet."
+            "reason": "Same config dropped 0.033 R2 across replicates â€” architecture is seed-fragile and not reliably above plain UNet."
           },
           {
             "hypothesis_id": "H_prior_iterative_refinement",
@@ -1343,11 +1343,11 @@ COMPACT_CONTEXT_JSON:
               "r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1"
             ],
             "rounds": 3,
-            "auto_thaw_condition": "Only re-test if combined with sdf/normal channels and depth≥6."
+            "auto_thaw_condition": "Only re-test if combined with sdf/normal channels and depthâ‰¥6."
           },
           {
             "arch_family": "boundary_strip_graph_mixer_unet",
-            "reason": "Graph-mixer on boundary strip costs 5600s for 0.6960 — strictly dominated",
+            "reason": "Graph-mixer on boundary strip costs 5600s for 0.6960 â€” strictly dominated",
             "evidence_run_ids": [
               "r006_full_boundary_strip_graph_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
             ],
@@ -1365,13 +1365,13 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "arch_family": "unet_v3_geomtok",
-            "reason": "Replicate regression 0.7296→0.6968 indicates seed fragility",
+            "reason": "Replicate regression 0.7296â†’0.6968 indicates seed fragility",
             "evidence_run_ids": [
               "r006_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
               "r005_full_unet_v3_geomtok_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
             ],
             "rounds": 1,
-            "auto_thaw_condition": "Stable mean over 3 seeds within ±0.01."
+            "auto_thaw_condition": "Stable mean over 3 seeds within Â±0.01."
           },
           {
             "arch_family": "pid_dcb_unet",
@@ -1383,7 +1383,7 @@ COMPACT_CONTEXT_JSON:
             "auto_thaw_condition": "Slim variant <8M params."
           },
           {
-            "arch_family": "unet_sdf_7level (nc≥28, d=7)",
+            "arch_family": "unet_sdf_7level (ncâ‰¥28, d=7)",
             "reason": "Capacity scaling unproductive; OOMs on A40 at nc=32",
             "evidence_run_ids": [
               "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1",
@@ -1446,12 +1446,12 @@ COMPACT_CONTEXT_JSON:
         {
           "exp_id": "r007_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1_gradient",
           "r2_median": 0.7382,
-          "note": "Lower-LR + deeper sdf7 backbone, no aug — strong but does not surpass best"
+          "note": "Lower-LR + deeper sdf7 backbone, no aug â€” strong but does not surpass best"
         },
         {
           "exp_id": "r007_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0004_masked_l1_gradient",
           "r2_median": 0.7327,
-          "note": "Best r2_mean (0.7288) and best mae_mean (0.0734) of round — most uniformly strong"
+          "note": "Best r2_mean (0.7288) and best mae_mean (0.0734) of round â€” most uniformly strong"
         },
         {
           "exp_id": "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
@@ -1473,18 +1473,18 @@ COMPACT_CONTEXT_JSON:
         }
       ],
       "recommendations": [
-        "Confirm tt_adapter_decoder_unet champion with multi-seed runs (seeds 2,3) at the exact winning config to verify it is not a single-seed lucky draw — the prior best was also 0.7523, so within-noise replication is uncertain.",
+        "Confirm tt_adapter_decoder_unet champion with multi-seed runs (seeds 2,3) at the exact winning config to verify it is not a single-seed lucky draw â€” the prior best was also 0.7523, so within-noise replication is uncertain.",
         "Capacity-scale tt_adapter_decoder_unet (try nc32 d6 with lr3e-4 and lr4e-4); it is currently only 6.1M params and may be underparameterized vs sdf7 d7 7.85M.",
         "Try tt_adapter_decoder_unet with depth=7 plus lr3.5e-4 and noaug, copying the regime that worked for unet_sdf_7level.",
-        "Stop launching nc16 explorers — four of them in round 7 all scored 0.67–0.69. They are firmly below the 0.72 floor of the nc24 family.",
-        "Target the KO-SE / UA-KY hard-case bucket directly: per-case R2 there is 0.1–0.4 across every architecture. Consider hard-example oversampling or per-domain loss weighting in next round, since these cases dominate the gap between r2_global (~0.71) and r2_median (~0.73-0.75).",
-        "Cool down iterative_residual_polisher_unet with flip_rot — 0.6951 fliprot vs 0.7363 noaug shows aug actively harms it. If revisited, run noaug only.",
-        "Cool down semi_lagrangian_warp_unet, cross_scale_operator_token_unet, lowrank_spatial_operator_unet, multiscale_linear_attention_decoder_unet for ≥2 rounds; all sub-0.69 with no obvious lever left untried.",
-        "Promote a final-mile run that combines seed-ensembling of top-3 architectures (tt_adapter_decoder, unet_sdf_7level, boundary_gated_multiscale) — ensembling is the most likely path to break 0.76 given each single arch plateaus near 0.75."
+        "Stop launching nc16 explorers â€” four of them in round 7 all scored 0.67â€“0.69. They are firmly below the 0.72 floor of the nc24 family.",
+        "Target the KO-SE / UA-KY hard-case bucket directly: per-case R2 there is 0.1â€“0.4 across every architecture. Consider hard-example oversampling or per-domain loss weighting in next round, since these cases dominate the gap between r2_global (~0.71) and r2_median (~0.73-0.75).",
+        "Cool down iterative_residual_polisher_unet with flip_rot â€” 0.6951 fliprot vs 0.7363 noaug shows aug actively harms it. If revisited, run noaug only.",
+        "Cool down semi_lagrangian_warp_unet, cross_scale_operator_token_unet, lowrank_spatial_operator_unet, multiscale_linear_attention_decoder_unet for â‰¥2 rounds; all sub-0.69 with no obvious lever left untried.",
+        "Promote a final-mile run that combines seed-ensembling of top-3 architectures (tt_adapter_decoder, unet_sdf_7level, boundary_gated_multiscale) â€” ensembling is the most likely path to break 0.76 given each single arch plateaus near 0.75."
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "Champion tt_adapter_decoder_unet at 0.7523 only matches (does not exceed) the prior best 0.7523. Strong runners-up cluster 0.73–0.74. Across the round, gains over the sdf7-family baseline (~0.72–0.74) are within noise. The hard-case bucket (KO-SE, UA-KY, FI-MS-V1) caps ceiling: every architecture scores 0.10–0.50 on these regardless of capacity or augmentation, dragging r2_global below r2_median. Until that bucket is targeted explicitly (per-case loss weighting, hard-example mining, or domain-aware regularization), median R2 will continue to plateau in the 0.73–0.75 band.",
+          "summary": "Champion tt_adapter_decoder_unet at 0.7523 only matches (does not exceed) the prior best 0.7523. Strong runners-up cluster 0.73â€“0.74. Across the round, gains over the sdf7-family baseline (~0.72â€“0.74) are within noise. The hard-case bucket (KO-SE, UA-KY, FI-MS-V1) caps ceiling: every architecture scores 0.10â€“0.50 on these regardless of capacity or augmentation, dragging r2_global below r2_median. Until that bucket is targeted explicitly (per-case loss weighting, hard-example mining, or domain-aware regularization), median R2 will continue to plateau in the 0.73â€“0.75 band.",
           "cited_failed_attempts": [
             "r007_full_iterative_residual_polisher_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient (0.6951, regressed from r006 retry 0.7363 once flip_rot added)",
             "r007_full_semi_lagrangian_warp_unet_nc16_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient (0.6740)",
@@ -1549,7 +1549,7 @@ COMPACT_CONTEXT_JSON:
               "r007_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0004_masked_l1_gradient",
               "r007_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1_gradient"
             ],
-            "planner_implication": "Every arch fails on KO-SE_d00/d45 (R2 0.13–0.49) and UA-KY_d90 (R2 0.07–0.22). This is a generalization failure class, not architecture-specific. Target with per-domain loss weighting, hard-example mining, or domain-aware augmentation, not by adding more architectures."
+            "planner_implication": "Every arch fails on KO-SE_d00/d45 (R2 0.13â€“0.49) and UA-KY_d90 (R2 0.07â€“0.22). This is a generalization failure class, not architecture-specific. Target with per-domain loss weighting, hard-example mining, or domain-aware augmentation, not by adding more architectures."
           },
           {
             "id": "F001",
@@ -1601,7 +1601,7 @@ COMPACT_CONTEXT_JSON:
         "positive_patterns": [
           {
             "id": "P1",
-            "pattern": "nc24, depth 6, masked_l1_gradient, height_sdf_normal, flip_rot, lr 4e-4 to 5e-4 — the dominant successful regime",
+            "pattern": "nc24, depth 6, masked_l1_gradient, height_sdf_normal, flip_rot, lr 4e-4 to 5e-4 â€” the dominant successful regime",
             "evidence_run_ids": [
               "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r007_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0004_masked_l1_gradient",
@@ -1616,7 +1616,7 @@ COMPACT_CONTEXT_JSON:
               "r007_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1_gradient",
               "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1"
             ],
-            "planner_implication": "When trying d7 variants, default to noaug + lr ≤ 4e-4."
+            "planner_implication": "When trying d7 variants, default to noaug + lr â‰¤ 4e-4."
           },
           {
             "id": "P3",
@@ -1658,14 +1658,14 @@ COMPACT_CONTEXT_JSON:
         "negative_patterns": [
           {
             "id": "N1",
-            "pattern": "nc16 explorers ceiling at 0.67–0.69 regardless of architectural novelty",
+            "pattern": "nc16 explorers ceiling at 0.67â€“0.69 regardless of architectural novelty",
             "evidence_run_ids": [
               "r007_full_semi_lagrangian_warp_unet_nc16_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r007_full_cross_scale_operator_token_unet_nc16_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r007_full_lowrank_spatial_operator_unet_nc16_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient",
               "r007_full_multiscale_linear_attention_decoder_unet_nc16_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "Skip nc16 in v6_full slots; only use nc16 for cheap resource probes."
+            "planner_implication": "Skip nc16 in hybrid_full slots; only use nc16 for cheap resource probes."
           },
           {
             "id": "N2",
@@ -1701,7 +1701,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H7-1",
             "claim": "tt_adapter_decoder_unet champion (0.7523) is reproducible across seeds; the prior 0.7523 was not architecture-specific.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient (0.7523)"
             ],
@@ -1710,7 +1710,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H7-2",
             "claim": "Capacity-scaling tt_adapter_decoder_unet to nc32 (or depth 7 + noaug + lr3.5e-4) breaks the 0.7523 ceiling.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r007_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1_gradient"
@@ -1719,27 +1719,27 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H7-3",
-            "claim": "The 0.73–0.75 plateau is bounded by hard-case generalization (KO-SE, UA-KY, FI-MS-V1), not architecture; per-domain loss weighting or hard-example oversampling will unlock >0.76.",
-            "source": "V4-result-driven",
+            "claim": "The 0.73â€“0.75 plateau is bounded by hard-case generalization (KO-SE, UA-KY, FI-MS-V1), not architecture; per-domain loss weighting or hard-example oversampling will unlock >0.76.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
-              "r007 per_case_r2 across all 12 architectures shows KO-SE/UA-KY consistently 0.10–0.50 while VA/VS train-like cases stay 0.85–0.99",
+              "r007 per_case_r2 across all 12 architectures shows KO-SE/UA-KY consistently 0.10â€“0.50 while VA/VS train-like cases stay 0.85â€“0.99",
               "r006 per_case_r2 shows identical pattern"
             ],
-            "next_test": "Run the current champion arch (tt_adapter_decoder_unet) once with a hard-case-weighted loss (e.g., 2× weight on KO-SE/UA-KY/FI-MS) and once with hard-example oversampling; compare r2_median + KO-SE bucket R2."
+            "next_test": "Run the current champion arch (tt_adapter_decoder_unet) once with a hard-case-weighted loss (e.g., 2Ã— weight on KO-SE/UA-KY/FI-MS) and once with hard-example oversampling; compare r2_median + KO-SE bucket R2."
           },
           {
             "id": "H7-4",
             "claim": "Seed-ensembling top-3 architectures (tt_adapter_decoder, unet_sdf_7level d7, boundary_gated_multiscale) raises r2_median above 0.76 even without further architecture search.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
-              "Three architectures plateau independently at 0.73–0.75 with non-overlapping per_case_r2 strengths (e.g., bgms wins on UA64_d45=0.7694; sdf7 wins on UA64_d45=0.8305; tt_adapter wins on AU-Mel-U14_d90=0.7523)"
+              "Three architectures plateau independently at 0.73â€“0.75 with non-overlapping per_case_r2 strengths (e.g., bgms wins on UA64_d45=0.7694; sdf7 wins on UA64_d45=0.8305; tt_adapter wins on AU-Mel-U14_d90=0.7523)"
             ],
             "next_test": "Train each of the top 3 with 3 seeds; compute median-of-ensembled-predictions r2_median."
           },
           {
             "id": "H008",
             "claim": "tt_adapter_decoder_unet is a true frontier architecture and can exceed 0.7523 with LR/loss tuning or seed replication.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
             ],
@@ -1748,7 +1748,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H009",
             "claim": "SDF-7 benefits more from conservative LR and capacity discipline than from width scaling.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r007_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1_gradient",
               "r006_full_unet_sdf_7level_nc28_d7_height_sdf_normal_none_lr0.0005_masked_l1",
@@ -1759,7 +1759,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H010",
             "claim": "Boundary-gated multiscale U-Net is a robust but not necessarily median-winning family.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r007_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0004_masked_l1_gradient",
               "r007_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1"
@@ -1790,7 +1790,7 @@ COMPACT_CONTEXT_JSON:
             "hypothesis_id": "H6-nc16-explorers-can-compete",
             "outcome": "refuted",
             "evidence": [
-              "r007 four nc16 architectures all in 0.6740–0.6910 range vs nc24 baseline 0.72+"
+              "r007 four nc16 architectures all in 0.6740â€“0.6910 range vs nc24 baseline 0.72+"
             ],
             "reason": "Across four distinct architectural ideas (warp, token, lowrank, linear-attention), nc16 capacity floor caps performance below the nc24 baseline. Capacity dominates novelty at this scale."
           },
@@ -1893,12 +1893,12 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "arch_family": "dct_spectral_unet",
-            "reason": "Catastrophic underfit in r006 (0.6052) on height-only; not retried in r007 — confirm cooldown",
+            "reason": "Catastrophic underfit in r006 (0.6052) on height-only; not retried in r007 â€” confirm cooldown",
             "evidence_run_ids": [
               "r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1"
             ],
             "rounds": 2,
-            "auto_thaw_condition": "Resume only with height_sdf_normal features and depth ≥ 6."
+            "auto_thaw_condition": "Resume only with height_sdf_normal features and depth â‰¥ 6."
           },
           {
             "arch_family": "nc16_operator_attention_warp_explorers",
@@ -1968,18 +1968,18 @@ COMPACT_CONTEXT_JSON:
         }
       ],
       "recommendations": [
-        "Re-run boundary_gated_multiscale_unet@nc24/d6/lr4e-4/none with 2 alternate seeds (e.g., 2,3) to confirm whether 0.7484 is a stable estimate or seed luck — gap to benchmark (0.0039) is plausibly seed noise.",
+        "Re-run boundary_gated_multiscale_unet@nc24/d6/lr4e-4/none with 2 alternate seeds (e.g., 2,3) to confirm whether 0.7484 is a stable estimate or seed luck â€” gap to benchmark (0.0039) is plausibly seed noise.",
         "Try boundary_gated_multiscale_unet at depth=7 and at n_c=32/d6 (with explicit OOM guard); also test lr={3e-4, 5e-4} to bracket the 4e-4 result.",
-        "Drop hyperinr_residual_head, coarse_to_fine_ladder, and the SSM family (multiscale_ssm_pyramid, noncausal_neighbor_ssm) — both SSM variants needed H100 just to fit and still landed below 0.70.",
-        "Augmentation contrast: for the top-3 architectures, run a paired none-vs-flip_rot ablation; round-008 has none>flip_rot for boundary_gated_multiscale (0.7484 vs n/a) and unet_sdf_7level (0.7204), which weakens the prior pro-flip_rot prior — confirm.",
-        "Investigate KO-SE_* and UA-KY-V14 specifically: every architecture in r008 lands per-case R² 0.07–0.40 there. Consider a per-case difficulty-weighted loss or domain-aware features rather than another architecture sweep.",
-        "Stop running OOM-prone architectures on L40S without an estimated_params guard — three retries each just to discover a fixed limit wastes a queue slot.",
+        "Drop hyperinr_residual_head, coarse_to_fine_ladder, and the SSM family (multiscale_ssm_pyramid, noncausal_neighbor_ssm) â€” both SSM variants needed H100 just to fit and still landed below 0.70.",
+        "Augmentation contrast: for the top-3 architectures, run a paired none-vs-flip_rot ablation; round-008 has none>flip_rot for boundary_gated_multiscale (0.7484 vs n/a) and unet_sdf_7level (0.7204), which weakens the prior pro-flip_rot prior â€” confirm.",
+        "Investigate KO-SE_* and UA-KY-V14 specifically: every architecture in r008 lands per-case RÂ² 0.07â€“0.40 there. Consider a per-case difficulty-weighted loss or domain-aware features rather than another architecture sweep.",
+        "Stop running OOM-prone architectures on L40S without an estimated_params guard â€” three retries each just to discover a fixed limit wastes a queue slot.",
         "Exploit boundary_gated_multiscale_unet: rerun nc24/d6 with lr around 0.00035-0.00045, compare none vs light flip only, and add one seed repeat to test robustness near the 0.7523 benchmark.",
         "Try a slightly cheaper boundary_gated_multiscale_unet variant, e.g. nc20 or gated bottleneck reduction, because the current run used 41.7 GB and is close to L40S limits."
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "V4 benchmark of 0.7523 still leads. Best r008 attempt (boundary_gated_multiscale_unet, 0.7484) is within seed noise but did not surpass. Other architectures (tt_adapter, unet_sdf_7level d7, derived_feature_aggregate) plateaued in 0.71–0.72; SSM-family and HyperINR underperformed and consumed disproportionate resources to even fit.",
+          "summary": "Sequential benchmark of 0.7523 still leads. Best r008 attempt (boundary_gated_multiscale_unet, 0.7484) is within seed noise but did not surpass. Other architectures (tt_adapter, unet_sdf_7level d7, derived_feature_aggregate) plateaued in 0.71â€“0.72; SSM-family and HyperINR underperformed and consumed disproportionate resources to even fit.",
           "cited_failed_attempts": [
             "r008_full_hyperinr_residual_head_unet_nc24_d6_height_sdf_normal_none_lr0.00035_masked_l1_gradient (0.6730)",
             "r008_full_coarse_to_fine_ladder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient (0.6994)",
@@ -2025,7 +2025,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r008_full_multiscale_ssm_pyramid_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient_retry3"
             ],
-            "planner_implication": "Once it ran (H100, peak 65.9 GB), it scored 0.6954 — well below benchmark. Cooldown."
+            "planner_implication": "Once it ran (H100, peak 65.9 GB), it scored 0.6954 â€” well below benchmark. Cooldown."
           },
           {
             "id": "F5",
@@ -2053,7 +2053,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r008_full_coarse_to_fine_ladder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "0.6994 — multi-scale ladder under-delivers vs simpler boundary-gated."
+            "planner_implication": "0.6994 â€” multi-scale ladder under-delivers vs simpler boundary-gated."
           },
           {
             "id": "F8",
@@ -2062,7 +2062,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient"
             ],
-            "planner_implication": "Round-best 0.7484 is within ~0.004 of the V4 benchmark 0.7523. Treat as a near-tie until multi-seed evidence resolves it."
+            "planner_implication": "Round-best 0.7484 is within ~0.004 of the Sequential benchmark 0.7523. Treat as a near-tie until multi-seed evidence resolves it."
           },
           {
             "id": "F1",
@@ -2143,7 +2143,7 @@ COMPACT_CONTEXT_JSON:
         "positive_patterns": [
           {
             "id": "P1",
-            "pattern": "Boundary-gated multiscale features with no augmentation and lr=4e-4 produce the strongest single architecture this round (0.7484), tightening the gap to V4 benchmark on the same height_sdf_normal+masked_l1_gradient recipe.",
+            "pattern": "Boundary-gated multiscale features with no augmentation and lr=4e-4 produce the strongest single architecture this round (0.7484), tightening the gap to Sequential benchmark on the same height_sdf_normal+masked_l1_gradient recipe.",
             "evidence_run_ids": [
               "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient"
             ],
@@ -2158,7 +2158,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
               "r008_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "Keep d=6, nc=24 as the default; depth=7 only buys a fractional gain (≤0.01) at higher VRAM cost."
+            "planner_implication": "Keep d=6, nc=24 as the default; depth=7 only buys a fractional gain (â‰¤0.01) at higher VRAM cost."
           },
           {
             "id": "P3",
@@ -2201,16 +2201,16 @@ COMPACT_CONTEXT_JSON:
         "negative_patterns": [
           {
             "id": "N1",
-            "pattern": "SSM-family (multiscale_ssm_pyramid, noncausal_neighbor_ssm) consistently OOMs on L40S and lands below 0.70 even on H100 — high resource cost, low return.",
+            "pattern": "SSM-family (multiscale_ssm_pyramid, noncausal_neighbor_ssm) consistently OOMs on L40S and lands below 0.70 even on H100 â€” high resource cost, low return.",
             "evidence_run_ids": [
               "r008_full_multiscale_ssm_pyramid_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient_retry3",
               "r008_full_noncausal_neighbor_ssm_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient_retry3"
             ],
-            "planner_implication": "Cooldown SSM family for ≥2 rounds; require an OOM-safe variant before re-queueing."
+            "planner_implication": "Cooldown SSM family for â‰¥2 rounds; require an OOM-safe variant before re-queueing."
           },
           {
             "id": "N2",
-            "pattern": "Implicit/INR heads (hyperinr_residual_head_unet) underperform vanilla decoders at matched capacity and depth, scoring 0.6730 — round floor.",
+            "pattern": "Implicit/INR heads (hyperinr_residual_head_unet) underperform vanilla decoders at matched capacity and depth, scoring 0.6730 â€” round floor.",
             "evidence_run_ids": [
               "r008_full_hyperinr_residual_head_unet_nc24_d6_height_sdf_normal_none_lr0.00035_masked_l1_gradient"
             ],
@@ -2218,7 +2218,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "N3",
-            "pattern": "Per-case R² shows persistent drag on KO-SE_* (0.15–0.39) and UA-KY-V14_d90 (0.06–0.30) across every architecture in r008.",
+            "pattern": "Per-case RÂ² shows persistent drag on KO-SE_* (0.15â€“0.39) and UA-KY-V14_d90 (0.06â€“0.30) across every architecture in r008.",
             "evidence_run_ids": [
               "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
               "r008_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.0003_masked_l1_gradient",
@@ -2249,17 +2249,17 @@ COMPACT_CONTEXT_JSON:
         "recommended_hypotheses": [
           {
             "id": "H1",
-            "claim": "boundary_gated_multiscale_unet @ nc24/d6/lr4e-4/none/sdfgrad will exceed the V4 benchmark when run on additional seeds (≥3 seeds, mean ≥ 0.7523).",
-            "source": "V4-result-driven",
+            "claim": "boundary_gated_multiscale_unet @ nc24/d6/lr4e-4/none/sdfgrad will exceed the Sequential benchmark when run on additional seeds (â‰¥3 seeds, mean â‰¥ 0.7523).",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7484, seed=1)"
             ],
-            "next_test": "Re-run with seed={2,3,4}; report mean and stdev; promote if mean≥benchmark."
+            "next_test": "Re-run with seed={2,3,4}; report mean and stdev; promote if meanâ‰¥benchmark."
           },
           {
             "id": "H2",
-            "claim": "Increasing capacity for boundary_gated_multiscale_unet (n_c=32 at d=6, or d=7 at n_c=24) yields a small lift at the cost of VRAM, but at most 0.01 — depth-7 ceiling already observed via unet_sdf_7level (0.7204).",
-            "source": "V4-result-driven",
+            "claim": "Increasing capacity for boundary_gated_multiscale_unet (n_c=32 at d=6, or d=7 at n_c=24) yields a small lift at the cost of VRAM, but at most 0.01 â€” depth-7 ceiling already observed via unet_sdf_7level (0.7204).",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7484)",
               "r008_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.0003_masked_l1_gradient (0.7204)"
@@ -2268,8 +2268,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H3",
-            "claim": "Per-case difficulty-weighted loss (upweighting KO-SE_* and UA-KY-V14 within masked_l1_gradient) raises r2_median by ≥0.01 across multiple architectures.",
-            "source": "V4-result-driven",
+            "claim": "Per-case difficulty-weighted loss (upweighting KO-SE_* and UA-KY-V14 within masked_l1_gradient) raises r2_median by â‰¥0.01 across multiple architectures.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (per_case_r2 KO-SE_V4_d45=0.286, UA-KY-V14_d90=0.127)"
             ],
@@ -2278,7 +2278,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H8-1",
             "claim": "boundary_gated_multiscale_unet can exceed 0.7523 with a narrow LR/augmentation/seed search.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "0.748428 at lr=0.0004 no augmentation, best Round 8 result"
             ],
@@ -2286,8 +2286,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H8-2",
-            "claim": "flip_rot augmentation is not generally beneficial for top V4 contenders.",
-            "source": "V4-result-driven",
+            "claim": "flip_rot augmentation is not generally beneficial for top Sequential contenders.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Best run used no augmentation; several flip_rot variants scored 0.7169 or lower, with dual_branch at 0.7218"
             ],
@@ -2296,7 +2296,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H8-3",
             "claim": "SSM and iterative polisher families are resource-biased without validation benefit.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Multiple L40S/A40 OOMs; H100 retries completed at 0.6954, 0.6984, and 0.7140"
             ],
@@ -2373,7 +2373,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_noncausal_neighbor_ssm_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient_retry3"
             ],
             "rounds": 2,
-            "auto_thaw_condition": "An OOM-safe SSM variant (≤32 GB peak on L40S) is proposed AND a related architecture (e.g., gated state-space attention) scores ≥0.74 in another family."
+            "auto_thaw_condition": "An OOM-safe SSM variant (â‰¤32 GB peak on L40S) is proposed AND a related architecture (e.g., gated state-space attention) scores â‰¥0.74 in another family."
           },
           {
             "arch_family": "hyperinr_*",
@@ -2382,7 +2382,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_hyperinr_residual_head_unet_nc24_d6_height_sdf_normal_none_lr0.00035_masked_l1_gradient"
             ],
             "rounds": 2,
-            "auto_thaw_condition": "Implicit/INR-head idea is paired with a different backbone (e.g., boundary_gated) and shows ≥0.005 lift on a small ablation."
+            "auto_thaw_condition": "Implicit/INR-head idea is paired with a different backbone (e.g., boundary_gated) and shows â‰¥0.005 lift on a small ablation."
           },
           {
             "arch_family": "iterative_residual_polisher_unet",
@@ -2393,7 +2393,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_iterative_residual_polisher_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry3"
             ],
             "rounds": 1,
-            "auto_thaw_condition": "Memory-trimmed variant fits on L40S at batch=16 AND seed-1 score ≥ 0.74."
+            "auto_thaw_condition": "Memory-trimmed variant fits on L40S at batch=16 AND seed-1 score â‰¥ 0.74."
           },
           {
             "arch_family": "coarse_to_fine_ladder_unet",
@@ -2402,7 +2402,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_coarse_to_fine_ladder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
             ],
             "rounds": 1,
-            "auto_thaw_condition": "Run with augmentation=none and lr=4e-4 to match top-runner recipe; thaw if ≥0.72."
+            "auto_thaw_condition": "Run with augmentation=none and lr=4e-4 to match top-runner recipe; thaw if â‰¥0.72."
           },
           {
             "arch_family": "multiscale_ssm_pyramid_unet",
@@ -2431,7 +2431,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_hyperinr_residual_head_unet_nc24_d6_height_sdf_normal_none_lr0.00035_masked_l1_gradient"
             ],
             "rounds": 2,
-            "auto_thaw_condition": "Only revisit with a materially different head or evidence from another V4 run."
+            "auto_thaw_condition": "Only revisit with a materially different head or evidence from another Sequential run."
           }
         ]
       },
@@ -2484,11 +2484,11 @@ COMPACT_CONTEXT_JSON:
         }
       ],
       "recommendations": [
-        "Stop pure exploit on boundary_gated_multiscale at this fidelity — three variants now cluster 0.72-0.73 with no clear winner; pivot to multi-seed averaging (seeds 1,2,3) on tt_adapter_decoder_unet + boundary_gated_multiscale to test if ensemble breaks 0.7523",
-        "tt_adapter_decoder_unet is the only round-9 arch above 0.736; try (a) flip_rot at lr0.0004, (b) flip_rot + nc28, (c) flip_rot + epochs=300 to push it toward V4 benchmark",
-        "Targeted hard-case loss reweighting: KO-SE-V4_d00, KO-SE-V4_d45, UA-KY-V14_d90 are below 0.30 across nearly every architecture — try per-case importance weights or curriculum on these patches",
-        "dual_branch_boundary_film_unet regressed sharply when augmentation was removed (0.7218 → 0.7104). Lock 'flip_rot' as default for FiLM-conditioned arches when retrying",
-        "Drop latent_grid_adapter_unet for ≥2 rounds — OOM-driven param collapse + low ceiling makes it dominated",
+        "Stop pure exploit on boundary_gated_multiscale at this fidelity â€” three variants now cluster 0.72-0.73 with no clear winner; pivot to multi-seed averaging (seeds 1,2,3) on tt_adapter_decoder_unet + boundary_gated_multiscale to test if ensemble breaks 0.7523",
+        "tt_adapter_decoder_unet is the only round-9 arch above 0.736; try (a) flip_rot at lr0.0004, (b) flip_rot + nc28, (c) flip_rot + epochs=300 to push it toward Sequential benchmark",
+        "Targeted hard-case loss reweighting: KO-SE-V4_d00, KO-SE-V4_d45, UA-KY-V14_d90 are below 0.30 across nearly every architecture â€” try per-case importance weights or curriculum on these patches",
+        "dual_branch_boundary_film_unet regressed sharply when augmentation was removed (0.7218 â†’ 0.7104). Lock 'flip_rot' as default for FiLM-conditioned arches when retrying",
+        "Drop latent_grid_adapter_unet for â‰¥2 rounds â€” OOM-driven param collapse + low ceiling makes it dominated",
         "Consider seed-ensemble (avg of 3 seeds) of best-of-round (tt_adapter_decoder_unet) before generating new architectures, as round-9 evidence shows variance between near-identical configs ~0.01-0.02 r2_median",
         {
           "priority": 1,
@@ -2501,11 +2501,11 @@ COMPACT_CONTEXT_JSON:
       ],
       "knowledge_update": {
         "benchmark_survival_explanation": {
-          "summary": "The 0.7523 V4 benchmark survives round 9 because no round-9 candidate exceeded 0.7368. Three distinct exploit attempts (boundary_gated_multiscale at lr0.000375 noaug, derived_feature_aggregate at lr0.0004 noaug, dual_branch_boundary_film at lr0.0004 noaug) failed to lift their archs above the prior leader, and the best round-9 arch (tt_adapter_decoder_unet) shows architectural ceiling near 0.74 even at favorable hyperparameters. Persistent low-R2 cases (KO-SE, UA-KY) cap the median across all candidates, suggesting the benchmark beats them via either better hard-case behavior or better mid-tier consistency that current candidates don't replicate.",
+          "summary": "The 0.7523 Sequential benchmark survives round 9 because no round-9 candidate exceeded 0.7368. Three distinct exploit attempts (boundary_gated_multiscale at lr0.000375 noaug, derived_feature_aggregate at lr0.0004 noaug, dual_branch_boundary_film at lr0.0004 noaug) failed to lift their archs above the prior leader, and the best round-9 arch (tt_adapter_decoder_unet) shows architectural ceiling near 0.74 even at favorable hyperparameters. Persistent low-R2 cases (KO-SE, UA-KY) cap the median across all candidates, suggesting the benchmark beats them via either better hard-case behavior or better mid-tier consistency that current candidates don't replicate.",
           "cited_failed_attempts": [
             "r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient (0.7316)",
             "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient (0.7368)",
-            "r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7170 vs r008 0.7169 with flip_rot — flat)",
+            "r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7170 vs r008 0.7169 with flip_rot â€” flat)",
             "r009_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7104, regressed from r008 0.7218)",
             "r009_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1 (0.7115)"
           ]
@@ -2518,7 +2518,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
             ],
-            "planner_implication": "Initial attempt OOMed on L40S after first backward pass (1.76 GiB shortfall) despite low param count — internal grid memory blow-up is shape-dependent and not predictable from param count. Probe peak memory before committing the variant."
+            "planner_implication": "Initial attempt OOMed on L40S after first backward pass (1.76 GiB shortfall) despite low param count â€” internal grid memory blow-up is shape-dependent and not predictable from param count. Probe peak memory before committing the variant."
           },
           {
             "id": "F2",
@@ -2527,7 +2527,7 @@ COMPACT_CONTEXT_JSON:
             "evidence_run_ids": [
               "r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2"
             ],
-            "planner_implication": "After OOM workaround, model trained with only 0.92M params (vs 5-7M for other arches in round) and underperformed broadly. Adapter bottleneck is too aggressive — capacity floor for this arch family is too low to be competitive. Cooldown."
+            "planner_implication": "After OOM workaround, model trained with only 0.92M params (vs 5-7M for other arches in round) and underperformed broadly. Adapter bottleneck is too aggressive â€” capacity floor for this arch family is too low to be competitive. Cooldown."
           },
           {
             "id": "F3",
@@ -2537,7 +2537,7 @@ COMPACT_CONTEXT_JSON:
               "r009_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
               "r008_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
             ],
-            "planner_implication": "FiLM-conditioned dual-branch arch loses ~1.1pt r2_median when augmentation is removed (r008 0.7218 → r009 0.7104). Augmentation appears load-bearing for FiLM regularization, not optional."
+            "planner_implication": "FiLM-conditioned dual-branch arch loses ~1.1pt r2_median when augmentation is removed (r008 0.7218 â†’ r009 0.7104). Augmentation appears load-bearing for FiLM regularization, not optional."
           },
           {
             "id": "F4",
@@ -2654,7 +2654,7 @@ COMPACT_CONTEXT_JSON:
         "negative_patterns": [
           {
             "id": "N1",
-            "pattern": "Increasing depth from 6 → 7 (unet_sdf_7level) does not improve and may hurt — 0.7115 with 7.85M params, while shallow 6-level boundary_gated at similar params hits 0.7316",
+            "pattern": "Increasing depth from 6 â†’ 7 (unet_sdf_7level) does not improve and may hurt â€” 0.7115 with 7.85M params, while shallow 6-level boundary_gated at similar params hits 0.7316",
             "evidence_run_ids": [
               "r009_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1"
             ],
@@ -2668,7 +2668,7 @@ COMPACT_CONTEXT_JSON:
               "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient",
               "r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
             ],
-            "planner_implication": "Architecture changes won't close this gap — try targeted loss reweighting, per-case curriculum, or hard-case data augmentation."
+            "planner_implication": "Architecture changes won't close this gap â€” try targeted loss reweighting, per-case curriculum, or hard-case data augmentation."
           },
           {
             "id": "N3",
@@ -2711,8 +2711,8 @@ COMPACT_CONTEXT_JSON:
         "recommended_hypotheses": [
           {
             "id": "H1",
-            "claim": "Seed ensembling (3 seeds) of tt_adapter_decoder_unet flip_rot lr0.00045 will exceed the 0.7523 V4 benchmark",
-            "source": "V4-result-driven",
+            "claim": "Seed ensembling (3 seeds) of tt_adapter_decoder_unet flip_rot lr0.00045 will exceed the 0.7523 Sequential benchmark",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient (0.7368 single seed)"
             ],
@@ -2721,25 +2721,25 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H2",
             "claim": "Hard-case loss reweighting (2x weight on KO-SE and UA-KY patches during training) lifts best-of-round model from 0.737 to >0.755",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
-              "12 round-9 runs all show KO-SE/UA-KY below 0.30 — consistent failure mode"
+              "12 round-9 runs all show KO-SE/UA-KY below 0.30 â€” consistent failure mode"
             ],
             "next_test": "Re-run boundary_gated_multiscale_unet nc24 d6 lr0.000375 with case-weighted loss; compare r2_median and per-case improvement on flagged cases"
           },
           {
             "id": "H3",
-            "claim": "Extending training from 200 → 300 epochs on tt_adapter_decoder_unet pushes it past 0.74 (saturation not yet reached)",
-            "source": "V4-result-driven",
+            "claim": "Extending training from 200 â†’ 300 epochs on tt_adapter_decoder_unet pushes it past 0.74 (saturation not yet reached)",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
-              "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient (1518s on H100 — cheap to extend)"
+              "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient (1518s on H100 â€” cheap to extend)"
             ],
             "next_test": "Same config with epochs=300 and EMA decay 0.9995; check if r2_median continues to improve"
           },
           {
             "id": "H4",
             "claim": "Flip_rot augmentation is necessary for FiLM-style conditioning architectures (regression from r008)",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r008_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient (0.7218)",
               "r009_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7104)"
@@ -2748,8 +2748,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H1",
-            "claim": "TT adapter decoder can close more of the gap to the V4 best if trained noaug with slightly lower LR.",
-            "source": "V4-result-driven",
+            "claim": "TT adapter decoder can close more of the gap to the Sequential best if trained noaug with slightly lower LR.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient reached 0.7368, best of round, despite weak hard cases."
             ],
@@ -2758,7 +2758,7 @@ COMPACT_CONTEXT_JSON:
           {
             "id": "H2",
             "claim": "Boundary-gated multiscale performance is capacity-sensitive and can improve with nc24+ and LR tuning.",
-            "source": "V4-result-driven",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient scored 0.7316 versus nc20 at 0.7233."
             ],
@@ -2766,8 +2766,8 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "id": "H3",
-            "claim": "Hard-case robustness, not average easy-case performance, is the main blocker to beating the V4 current-best.",
-            "source": "V4-result-driven",
+            "claim": "Hard-case robustness, not average easy-case performance, is the main blocker to beating the Sequential current-best.",
+            "source": "Sequential-result-driven",
             "evidence_so_far": [
               "Top challengers still show very low UA-KY-V14, KO-SE, and some US-Pho scores while synthetic/VA/VS cases are near saturated."
             ],
@@ -2782,7 +2782,7 @@ COMPACT_CONTEXT_JSON:
               "r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient (0.7316)",
               "r009_full_boundary_gated_multiscale_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7233)"
             ],
-            "reason": "Two no-augmentation exploit variants both fell short of the V4 benchmark; removing augmentation does not unlock more performance from this family"
+            "reason": "Two no-augmentation exploit variants both fell short of the Sequential benchmark; removing augmentation does not unlock more performance from this family"
           },
           {
             "hypothesis_id": "H_prior_deeper_unet_d7",
@@ -2799,7 +2799,7 @@ COMPACT_CONTEXT_JSON:
               "r008_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient (0.7169)",
               "r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient (0.7170)"
             ],
-            "reason": "Two near-identical scores across r008 (with aug, lr0.0005) and r009 (no aug, lr0.0004) — variant is at its ceiling; further hyperparameter perturbation is unlikely to break 0.72"
+            "reason": "Two near-identical scores across r008 (with aug, lr0.0005) and r009 (no aug, lr0.0004) â€” variant is at its ceiling; further hyperparameter perturbation is unlikely to break 0.72"
           },
           {
             "hypothesis_id": "H_prior_latent_grid_adapter",
@@ -2871,7 +2871,7 @@ COMPACT_CONTEXT_JSON:
         "cooldowns": [
           {
             "arch_family": "latent_grid_adapter_unet",
-            "reason": "OOM under default settings forced sub-1M-param config that scored 0.567 — well below all peers; capacity floor too low",
+            "reason": "OOM under default settings forced sub-1M-param config that scored 0.567 â€” well below all peers; capacity floor too low",
             "evidence_run_ids": [
               "r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient",
               "r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2"
@@ -2881,7 +2881,7 @@ COMPACT_CONTEXT_JSON:
           },
           {
             "arch_family": "boundary_pressure_basis_unet",
-            "reason": "0.6915 — lowest non-collapsed score; basis projection appears to bottleneck information critical for hard cases",
+            "reason": "0.6915 â€” lowest non-collapsed score; basis projection appears to bottleneck information critical for hard cases",
             "evidence_run_ids": [
               "r009_full_boundary_pressure_basis_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient"
             ],
@@ -2987,7 +2987,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "boundary_gated_multiscale_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3031,13 +3031,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6960728430850259,
             "KO-SE-V4_d00": 0.4099719861398309,
             "KO-SE-V4_d45": 0.25555540399573584,
-            "KO-SE-V6_d00": 0.5090529209489887,
+            "KO-SE-hybrid_d00": 0.5090529209489887,
             "KO-SE-V8_d00": 0.5638570871788402,
             "SG-Boo-U1_d15": 0.6368461764647875,
             "SG-Boo-U1_d90": 0.600808596155556,
             "UA-KY-V11_d00": 0.40184024615998815,
             "UA-KY-V14_d90": 0.10248396755764833,
-            "UA-KY-V6_d00": 0.5728879929747915,
+            "UA-KY-hybrid_d00": 0.5728879929747915,
             "UA0625_d45": 0.9906115892929658,
             "UA1111_d45": 0.9892787989199499,
             "UA25_d45": 0.9615800653241118,
@@ -3074,7 +3074,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T13:29:13.719440Z"
       },
       "val_r2_median": 0.7315550349501169
@@ -3117,7 +3117,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_boundary_gated_multiscale_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "boundary_gated_multiscale_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3161,13 +3161,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.7049014053598248,
             "KO-SE-V4_d00": 0.4062753105741369,
             "KO-SE-V4_d45": 0.25232907168317376,
-            "KO-SE-V6_d00": 0.5253057670057285,
+            "KO-SE-hybrid_d00": 0.5253057670057285,
             "KO-SE-V8_d00": 0.5207350235284538,
             "SG-Boo-U1_d15": 0.6148711635896984,
             "SG-Boo-U1_d90": 0.589084404710547,
             "UA-KY-V11_d00": 0.34013474429347923,
             "UA-KY-V14_d90": 0.11465289722306504,
-            "UA-KY-V6_d00": 0.5386337205527202,
+            "UA-KY-hybrid_d00": 0.5386337205527202,
             "UA0625_d45": 0.9908935927669698,
             "UA1111_d45": 0.9893499934565324,
             "UA25_d45": 0.960972194459573,
@@ -3204,7 +3204,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_boundary_gated_multiscale_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_boundary_gated_multiscale_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T13:10:40.062814Z"
       },
       "val_r2_median": 0.7233054638110687
@@ -3247,7 +3247,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "tt_adapter_decoder_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3291,13 +3291,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6961421357321038,
             "KO-SE-V4_d00": 0.3186748972493938,
             "KO-SE-V4_d45": 0.22072807026915242,
-            "KO-SE-V6_d00": 0.5102125227742381,
+            "KO-SE-hybrid_d00": 0.5102125227742381,
             "KO-SE-V8_d00": 0.503262963714356,
             "SG-Boo-U1_d15": 0.6241388134687875,
             "SG-Boo-U1_d90": 0.5992515967746717,
             "UA-KY-V11_d00": 0.3958234038339633,
             "UA-KY-V14_d90": -0.040982371209005386,
-            "UA-KY-V6_d00": 0.5202039115113916,
+            "UA-KY-hybrid_d00": 0.5202039115113916,
             "UA0625_d45": 0.9901365794025084,
             "UA1111_d45": 0.9892386635236171,
             "UA25_d45": 0.9582832901103137,
@@ -3334,7 +3334,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T12:01:09.756451Z"
       },
       "val_r2_median": 0.7368035278700551
@@ -3377,7 +3377,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "dual_branch_boundary_film_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3421,13 +3421,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6712511829134518,
             "KO-SE-V4_d00": 0.33787550028598035,
             "KO-SE-V4_d45": 0.18777581237547192,
-            "KO-SE-V6_d00": 0.4545759288694492,
+            "KO-SE-hybrid_d00": 0.4545759288694492,
             "KO-SE-V8_d00": 0.46407703832852665,
             "SG-Boo-U1_d15": 0.5293518885196107,
             "SG-Boo-U1_d90": 0.5622189487220863,
             "UA-KY-V11_d00": 0.3351869714861101,
             "UA-KY-V14_d90": 0.12948245875635822,
-            "UA-KY-V6_d00": 0.5129134329347396,
+            "UA-KY-hybrid_d00": 0.5129134329347396,
             "UA0625_d45": 0.9859038639540962,
             "UA1111_d45": 0.9843651357078561,
             "UA25_d45": 0.9635952672952605,
@@ -3464,7 +3464,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_dual_branch_boundary_film_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T13:07:08.070853Z"
       },
       "val_r2_median": 0.7104455178404789
@@ -3507,7 +3507,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 7,
       "metrics": {
         "experiment_id": "r009_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "unet_sdf_7level",
         "loss_name": "masked_l1",
         "arch_kwargs": {
@@ -3551,13 +3551,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6512590196186158,
             "KO-SE-V4_d00": 0.2559348994376399,
             "KO-SE-V4_d45": 0.13394952256749038,
-            "KO-SE-V6_d00": 0.37139507636855884,
+            "KO-SE-hybrid_d00": 0.37139507636855884,
             "KO-SE-V8_d00": 0.45865563258990916,
             "SG-Boo-U1_d15": 0.6529014308718815,
             "SG-Boo-U1_d90": 0.5404727218689385,
             "UA-KY-V11_d00": 0.33572525695096544,
             "UA-KY-V14_d90": 0.13511390984954197,
-            "UA-KY-V6_d00": 0.460207968649873,
+            "UA-KY-hybrid_d00": 0.460207968649873,
             "UA0625_d45": 0.9860746433914999,
             "UA1111_d45": 0.9868142613547175,
             "UA25_d45": 0.9677995028528962,
@@ -3594,7 +3594,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1/model.py",
         "timestamp": "2026-05-09T12:48:55.896384Z"
       },
       "val_r2_median": 0.711536225302116
@@ -3637,7 +3637,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "derived_feature_aggregate_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3681,13 +3681,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6726232622052284,
             "KO-SE-V4_d00": 0.28759396111098745,
             "KO-SE-V4_d45": 0.2529302978296719,
-            "KO-SE-V6_d00": 0.45844023009433255,
+            "KO-SE-hybrid_d00": 0.45844023009433255,
             "KO-SE-V8_d00": 0.5250615571378743,
             "SG-Boo-U1_d15": 0.6172564410839774,
             "SG-Boo-U1_d90": 0.5988474118995321,
             "UA-KY-V11_d00": 0.3582287004934507,
             "UA-KY-V14_d90": 0.13742633335989973,
-            "UA-KY-V6_d00": 0.5118264915021757,
+            "UA-KY-hybrid_d00": 0.5118264915021757,
             "UA0625_d45": 0.9886599606171202,
             "UA1111_d45": 0.9877642065295539,
             "UA25_d45": 0.954979058652474,
@@ -3724,7 +3724,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T12:50:03.755926Z"
       },
       "val_r2_median": 0.7169862276566327
@@ -3767,7 +3767,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_mlp_multiscale_decoder_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "mlp_multiscale_decoder_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3811,13 +3811,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.7033714306570424,
             "KO-SE-V4_d00": 0.39743900982101155,
             "KO-SE-V4_d45": 0.3332868479228843,
-            "KO-SE-V6_d00": 0.35247784244827884,
+            "KO-SE-hybrid_d00": 0.35247784244827884,
             "KO-SE-V8_d00": 0.5835709929963016,
             "SG-Boo-U1_d15": 0.6102726720026371,
             "SG-Boo-U1_d90": 0.5961718675389169,
             "UA-KY-V11_d00": 0.2964610553585185,
             "UA-KY-V14_d90": 0.20408468975854455,
-            "UA-KY-V6_d00": 0.5716423596604006,
+            "UA-KY-hybrid_d00": 0.5716423596604006,
             "UA0625_d45": 0.9856969251933785,
             "UA1111_d45": 0.987289773756065,
             "UA25_d45": 0.9621150874161857,
@@ -3854,7 +3854,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_mlp_multiscale_decoder_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_mlp_multiscale_decoder_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T12:13:25.645269Z"
       },
       "val_r2_median": 0.7128336766837797
@@ -3897,7 +3897,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "physics_state_slice_mixer_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -3941,13 +3941,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.7144000537673902,
             "KO-SE-V4_d00": 0.4061720033297732,
             "KO-SE-V4_d45": 0.27750550003166863,
-            "KO-SE-V6_d00": 0.4196471841813617,
+            "KO-SE-hybrid_d00": 0.4196471841813617,
             "KO-SE-V8_d00": 0.514633058971997,
             "SG-Boo-U1_d15": 0.6232287392446052,
             "SG-Boo-U1_d90": 0.5971412680424424,
             "UA-KY-V11_d00": 0.2835569701374353,
             "UA-KY-V14_d90": 0.11193961503242145,
-            "UA-KY-V6_d00": 0.5052639244709487,
+            "UA-KY-hybrid_d00": 0.5052639244709487,
             "UA0625_d45": 0.9865211351039553,
             "UA1111_d45": 0.9801415613953839,
             "UA25_d45": 0.9625395015095366,
@@ -3984,7 +3984,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T12:03:04.562038Z"
       },
       "val_r2_median": 0.7281206223998109
@@ -4027,7 +4027,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_spatial_prior_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "spatial_prior_adapter_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -4071,13 +4071,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.7093115003879771,
             "KO-SE-V4_d00": 0.301634169774862,
             "KO-SE-V4_d45": 0.24333495555333406,
-            "KO-SE-V6_d00": 0.3967571282453234,
+            "KO-SE-hybrid_d00": 0.3967571282453234,
             "KO-SE-V8_d00": 0.5009055289159683,
             "SG-Boo-U1_d15": 0.6579067368079747,
             "SG-Boo-U1_d90": 0.5843898398367906,
             "UA-KY-V11_d00": 0.2915480259286668,
             "UA-KY-V14_d90": 0.18668615820728618,
-            "UA-KY-V6_d00": 0.5438984286872828,
+            "UA-KY-hybrid_d00": 0.5438984286872828,
             "UA0625_d45": 0.98514094096697,
             "UA1111_d45": 0.9879240080622843,
             "UA25_d45": 0.9444704858383262,
@@ -4114,7 +4114,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_spatial_prior_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_spatial_prior_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T12:09:25.607913Z"
       },
       "val_r2_median": 0.7132519089615712
@@ -4157,7 +4157,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "dual_spatial_channel_agg_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -4201,13 +4201,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.683789641104213,
             "KO-SE-V4_d00": 0.43718249182819346,
             "KO-SE-V4_d45": 0.2810168972877194,
-            "KO-SE-V6_d00": 0.13744881191313563,
+            "KO-SE-hybrid_d00": 0.13744881191313563,
             "KO-SE-V8_d00": 0.5099248969968213,
             "SG-Boo-U1_d15": 0.6215299149307085,
             "SG-Boo-U1_d90": 0.5308986087189906,
             "UA-KY-V11_d00": 0.33515791338855005,
             "UA-KY-V14_d90": 0.16858404766842883,
-            "UA-KY-V6_d00": 0.5301297388698496,
+            "UA-KY-hybrid_d00": 0.5301297388698496,
             "UA0625_d45": 0.9874709830152147,
             "UA1111_d45": 0.9840719161635343,
             "UA25_d45": 0.9633086327554563,
@@ -4244,7 +4244,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T13:06:56.154581Z"
       },
       "val_r2_median": 0.7189420857657879
@@ -4287,7 +4287,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_boundary_pressure_basis_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "boundary_pressure_basis_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -4331,13 +4331,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.6799221777212874,
             "KO-SE-V4_d00": 0.29076206988932596,
             "KO-SE-V4_d45": 0.19229516722156637,
-            "KO-SE-V6_d00": 0.440484822306215,
+            "KO-SE-hybrid_d00": 0.440484822306215,
             "KO-SE-V8_d00": 0.4750482360367323,
             "SG-Boo-U1_d15": 0.6388831943609361,
             "SG-Boo-U1_d90": 0.5761424101541532,
             "UA-KY-V11_d00": 0.26828836118962585,
             "UA-KY-V14_d90": 0.15405415866689076,
-            "UA-KY-V6_d00": 0.517290977882326,
+            "UA-KY-hybrid_d00": 0.517290977882326,
             "UA0625_d45": 0.9874812143901466,
             "UA1111_d45": 0.9874897577458297,
             "UA25_d45": 0.9664861308267831,
@@ -4374,7 +4374,7 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_boundary_pressure_basis_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_boundary_pressure_basis_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py",
         "timestamp": "2026-05-09T12:29:55.639729Z"
       },
       "val_r2_median": 0.691522700565732
@@ -4416,7 +4416,7 @@ COMPACT_CONTEXT_JSON:
       "depth": 6,
       "metrics": {
         "experiment_id": "r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2",
-        "strategy": "v6_full",
+        "strategy": "hybrid_full",
         "arch_name": "latent_grid_adapter_unet",
         "loss_name": "masked_l1_gradient",
         "arch_kwargs": {
@@ -4460,13 +4460,13 @@ COMPACT_CONTEXT_JSON:
             "IT-ROM-V4_d00": 0.5879434806576289,
             "KO-SE-V4_d00": 0.22691968921158734,
             "KO-SE-V4_d45": 0.007628122312462793,
-            "KO-SE-V6_d00": 0.19842405920616712,
+            "KO-SE-hybrid_d00": 0.19842405920616712,
             "KO-SE-V8_d00": 0.2953414626569054,
             "SG-Boo-U1_d15": 0.47017991898575806,
             "SG-Boo-U1_d90": 0.36019988704434913,
             "UA-KY-V11_d00": 0.3039006389938823,
             "UA-KY-V14_d90": 0.12510448155585285,
-            "UA-KY-V6_d00": 0.45560288137437577,
+            "UA-KY-hybrid_d00": 0.45560288137437577,
             "UA0625_d45": 0.9783912027526727,
             "UA1111_d45": 0.9788020624974384,
             "UA25_d45": 0.9396160970169926,
@@ -4503,14 +4503,14 @@ COMPACT_CONTEXT_JSON:
         "split_hash": "d510fc05b39c4cf504a32fd4d48a9dccf3d6767ce1818168c62194472e1cce08",
         "error_message": null,
         "early_stop_info": null,
-        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2/model.py",
+        "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r009_full_latent_grid_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient_retry2/model.py",
         "timestamp": "2026-05-09T12:35:39.533424Z"
       },
       "val_r2_median": 0.5668652229860189
     }
   ],
   "novelty_index": {
-    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "policy": "Use this Sequential-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
     "seen_arch_names": [
       "adaptive_afno_unet",
       "attn_ssm_neighbor_unet",
@@ -6912,7 +6912,7 @@ COMPACT_CONTEXT_JSON:
             ]
           },
           {
-            "title": "Rainfusion: Integrating Prandtl’s mixing length theory",
+            "title": "Rainfusion: Integrating Prandtlâ€™s mixing length theory",
             "url": "https://ieee.org",
             "flags": [
               "homepage_like_url"
@@ -6937,7 +6937,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "kept_weak_examples": [
           {
-            "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+            "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
             "url": "https://www.researchgate.net/publication/TVI-Derain",
             "flags": [
               "suspicious_non_paper_source"
@@ -7046,7 +7046,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json"
         },
         {
           "query": "image restoration lightweight state space model U-Net dense prediction 2025",
@@ -7086,7 +7086,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json"
         },
         {
           "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
@@ -7115,7 +7115,7 @@ COMPACT_CONTEXT_JSON:
           ],
           "cache_candidate": true,
           "cache_candidate_source_count": 2,
-          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json"
+          "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json"
         }
       ],
       "adaptive_policy": {
@@ -7368,20 +7368,20 @@ COMPACT_CONTEXT_JSON:
       "reuse_hints": {
         "enabled": true,
         "scanned_artifacts": [
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r008\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r007\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r006\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r005\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r004\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r003\\external_sources_gemini.json",
-          "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r002\\external_sources_gemini.json"
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r008\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r007\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r006\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r005\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r004\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r003\\external_sources_gemini.json",
+          "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r002\\external_sources_gemini.json"
         ],
         "cache_candidate_count": 3,
         "cluster_cache_candidate_count": 3,
         "by_query": {
           "airfoil building wind pressure field prediction neural operator 2025": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
             "query": "airfoil building wind pressure field prediction neural operator 2025",
             "topic_cluster": "cfd_pressure_surrogate",
             "source_count": 2,
@@ -7399,7 +7399,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -7416,20 +7416,20 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "dense prediction transformer lightweight decoder adapter segmentation restoration 2025": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
             "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
             "topic_cluster": "dense_prediction_transformer",
             "source_count": 2,
             "sources": [
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -7443,12 +7443,12 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -7462,14 +7462,14 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r008\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r008\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "implicit neural representation hypernetwork image to field prediction architecture": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
             "query": "implicit neural representation hypernetwork image to field prediction architecture",
             "topic_cluster": "inr_hypernetwork",
             "source_count": 2,
@@ -7487,7 +7487,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -7504,7 +7504,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
@@ -7513,7 +7513,7 @@ COMPACT_CONTEXT_JSON:
         },
         "by_topic_cluster": {
           "cfd_pressure_surrogate": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
             "query": "airfoil building wind pressure field prediction neural operator 2025",
             "topic_cluster": "cfd_pressure_surrogate",
             "source_count": 2,
@@ -7531,7 +7531,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -7548,20 +7548,20 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "dense_prediction_transformer": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
             "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
             "topic_cluster": "dense_prediction_transformer",
             "source_count": 2,
             "sources": [
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -7575,12 +7575,12 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
               {
-                "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+                "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
                 "url": "https://www.researchgate.net/publication/TVI-Derain",
                 "year": 2025,
                 "topic_cluster": "dense_prediction_transformer",
@@ -7594,14 +7594,14 @@ COMPACT_CONTEXT_JSON:
                   "suspicious_non_paper_source"
                 ],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r008\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r008\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
             ]
           },
           "inr_hypernetwork": {
-            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+            "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
             "query": "implicit neural representation hypernetwork image to field prediction architecture",
             "topic_cluster": "inr_hypernetwork",
             "source_count": 2,
@@ -7619,7 +7619,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               },
@@ -7636,7 +7636,7 @@ COMPACT_CONTEXT_JSON:
                 "reliability_score": 1.0,
                 "reliability_flags": [],
                 "hard_excluded_from_codex": false,
-                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+                "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
                 "cache_candidate": true,
                 "reused_source": true
               }
@@ -7671,17 +7671,17 @@ COMPACT_CONTEXT_JSON:
         "inr_hypernetwork": 2,
         "dense_prediction_transformer": 1
       },
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\external_sources_gemini.json"
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\external_sources_gemini.json"
     },
     "codex_web_ideas": {
       "status": "ok",
       "idea_count": 12,
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\external_ideas_codex_web.json"
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\external_ideas_codex_web.json"
     },
     "claude_local_review": {
       "status": "ok",
       "reviewed_count": 12,
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\external_ideas_review.json",
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\external_ideas_review.json",
       "topic_cluster_counts": {
         "cfd_pressure_surrogate": 2,
         "geometry_aware_cfd": 1,
@@ -7714,7 +7714,7 @@ COMPACT_CONTEXT_JSON:
       "summary": "12 ideas reviewed under locked height-only single-frame 2D contract. Top-tier (keep=4): r10_ext_03 (geometry-landmark tokens), r10_ext_06 (visual context replay decoder), r10_ext_09 (pseudo-station anchor fusion), r10_ext_05 (META cross-shape adapter). Mid-tier (keep=3): r10_ext_01, r10_ext_02, r10_ext_07, r10_ext_10. Low-tier overlap with seen archs (keep<=2): r10_ext_04 (SSM, OOM-prone), r10_ext_08 (semi-lagrangian warp duplicate), r10_ext_11 (LIIF head duplicate), r10_ext_12 (hypernet adapter duplicate). Recommend explorer slots use ideas 03, 05, 06, 09; route the rest to capacity-matched paired comparisons or down-rank."
     },
     "quality_report": {
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\web_scout_quality_report.json",
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\web_scout_quality_report.json",
       "status": "ok",
       "query_mode": "routine",
       "query_rotation": 10,
@@ -7906,7 +7906,7 @@ COMPACT_CONTEXT_JSON:
             ]
           },
           {
-            "title": "Rainfusion: Integrating Prandtl’s mixing length theory",
+            "title": "Rainfusion: Integrating Prandtlâ€™s mixing length theory",
             "url": "https://ieee.org",
             "flags": [
               "homepage_like_url"
@@ -7931,7 +7931,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "kept_weak_examples": [
           {
-            "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+            "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
             "url": "https://www.researchgate.net/publication/TVI-Derain",
             "flags": [
               "suspicious_non_paper_source"
@@ -8047,8 +8047,8 @@ COMPACT_CONTEXT_JSON:
       ]
     },
     "yield_artifact": {
-      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\web_query_yield.json",
-      "jsonl_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\web_query_yield.jsonl",
+      "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\web_query_yield.json",
+      "jsonl_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r010\\web_query_yield.jsonl",
       "record_count": 6
     },
     "missing_clusters_for_next_round": [
@@ -8174,7 +8174,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json"
       },
       {
         "query": "image restoration lightweight state space model U-Net dense prediction 2025",
@@ -8214,7 +8214,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json"
       },
       {
         "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
@@ -8243,7 +8243,7 @@ COMPACT_CONTEXT_JSON:
         ],
         "cache_candidate": true,
         "cache_candidate_source_count": 2,
-        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json"
+        "cache_candidate_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json"
       }
     ],
     "adaptive_policy": {
@@ -8501,20 +8501,20 @@ COMPACT_CONTEXT_JSON:
     "reuse_hints": {
       "enabled": true,
       "scanned_artifacts": [
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r008\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r007\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r006\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r005\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r004\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r003\\external_sources_gemini.json",
-        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r002\\external_sources_gemini.json"
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r008\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r007\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r006\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r005\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r004\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r003\\external_sources_gemini.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r002\\external_sources_gemini.json"
       ],
       "cache_candidate_count": 3,
       "cluster_cache_candidate_count": 3,
       "by_query": {
         "airfoil building wind pressure field prediction neural operator 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
           "query": "airfoil building wind pressure field prediction neural operator 2025",
           "topic_cluster": "cfd_pressure_surrogate",
           "source_count": 2,
@@ -8532,7 +8532,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -8549,20 +8549,20 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "dense prediction transformer lightweight decoder adapter segmentation restoration 2025": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
           "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
           "topic_cluster": "dense_prediction_transformer",
           "source_count": 2,
           "sources": [
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -8576,12 +8576,12 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -8595,14 +8595,14 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r008\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r008\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "implicit neural representation hypernetwork image to field prediction architecture": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
           "topic_cluster": "inr_hypernetwork",
           "source_count": 2,
@@ -8620,7 +8620,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -8637,7 +8637,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
@@ -8646,7 +8646,7 @@ COMPACT_CONTEXT_JSON:
       },
       "by_topic_cluster": {
         "cfd_pressure_surrogate": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
           "query": "airfoil building wind pressure field prediction neural operator 2025",
           "topic_cluster": "cfd_pressure_surrogate",
           "source_count": 2,
@@ -8664,7 +8664,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -8681,20 +8681,20 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "dense_prediction_transformer": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
           "query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025",
           "topic_cluster": "dense_prediction_transformer",
           "source_count": 2,
           "sources": [
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -8708,12 +8708,12 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
             {
-              "title": "TVI-Derain: Textual–Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
+              "title": "TVI-Derain: Textualâ€“Visual Interaction for Enhanced Single Image Deraining using Adapter-tuned VLMs",
               "url": "https://www.researchgate.net/publication/TVI-Derain",
               "year": 2025,
               "topic_cluster": "dense_prediction_transformer",
@@ -8727,14 +8727,14 @@ COMPACT_CONTEXT_JSON:
                 "suspicious_non_paper_source"
               ],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r008\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r008\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
           ]
         },
         "inr_hypernetwork": {
-          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+          "artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
           "query": "implicit neural representation hypernetwork image to field prediction architecture",
           "topic_cluster": "inr_hypernetwork",
           "source_count": 2,
@@ -8752,7 +8752,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             },
@@ -8769,7 +8769,7 @@ COMPACT_CONTEXT_JSON:
               "reliability_score": 1.0,
               "reliability_flags": [],
               "hard_excluded_from_codex": false,
-              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r009\\external_sources_gemini.json",
+              "reused_from_artifact": "<HYBRID_SOURCE_ROOT>\\campaigns\\hybrid\\artifacts\\r009\\external_sources_gemini.json",
               "cache_candidate": true,
               "reused_source": true
             }
@@ -8814,7 +8814,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Boundary tokens derived from internal Sobel/Laplacian on the single height channel; FiLM-style modulation broadcasts back into U-Net skips.",
         "ablation_removes_mechanism": "Replace boundary-token mixer outputs with zeros or restrict to local 3x3 edge gates only.",
         "implementation_risk": "Moderate; overlaps conceptually with seen boundary_token_mixer_unet and boundary_strip_graph_mixer_unet families.",
-        "minimal_implementation_in_auto_v6": "Boundary extractor + 2-3 token-mixer residual blocks + per-scale affine gates injected into existing encoder-decoder backbone at nc=16, depth=6.",
+        "minimal_implementation_in_hybrid": "Boundary extractor + 2-3 token-mixer residual blocks + per-scale affine gates injected into existing encoder-decoder backbone at nc=16, depth=6.",
         "expected_parameter_efficiency": "High: global reasoning on tens-hundreds of tokens, not full grid.",
         "recommended_paired_comparison": "Vs boundary_gated_multiscale_unet at matched nc/depth to isolate explicit all-to-all token communication from local boundary gating.",
         "planner_hint": "Treat as low-priority explorer; only include if a clearly different all-to-all mixer formulation can be drawn vs prior boundary-token archs.",
@@ -8841,7 +8841,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Tile masks and edge-aware blend weights derived from height grid alone; torch.fft over fixed 2D windows with overlap-add reconstruction.",
         "ablation_removes_mechanism": "Disable overlap-add and edge blend (single-tile or non-overlapping) while keeping conv backbone.",
         "implementation_risk": "Low-medium; tile seams and low-mode smoothing risk near sharp boundaries.",
-        "minimal_implementation_in_auto_v6": "Patch Fourier residual block at bottleneck plus one decoder scale, Hann-window overlap, learned edge blend map.",
+        "minimal_implementation_in_hybrid": "Patch Fourier residual block at bottleneck plus one decoder scale, Hann-window overlap, learned edge blend map.",
         "expected_parameter_efficiency": "Medium-high via shared spectral weights across tiles.",
         "recommended_paired_comparison": "Vs separable_fourier_unet at matched nc/depth to test whether overlap-add tiling and edge blending add value.",
         "planner_hint": "Use only as a differentiated spectral variant beyond seen tiled_spectral_mixer_unet; emphasize Hann overlap + edge-gated blend, not bare tiling.",
@@ -8868,7 +8868,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Differentiable landmark scoring (top-k/soft) over height-derived extrema/corners/edge bands; tokens carry pooled features only.",
         "ablation_removes_mechanism": "Replace landmark tokens with single global average-pooled context or remove decoder cross-attention injection.",
         "implementation_risk": "Medium; soft selection may collapse to obvious edges; cross-attention adds modest overhead.",
-        "minimal_implementation_in_auto_v6": "Landmark scorer + soft pooling (~32-64 tokens) + small self-attention + decoder cross-attention from grid features at nc=16/24, depth=6.",
+        "minimal_implementation_in_hybrid": "Landmark scorer + soft pooling (~32-64 tokens) + small self-attention + decoder cross-attention from grid features at nc=16/24, depth=6.",
         "expected_parameter_efficiency": "Medium: fixed token count, attention is small.",
         "recommended_paired_comparison": "Vs cross_scale_operator_token_unet (single global pooled token / non-landmark tokens) at matched backbone capacity.",
         "planner_hint": "Strong explorer candidate: differentiable height-derived landmark tokens are not yet seen; keep batch_size=16, nc<=24, depth=6.",
@@ -8895,7 +8895,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Similarity keys from height features + coords only; remains single-frame 2D grid-to-grid.",
         "ablation_removes_mechanism": "Disable noncausal scan + neighbor branch, keep surrounding convs.",
         "implementation_risk": "High: noncausal_neighbor_ssm_unet and multiscale_ssm_pyramid_unet both required OOM retries; restrict block to bottleneck-only.",
-        "minimal_implementation_in_auto_v6": "Single residual SSM block at encoder bottleneck, learnable residual scale init near zero, batch_size=16 nc<=24 depth<=6.",
+        "minimal_implementation_in_hybrid": "Single residual SSM block at encoder bottleneck, learnable residual scale init near zero, batch_size=16 nc<=24 depth<=6.",
         "expected_parameter_efficiency": "High only if confined to low resolution.",
         "recommended_paired_comparison": "Vs noncausal_neighbor_ssm_unet at matched config to isolate single-scan-only attentive variant.",
         "planner_hint": "Lower priority; only include if a clearly different attentive/noncausal formulation is articulated, otherwise overlaps seen SSM family.",
@@ -8922,7 +8922,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Adapter on existing height-derived feature maps; no pretrained ViT, no labels.",
         "ablation_removes_mechanism": "Remove cross-shaped attention (keep local depthwise branch); then remove entire adapter.",
         "implementation_risk": "Low-medium; standard PyTorch attention/conv primitives at reduced resolution.",
-        "minimal_implementation_in_auto_v6": "Decoder skip-fusion adapter: shared norm + reduced-channel cross-axis attention + depthwise local branch + residual scale, nc=16 depth=6.",
+        "minimal_implementation_in_hybrid": "Decoder skip-fusion adapter: shared norm + reduced-channel cross-axis attention + depthwise local branch + residual scale, nc=16 depth=6.",
         "expected_parameter_efficiency": "High: adapter ~5-10% of backbone params.",
         "recommended_paired_comparison": "Vs crossaxis_attn_unet at matched capacity to test added local conv branch + cascaded head fusion contribution.",
         "planner_hint": "Good explorer; differentiates from crossaxis_attn_unet via shared norm + depthwise local branch + cascaded head feature reuse.",
@@ -8949,7 +8949,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Per-scale prototype banks pooled from height-only feature pyramid; gated additive replay during upsampling.",
         "ablation_removes_mechanism": "Remove prototype replay gates; rely only on plain skip concatenation.",
         "implementation_risk": "Low; small prototype banks + MLP mixer.",
-        "minimal_implementation_in_auto_v6": "Per-scale prototype pooling (~16-32 protos), light MLP mixer, gated additive replay at each decoder stage; nc=16/24 depth=6.",
+        "minimal_implementation_in_hybrid": "Per-scale prototype pooling (~16-32 protos), light MLP mixer, gated additive replay at each decoder stage; nc=16/24 depth=6.",
         "expected_parameter_efficiency": "High: small prototype bank, no large transformer decoder.",
         "recommended_paired_comparison": "Vs plain U-Net decoder with identical skip features but no prototype replay.",
         "planner_hint": "Strong explorer; visual context replay style is not yet seen in catalog. Keep batch_size=16, nc<=24, depth=6.",
@@ -8976,7 +8976,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Fixed Haar/DWT filters + small per-subband convs; gating uses height-gradient cues only.",
         "ablation_removes_mechanism": "Replace WTConv with ordinary depthwise conv and disable subband edge gating.",
         "implementation_risk": "Low-medium; WTConv has DWT runtime overhead and possible ringing near sharp boundaries.",
-        "minimal_implementation_in_auto_v6": "WTConv2d-style depthwise module at one bottleneck block + one high-res decoder block; nc=16, depth=6.",
+        "minimal_implementation_in_hybrid": "WTConv2d-style depthwise module at one bottleneck block + one high-res decoder block; nc=16, depth=6.",
         "expected_parameter_efficiency": "High: log-scaling kernel growth.",
         "recommended_paired_comparison": "Vs fourier_unet_wtconv at matched nc/depth to isolate boundary-gated subband contribution.",
         "planner_hint": "Lower priority overlap with fourier_unet_wtconv; keep only if explicit boundary-gated subband mechanism is articulated.",
@@ -9003,7 +9003,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Single-frame displacement from height features warps hidden features only via grid_sample.",
         "ablation_removes_mechanism": "Fix displacement to zero or remove grid_sample; keep only residual branch.",
         "implementation_risk": "Medium; offsets must be bounded; single-frame analogy of advection is weak.",
-        "minimal_implementation_in_auto_v6": "Already largely covered by seen semi_lagrangian_warp_unet.",
+        "minimal_implementation_in_hybrid": "Already largely covered by seen semi_lagrangian_warp_unet.",
         "expected_parameter_efficiency": "Medium-high.",
         "recommended_paired_comparison": "Vs semi_lagrangian_warp_unet at matched nc/depth.",
         "planner_hint": "Down-rank: directly redundant with seen semi_lagrangian_warp_unet; do not propose unless mechanism is meaningfully reformulated.",
@@ -9030,7 +9030,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Pseudo-stations generated internally from height extrema/boundary bands; learned RBF interpolates back to dense bottleneck map.",
         "ablation_removes_mechanism": "Replace pseudo-station interpolation with zeros or single global pooled vector.",
         "implementation_risk": "Medium; soft selection safer than hard top-k for early training stability.",
-        "minimal_implementation_in_auto_v6": "Anchor scorer + soft pooling (~32 anchors) + learned RBF/attention interpolation + bottleneck fusion conv; nc=16/24 depth=6 batch_size=16.",
+        "minimal_implementation_in_hybrid": "Anchor scorer + soft pooling (~32 anchors) + learned RBF/attention interpolation + bottleneck fusion conv; nc=16/24 depth=6 batch_size=16.",
         "expected_parameter_efficiency": "High: sparse anchor summaries cheaper than full attention.",
         "recommended_paired_comparison": "Vs global average bottleneck conditioning at matched channel count.",
         "planner_hint": "Strong explorer; pseudo-station anchor RBF fusion is novel relative to coarse_prior_adain_unet / boundary_pressure_basis_unet.",
@@ -9057,7 +9057,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Planar V-cycle on height-derived feature maps only; pooling + interpolation + low-res FFT/DCT mixer.",
         "ablation_removes_mechanism": "Remove coarse-grid spectral correction; keep only local smoothing convs.",
         "implementation_risk": "Low.",
-        "minimal_implementation_in_auto_v6": "Single residual V-cycle block around bottleneck with shared smoothers + low-res spectral mixer; nc=16/24 depth=6.",
+        "minimal_implementation_in_hybrid": "Single residual V-cycle block around bottleneck with shared smoothers + low-res spectral mixer; nc=16/24 depth=6.",
         "expected_parameter_efficiency": "Medium-high.",
         "recommended_paired_comparison": "Vs multigrid_spectral_unet at matched capacity to isolate residual correction framing.",
         "planner_hint": "Lower priority unless framed strictly as residual correction (not full operator backbone), since multigrid_spectral_unet already exists.",
@@ -9084,7 +9084,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Coordinate-conditioned tiny MLP residual head on existing grid; no resolution change.",
         "ablation_removes_mechanism": "Remove coords + local feature sampling; keep plain 1x1 projection.",
         "implementation_risk": "Low.",
-        "minimal_implementation_in_auto_v6": "Replace final 1x1 head with local feature sampler + 2-layer MLP residual prediction; nc=16 depth=6.",
+        "minimal_implementation_in_hybrid": "Replace final 1x1 head with local feature sampler + 2-layer MLP residual prediction; nc=16 depth=6.",
         "expected_parameter_efficiency": "Very high.",
         "recommended_paired_comparison": "Vs liif_head_unet at matched config.",
         "planner_hint": "Down-rank: direct overlap with seen liif_head_unet; only include with explicit edge-aware residual reformulation, otherwise reject.",
@@ -9111,7 +9111,7 @@ COMPACT_CONTEXT_JSON:
         "height_only_translation": "Hypernet conditioned on pooled height encoder features; emits rank-r adapter matrices for fixed residual MLP head.",
         "ablation_removes_mechanism": "Freeze adapter to zero or replace generated adapters with one shared learned adapter.",
         "implementation_risk": "Medium; hypernets are optimization-sensitive; restrict to low-rank adapter init near zero.",
-        "minimal_implementation_in_auto_v6": "Global encoder pool + linear -> rank-r A/B adapter matrices applied to output MLP; nc=16 depth=6 batch_size=16.",
+        "minimal_implementation_in_hybrid": "Global encoder pool + linear -> rank-r A/B adapter matrices applied to output MLP; nc=16 depth=6 batch_size=16.",
         "expected_parameter_efficiency": "Very high if only last residual head is adapted.",
         "recommended_paired_comparison": "Vs hyperinr_residual_head_unet / hypernet_adapter_unet at matched config.",
         "planner_hint": "Lower priority overlap with hypernet_adapter_unet and hyperinr_residual_head_unet; only include if low-rank residual-only formulation is concretely differentiated.",
@@ -9125,3 +9125,6 @@ COMPACT_CONTEXT_JSON:
 
 Propose exactly 12 experiments.
 Each proposal should use role=exploit or role=explorer and include hypothesis_id/hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, evidence_refs, source_note, plus novelty_rationale/new_model_mechanism for explorer, topic_cluster/query_tier/height_only_translation/ablation_removes_mechanism for web-derived explorer, and capacity_rationale for high-capacity configs.
+
+
+

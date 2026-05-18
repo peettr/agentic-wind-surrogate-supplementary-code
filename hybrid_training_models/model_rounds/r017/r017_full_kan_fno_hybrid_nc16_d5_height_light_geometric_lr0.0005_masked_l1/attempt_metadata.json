@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\kan_fno_hybrid.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\kan_fno_hybrid.py",
   "model_source_kind": "generated",
   "model_sha256": "e70a64f673c8e4da90df168007d9d710e93f55923b8b31d4f2141978c2adac09",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r017_full_kan_fno_hybrid_nc16_d5_height_light_geometric_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r017_full_kan_fno_hybrid_nc16_d5_height_light_geometric_lr0.0005_masked_l1/model.py"
 }
+
+

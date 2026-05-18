@@ -1,4 +1,4 @@
-"""CNO-v2 — Convolutional Neural Operator v2 for 2D dense regression.
+﻿"""CNO-v2 â€” Convolutional Neural Operator v2 for 2D dense regression.
 
 Learns mappings between function spaces using a sequence of strided convolutions
 with residual connections. Unlike standard CNNs, CNO explicitly lifts to higher
@@ -23,7 +23,7 @@ def _gn(ch: int) -> nn.GroupNorm:
 
 
 class CNOBlock(nn.Module):
-    """CNO residual block: lift → conv → nonlinear → project."""
+    """CNO residual block: lift â†’ conv â†’ nonlinear â†’ project."""
 
     def __init__(self, ch: int, lift_mult: int = 2) -> None:
         super().__init__()
@@ -111,3 +111,6 @@ class CNO(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

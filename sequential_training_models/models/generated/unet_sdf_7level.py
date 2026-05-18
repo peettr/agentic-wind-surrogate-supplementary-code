@@ -1,4 +1,4 @@
-"""unet_sdf_7level.py - 7-level UNet with reflection padding."""
+﻿"""unet_sdf_7level.py - 7-level UNet with reflection padding."""
 
 from __future__ import annotations
 
@@ -108,3 +108,5 @@ class Up(nn.Module):
         if x.shape[2:] != skip.shape[2:]:
             x = F.interpolate(x, size=skip.shape[2:], mode="bilinear", align_corners=False)
         return self.conv(torch.cat([skip, x], dim=1))
+
+

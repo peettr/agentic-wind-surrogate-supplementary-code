@@ -1,4 +1,4 @@
-import math
+﻿import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -95,3 +95,5 @@ class channel_transposed_attention_head_unet(nn.Module):
         if valid_collapsed.shape[1] != out.shape[1]:
             valid_collapsed = valid_collapsed.expand(-1, out.shape[1], -1, -1)
         return torch.where(valid_collapsed, out, torch.full_like(out, float("nan")))
+
+

@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\semantic_neighbor_key_ssm_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\semantic_neighbor_key_ssm_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "71edcbf8b5a8be98824fe7d58ad8060e5ac835bc7df56a5bdb59e9bc8c43cd63",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r021_full_semantic_neighbor_key_ssm_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r021_full_semantic_neighbor_key_ssm_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
 }
+
+

@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\dct_spectral_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\dct_spectral_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "a8f24fadf3b1c1c45b989c9e859df94981d6d6e91f7c97ac3752fe154b35cde9",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r006_full_dct_spectral_unet_nc24_d4_height_none_lr0.0005_masked_l1/model.py"
 }
+
+

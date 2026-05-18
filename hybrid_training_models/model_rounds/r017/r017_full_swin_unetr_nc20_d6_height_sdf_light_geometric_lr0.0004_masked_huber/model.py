@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -178,3 +178,5 @@ class swin_unetr(nn.Module):
 
         x = torch.where(valid, x, torch.full_like(x, float("nan")))
         return x
+
+

@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """U-FNO (U-shaped Fourier Neural Operator) conforming to BaseSurrogate contract.
 
 Combines FNO's global spectral mixing with UNet's local edge fidelity.
 Architecture: UNet-style encoder-decoder with FactorizedSpectralConv at bottleneck,
 preserving skip connections for sharp building edge reconstruction.
 
-Reference: Wen et al., 2022 "U-FNO—An enhanced Fourier neural operator-based 
+Reference: Wen et al., 2022 "U-FNOâ€”An enhanced Fourier neural operator-based 
 deep neural network for multiphase flow"
 
 Input/output contract: (B, 1, 640, 640) -> (B, 1, 640, 640) with ReLU output.
@@ -112,7 +112,7 @@ class UFNO(BaseSurrogate):
         modes: FFT modes per dimension at bottleneck (default 32).
         fno_layers: number of FNO blocks at bottleneck (default 4).
         activation: 'gelu' or 'relu' (default 'gelu').
-        training: dict of training extras — ignored by model.
+        training: dict of training extras â€” ignored by model.
     """
 
     def __init__(
@@ -190,3 +190,6 @@ if __name__ == "__main__":
             with torch.no_grad():
                 y = m(x)
             print(f"UFNO n_c={n_c} depth={depth}: params={n_params:,} ({n_params/1e6:.1f}M) out={tuple(y.shape)} min={y.min():.4f}")
+
+
+

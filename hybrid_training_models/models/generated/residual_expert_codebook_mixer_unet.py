@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -129,3 +129,5 @@ class residual_expert_codebook_mixer_unet(nn.Module):
 
         out_valid = valid.all(dim=1, keepdim=True).expand_as(y)
         return torch.where(out_valid, y, torch.full_like(y, float("nan")))
+
+

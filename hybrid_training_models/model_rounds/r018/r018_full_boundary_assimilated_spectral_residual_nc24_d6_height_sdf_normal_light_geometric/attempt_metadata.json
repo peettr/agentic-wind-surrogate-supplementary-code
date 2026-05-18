@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_assimilated_spectral_residual.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\boundary_assimilated_spectral_residual.py",
   "model_source_kind": "generated",
   "model_sha256": "16ba8793ae6ca1565f9188e587441aac1cf92321c3b4a6496bb4f82b24cfe238",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r018_full_boundary_assimilated_spectral_residual_nc24_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r018_full_boundary_assimilated_spectral_residual_nc24_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry2/model.py"
 }
+
+

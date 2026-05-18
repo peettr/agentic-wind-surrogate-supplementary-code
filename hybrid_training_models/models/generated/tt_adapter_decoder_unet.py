@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -95,3 +95,5 @@ class tt_adapter_decoder_unet(nn.Module):
             valid = valid[:, :1].expand_as(out)
 
         return torch.where(valid, out, torch.full_like(out, float("nan")))
+
+

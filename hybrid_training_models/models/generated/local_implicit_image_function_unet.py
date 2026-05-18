@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -103,3 +103,5 @@ class local_implicit_image_function_unet(nn.Module):
             valid_mask = valid
         output = torch.where(valid_mask, output, torch.full_like(output, float("nan")))
         return output
+
+

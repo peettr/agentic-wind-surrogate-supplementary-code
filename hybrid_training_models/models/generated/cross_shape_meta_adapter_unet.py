@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -109,3 +109,5 @@ class cross_shape_meta_adapter_unet(nn.Module):
             y = torch.where(out_valid, y, torch.full_like(y, float("nan")))
 
         return y
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -124,3 +124,5 @@ class planar_multigrid_vcycle_unet(nn.Module):
         output = output.clone()
         output[~valid_out] = float("nan")
         return output
+
+

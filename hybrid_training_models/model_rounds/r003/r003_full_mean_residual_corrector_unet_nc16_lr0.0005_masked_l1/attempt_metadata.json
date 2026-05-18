@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\mean_residual_corrector_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\mean_residual_corrector_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "967e5adb2ad185cc240b4fcec504dfa7672e81e2f7353eb82f852750a07849f9",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r003_full_mean_residual_corrector_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r003_full_mean_residual_corrector_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

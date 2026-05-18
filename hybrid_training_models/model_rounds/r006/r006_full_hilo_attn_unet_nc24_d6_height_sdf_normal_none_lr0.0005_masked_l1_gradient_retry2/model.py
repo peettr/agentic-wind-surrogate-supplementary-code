@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -109,3 +109,5 @@ class hilo_attn_unet(nn.Module):
         output = self.out(h)
         output = torch.where(valid, output, torch.full_like(output, float("nan")))
         return output
+
+

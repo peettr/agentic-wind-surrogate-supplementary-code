@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Validate materialized Auto V5 train_config.json files."""
+﻿#!/usr/bin/env python3
+"""Validate materialized Grid train_config.json files."""
 from __future__ import annotations
 
 import argparse
@@ -52,7 +52,7 @@ def registry_names(repo_root: Path) -> set[str]:
 
 
 def included_architectures(repo_root: Path) -> set[str]:
-    data = load_json(repo_root / "grids" / "v5_architectures.json")
+    data = load_json(repo_root / "grids" / "grid_architectures.json")
     return {row["arch_name"] for row in data if row.get("include_in_v5", True)}
 
 
@@ -153,7 +153,7 @@ def validate_one(cfg_path: Path, cfg: dict[str, Any], *, stage: str, repo_root: 
         err(f"seed must be 1, got {cfg.get('seed')!r}")
 
     if stage == "benchmark200":
-        hp = load_json(repo_root / "grids" / "v5_hp_candidates.json")
+        hp = load_json(repo_root / "grids" / "grid_hp_candidates.json")
         allowed = hp.get("allowed", {})
         checks = {
             "loss_name": cfg.get("loss_name"),
@@ -212,3 +212,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

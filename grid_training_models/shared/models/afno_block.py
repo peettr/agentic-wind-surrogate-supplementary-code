@@ -1,9 +1,9 @@
-"""AFNO (Adaptive Fourier Neural Operator) block for UNet bottleneck.
+﻿"""AFNO (Adaptive Fourier Neural Operator) block for UNet bottleneck.
 
 Reference: Guibas et al. 2022 "Adaptive Fourier Neural Operators:
 Efficient and Stable Transformers for Symbolic Regression"
 
-Uses FFT-based global mixing at the bottleneck resolution (~5×5 to 20×20),
+Uses FFT-based global mixing at the bottleneck resolution (~5Ã—5 to 20Ã—20),
 making it extremely cheap while providing global receptive field.
 """
 from __future__ import annotations
@@ -16,7 +16,7 @@ import torch.nn.functional as F
 class AFNOBlock(nn.Module):
     """Single AFNO spectral mixing layer.
 
-    At bottleneck resolution (H×W small), FFT is cheap and provides
+    At bottleneck resolution (HÃ—W small), FFT is cheap and provides
     global receptive field over the entire spatial domain.
     """
 
@@ -138,3 +138,6 @@ if __name__ == "__main__":
             with torch.no_grad():
                 y = m(x)
             print(f"AFNO {H}x{W} modes={modes}: params={n_params:,} in={tuple(x.shape)} out={tuple(y.shape)}")
+
+
+

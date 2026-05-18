@@ -1,4 +1,4 @@
-"""Transolver — Physics-Attention Transformer for dense field regression.
+﻿"""Transolver â€” Physics-Attention Transformer for dense field regression.
 
 Partitions the spatial domain into learnable "physics slices" that group
 dynamically-similar points (e.g. wake region, stagnation zone), then applies
@@ -179,3 +179,6 @@ class Transolver(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec[k](x)
         return self.head(x)
+
+
+

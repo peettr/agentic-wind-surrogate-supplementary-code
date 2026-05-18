@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Launch Auto V5 smoke runs from a single control JSON file.
+﻿#!/usr/bin/env python3
+"""Launch Grid smoke runs from a single control JSON file.
 
 The control file is the deterministic top-level description of a small smoke
 campaign: which source configs to copy, which new run ids to create, which model
@@ -183,7 +183,7 @@ def build_plan(local_root: Path, control: dict[str, Any], *, materialize: bool) 
 
 def _json_safe_tail(text: str, limit: int = 4000) -> str:
     tail = text[-limit:]
-    return "".join(ch if ch in "\n\r\t" or ord(ch) >= 32 else "�" for ch in tail)
+    return "".join(ch if ch in "\n\r\t" or ord(ch) >= 32 else "ï¿½" for ch in tail)
 
 
 def build_remote_batch_submit_script(plan: dict[str, Any]) -> str:
@@ -203,7 +203,7 @@ plan = json.loads({payload!r})
 root = Path(plan["remote_root"])
 sys.path.insert(0, str(root))
 campaign = plan["campaign"]
-log_root = Path("/users/lhu1/condor_v5_logs")
+log_root = Path("/users/lhu1/condor_grid_logs")
 wrapper = Path("/users/lhu1") / campaign / "condor_wrapper.sh"
 wrapper.parent.mkdir(parents=True, exist_ok=True)
 template = root / "templates" / "condor_wrapper.sh"
@@ -267,7 +267,7 @@ def submit_runs_remote_batch(local_root: Path, plan: dict[str, Any]) -> list[dic
     subprocess.run(
         [
             "tar", "--exclude=__pycache__", "--exclude=.pytest_cache", "--exclude=shared/data",
-            "-cf", str(tar_path), "shared", "scripts", "templates", "generated_models", "campaigns/" + campaign, "AUTO_V5_PROTOCOL.md",
+            "-cf", str(tar_path), "shared", "scripts", "templates", "generated_models", "campaigns/" + campaign, "grid_PROTOCOL.md",
         ],
         cwd=local_root,
         check=True,
@@ -360,3 +360,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+

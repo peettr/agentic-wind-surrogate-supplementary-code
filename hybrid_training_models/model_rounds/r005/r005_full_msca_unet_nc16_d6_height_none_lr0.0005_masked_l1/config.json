@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1",
-  "strategy": "v6_full",
+  "strategy": "hybrid_full",
   "arch_name": "msca_unet",
   "arch_kwargs": {
     "n_c": 16,
@@ -18,8 +18,10 @@
     "val"
   ],
   "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
-  "results_dir": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1",
+  "results_dir": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1/model.py"
+  "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1/model.py"
 }
+
+

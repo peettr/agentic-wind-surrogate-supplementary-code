@@ -1,4 +1,4 @@
-"""CLI entry point: run a Grid or AI Explorer campaign.
+﻿"""CLI entry point: run a Grid or AI Explorer campaign.
 
 Usage::
 
@@ -39,7 +39,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
-LOGGER = logging.getLogger("auto_v3.cli")
+LOGGER = logging.getLogger("baseline_source.cli")
 
 
 def _default_baseline() -> BaselineMetrics:
@@ -199,3 +199,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+

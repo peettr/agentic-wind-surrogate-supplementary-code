@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -145,3 +145,5 @@ class soft_boundary_token_mixer_unet(nn.Module):
 
         y = torch.where(valid, y, torch.full_like(y, float("nan")))
         return y
+
+

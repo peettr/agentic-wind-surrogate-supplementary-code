@@ -1,4 +1,4 @@
-"""Generic training loop driven by :class:`TrainConfig`.
+﻿"""Generic training loop driven by :class:`TrainConfig`.
 
 Accepts any :class:`BaseSurrogate` registered with :data:`REGISTRY` and any
 loss in :data:`LIBRARY`. Mirrors the locked training contract (Appendix A.2):
@@ -44,7 +44,7 @@ from shared.losses import LIBRARY as LOSS_LIBRARY                               
 from shared.models import REGISTRY as MODEL_REGISTRY                            # noqa: E402
 
 
-LOGGER = logging.getLogger("auto_v3.train")
+LOGGER = logging.getLogger("baseline_source.train")
 
 
 # Default training hyperparameters (v2 baseline values, but explorable in search).
@@ -65,7 +65,7 @@ def _load_external_module(script_path: str | Path):
     p = Path(script_path)
     if not p.is_file():
         raise FileNotFoundError(f"script_path not found: {p}")
-    mod_name = f"auto_v3_ext_{uuid.uuid4().hex}"
+    mod_name = f"baseline_source_ext_{uuid.uuid4().hex}"
     spec = importlib.util.spec_from_file_location(mod_name, p)
     if spec is None or spec.loader is None:
         raise ImportError(f"Cannot load spec for {p}")
@@ -77,7 +77,7 @@ def _load_external_module(script_path: str | Path):
 
 def _resolve_model_cls(cfg: TrainConfig):
     """Resolve the model class, preferring generated code over shared registry."""
-    # V4 codegen/fix can emit a corrected model file with the same arch_name as
+    # Sequential codegen/fix can emit a corrected model file with the same arch_name as
     # a registered shared model. Prefer script_path when provided so the
     # generated/fixed implementation is actually exercised by smoke tests.
     if cfg.script_path:
@@ -155,7 +155,7 @@ def _model_kwargs_for_cfg(model_cls: type, cfg: TrainConfig) -> dict:
 def _enforce_locked_contract(cfg: TrainConfig) -> TrainConfig:
     """Only enforce truly locked parameters (data pipeline, eval domain).
 
-    Training hyperparams (lr, batch_size, scheduler) are NOT locked —
+    Training hyperparams (lr, batch_size, scheduler) are NOT locked â€”
     the search strategies may explore them. We only cap batch_size as a
     safety guard against OOM before the first iteration.
     """
@@ -359,7 +359,7 @@ def _compute_per_case_r2(
     case_names: list[str],
     bs: int = 4,
 ) -> tuple[float, float]:
-    """Return (r2_median, mae_median) over per-case R² on valid (non-NaN, non-building) pixels."""
+    """Return (r2_median, mae_median) over per-case RÂ² on valid (non-NaN, non-building) pixels."""
     import numpy as np
 
     model.eval()
@@ -456,14 +456,14 @@ def train(cfg: TrainConfig) -> dict:
     LOGGER.info("Data: train=%d val=%d holdout=%d patches",
                 len(X_tr), len(X_va), len(holdout_b["X"]))
 
-    # EvalModule for official R² (if compute_r2 enabled)
+    # EvalModule for official RÂ² (if compute_r2 enabled)
     eval_mod = None
     if cfg.compute_r2:
         eval_mod = EvalModule(
             split_manifest_path=cfg.split_manifest_path,
             data_dir=str(data_dir),
         )
-        LOGGER.info("Official R² evaluation enabled (eval_module.py)")
+        LOGGER.info("Official RÂ² evaluation enabled (eval_module.py)")
         
         # Monkey-patch eval_mod's _predict for SDF features (heartbeat path)
         if cfg.input_features != "height":
@@ -560,7 +560,7 @@ def train(cfg: TrainConfig) -> dict:
     if device.type == "cuda":
         bs = _probe_batch(model, loss_fn, X_tr, Y_tr, optimizer, bs)
         if bs == 0:
-            # Model too large even at batch=8 — abort.
+            # Model too large even at batch=8 â€” abort.
             error_message = "OOM at batch=8"
             LOGGER.error("Model too large for GPU; writing FAILED sentinel.")
             _write_sentinel(results_dir, "FAILED", {"error": error_message})
@@ -571,7 +571,7 @@ def train(cfg: TrainConfig) -> dict:
             }
             metrics = {
                 "experiment_id": cfg.experiment_id,
-                "strategy": os.environ.get("AUTO_V3_STRATEGY") or cfg.strategy or "unknown",
+                "strategy": os.environ.get("baseline_source_STRATEGY") or cfg.strategy or "unknown",
                 "arch_name": cfg.arch_name,
                 "loss_name": cfg.loss_name,
                 "arch_kwargs": dict(cfg.arch_kwargs or {}),
@@ -608,10 +608,10 @@ def train(cfg: TrainConfig) -> dict:
     try:
         best_r2_so_far
     except NameError:
-        best_r2_so_far = -float('inf')  # track best R² for early stop comparison
+        best_r2_so_far = -float('inf')  # track best RÂ² for early stop comparison
     early_stop_info = None  # store early stop reason
 
-    # Load baseline R² curve for early stop comparison (once, before loop)
+    # Load baseline RÂ² curve for early stop comparison (once, before loop)
     baseline_r2_curve = None
     baseline_curve_path = getattr(cfg, 'baseline_r2_curve_path', None)
     if baseline_curve_path:
@@ -620,11 +620,11 @@ def train(cfg: TrainConfig) -> dict:
                 baseline_r2_curve = json.load(_f)
             if not baseline_r2_curve:
                 baseline_r2_curve = None
-                LOGGER.warning("Baseline R² curve is empty, early stop disabled")
+                LOGGER.warning("Baseline RÂ² curve is empty, early stop disabled")
             else:
-                LOGGER.info("Loaded baseline R² curve from %s (%d points)", baseline_curve_path, len(baseline_r2_curve))
+                LOGGER.info("Loaded baseline RÂ² curve from %s (%d points)", baseline_curve_path, len(baseline_r2_curve))
         except Exception as _e:
-            LOGGER.warning("Failed to load baseline R² curve: %s", _e)
+            LOGGER.warning("Failed to load baseline RÂ² curve: %s", _e)
     early_stop_min = getattr(cfg, 'early_stop_wall_min', 100)
     max_wall_min = getattr(cfg, 'max_wall_min', 200)
     try:
@@ -698,7 +698,7 @@ def train(cfg: TrainConfig) -> dict:
                     best_r2_so_far = r2_med
                 if cfg.compute_r2:
                     LOGGER.info(
-                        "Epoch %4d/%d train=%.6f val=%.6f best=%.6f R²=%.4f MAE=%.4f%s",
+                        "Epoch %4d/%d train=%.6f val=%.6f best=%.6f RÂ²=%.4f MAE=%.4f%s",
                         epoch, cfg.epochs, tr_loss, va_loss, best_val, r2_med, mae_med,
                         " *" if is_best else "",
                     )
@@ -713,7 +713,7 @@ def train(cfg: TrainConfig) -> dict:
             elapsed_min = (time.time() - t0) / 60.0
             stop_reason = None
 
-            # Rule 1: 100min + best R² not beating baseline at same epoch → stop
+            # Rule 1: 100min + best RÂ² not beating baseline at same epoch â†’ stop
             if elapsed_min >= early_stop_min and baseline_r2_curve is not None and cfg.compute_r2:
                 # Compare against most recently passed baseline epoch (not future)
                 baseline_epochs = sorted([int(k) for k in baseline_r2_curve.keys()])
@@ -724,9 +724,9 @@ def train(cfg: TrainConfig) -> dict:
                     ref_epoch = baseline_epochs[0]
                 baseline_r2_at_epoch = baseline_r2_curve[str(ref_epoch)]
                 if best_r2_so_far < baseline_r2_at_epoch:
-                    stop_reason = f"early_stop: {elapsed_min:.0f}min, best_R²={best_r2_so_far:.4f} < baseline@ep{ref_epoch}={baseline_r2_at_epoch:.4f}"
+                    stop_reason = f"early_stop: {elapsed_min:.0f}min, best_RÂ²={best_r2_so_far:.4f} < baseline@ep{ref_epoch}={baseline_r2_at_epoch:.4f}"
 
-            # Rule 2: 200min absolute limit → stop regardless
+            # Rule 2: 200min absolute limit â†’ stop regardless
             if elapsed_min >= max_wall_min:
                 stop_reason = f"max_wall_time: {elapsed_min:.0f}min >= {max_wall_min}min limit"
 
@@ -760,7 +760,7 @@ def train(cfg: TrainConfig) -> dict:
         torch.save(final_model.state_dict(), results_dir / "model_final.pt")
         if ckpt_path.exists():
             ckpt_path.unlink(missing_ok=True)
-    except Exception as exc:  # runtime safety net — write FAILED sentinel
+    except Exception as exc:  # runtime safety net â€” write FAILED sentinel
         status = "failed"
         error_message = "".join(traceback.format_exception(exc))
         _write_sentinel(results_dir, "FAILED", {"error": error_message})
@@ -825,7 +825,7 @@ def train(cfg: TrainConfig) -> dict:
             "per_case_r2": m.get("per_case_r2", {}),
         }
 
-    strategy_env = os.environ.get("AUTO_V3_STRATEGY")
+    strategy_env = os.environ.get("baseline_source_STRATEGY")
     strategy = strategy_env or cfg.strategy or "unknown"
 
     metrics = {
@@ -926,7 +926,7 @@ if __name__ == "__main__":
         metrics = {
             "experiment_id": _cfg.experiment_id,
             "strategy": os.environ.get(
-                "AUTO_V3_STRATEGY", _cfg.strategy or "unknown",
+                "baseline_source_STRATEGY", _cfg.strategy or "unknown",
             ),
             "arch_name": _cfg.arch_name,
             "loss_name": _cfg.loss_name,
@@ -970,3 +970,6 @@ if __name__ == "__main__":
         )
     else:
         train(_cfg)
+
+
+

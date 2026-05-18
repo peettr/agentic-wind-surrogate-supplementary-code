@@ -1,11 +1,11 @@
-"""UNet with AFNO spectral bottleneck.
+﻿"""UNet with AFNO spectral bottleneck.
 
 Drop-in replacement for the standard 7-level UNet where the bottleneck
 is replaced with AFNO (Adaptive Fourier Neural Operator) blocks for
 global spectral mixing at the lowest resolution.
 
-At the bottleneck (5×5 or 10×10), FFT is extremely cheap and provides
-a true global receptive field over the entire 640×640 input.
+At the bottleneck (5Ã—5 or 10Ã—10), FFT is extremely cheap and provides
+a true global receptive field over the entire 640Ã—640 input.
 """
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ class UNetAFNO(BaseSurrogate):
         in_channels: number of input channels (1=height, 2=+sdf, 3=+sdf+normal).
         afno_layers: number of AFNO layers in bottleneck (0 = standard UNet).
         afno_modes: number of FFT modes to keep in AFNO.
-        training: dict of training extras — ignored by model.
+        training: dict of training extras â€” ignored by model.
     """
 
     def __init__(
@@ -125,3 +125,6 @@ if __name__ == "__main__":
                 with torch.no_grad():
                     y = m(x)
                 print(f"n_c={n_c} afno={afno_layers}x{afno_modes}: params={n_params:,} ({n_params/1e6:.1f}M) out={tuple(y.shape)} min={y.min():.4f}")
+
+
+

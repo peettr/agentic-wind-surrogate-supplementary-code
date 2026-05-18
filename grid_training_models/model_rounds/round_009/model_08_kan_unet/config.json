@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 9,
+  "slot": 8,
+  "arch_name": "kan_unet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.001,
+  "batch_size": 16,
+  "params": 21756196,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "8.0",
+  "metrics": {
+    "r2_median": "0.3275707012584447",
+    "r2_global": "0.4934823043098801",
+    "mae_median": "0.1219782456755638",
+    "mae_mean": "0.1162322030826048"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

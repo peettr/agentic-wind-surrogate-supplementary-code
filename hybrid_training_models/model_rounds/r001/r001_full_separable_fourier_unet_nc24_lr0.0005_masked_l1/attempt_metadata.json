@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\separable_fourier_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\separable_fourier_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "1c664c73f32d3accaa97e605ee0cb4e6ca4667f8743f1c8675b19f2ed5a6487f",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r001_full_separable_fourier_unet_nc24_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r001_full_separable_fourier_unet_nc24_lr0.0005_masked_l1/model.py"
 }
+
+

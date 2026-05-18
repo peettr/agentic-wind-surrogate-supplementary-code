@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -110,3 +110,5 @@ class anisotropic_kernel_operator(nn.Module):
         nan_fill = torch.full_like(output, float("nan"))
         output = torch.where(valid.expand_as(output), output, nan_fill)
         return output
+
+

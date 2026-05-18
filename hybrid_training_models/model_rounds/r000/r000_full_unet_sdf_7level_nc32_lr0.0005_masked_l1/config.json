@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r000_full_unet_sdf_7level_nc32_lr0.0005_masked_l1",
-  "strategy": "v6_full",
+  "strategy": "hybrid_full",
   "arch_name": "unet_sdf_7level",
   "arch_kwargs": {
     "n_c": 32,
@@ -18,8 +18,10 @@
     "val"
   ],
   "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
-  "results_dir": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r000_full_unet_sdf_7level_nc32_lr0.0005_masked_l1",
+  "results_dir": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r000_full_unet_sdf_7level_nc32_lr0.0005_masked_l1",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r000_full_unet_sdf_7level_nc32_lr0.0005_masked_l1/model.py"
+  "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r000_full_unet_sdf_7level_nc32_lr0.0005_masked_l1/model.py"
 }
+
+

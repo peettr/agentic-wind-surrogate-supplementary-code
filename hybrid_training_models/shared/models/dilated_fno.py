@@ -1,4 +1,4 @@
-"""DilatedFNO — Dilated convolution encoder + FNO spectral skip connections.
+﻿"""DilatedFNO â€” Dilated convolution encoder + FNO spectral skip connections.
 
 Combines DilatedUNet's strong local feature extraction with FNO's global
 spectral processing. Dilated convolutions capture multi-scale local patterns,
@@ -127,3 +127,6 @@ class DilatedFNO(BaseSurrogate):
             x = torch.cat([x, skip], dim=1)
             x = self.dec_blocks[k](x)
         return F.interpolate(self.output_proj(x), size=(H, W), mode="bilinear", align_corners=False)
+
+
+

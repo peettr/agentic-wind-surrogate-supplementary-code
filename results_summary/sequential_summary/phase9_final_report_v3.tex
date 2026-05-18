@@ -1,4 +1,4 @@
-\documentclass[preprint,12pt,authoryear]{elsarticle}
+﻿\documentclass[preprint,12pt,authoryear]{elsarticle}
 \usepackage[margin=0.82in]{geometry}
 \usepackage{booktabs,longtable,tabularx,array,pdflscape,hyperref,xcolor}
 \usepackage{amsmath,amssymb}
@@ -15,10 +15,10 @@
 \begin{document}
 \begin{frontmatter}
 \title{Phase~9 Automated Architecture Search for Wind-Field Reconstruction:\\Workflow, Execution Record, and Holdout Validation}
-\author{Auto V4 workflow report}
+\author{Sequential workflow report}
 \address{Graph-DeepONet wind reconstruction campaign notes}
 \begin{abstract}
-This study documents Phase~9 of the Auto~V4 architecture-search campaign for urban wind-field reconstruction.
+This study documents Phase~9 of the Auto~Sequential architecture-search campaign for urban wind-field reconstruction.
 The campaign employed a closed-loop workflow comprising multi-agent planning, automated code generation, smoke testing with repair, 200-epoch training on a scheduled HPC backend, metric consolidation, and reviewer-guided re-planning.
 Over 30 numbered rounds the workflow produced 319 full-training records, of which 246 exceeded the split-matched L40S epoch-200 baseline on the 55-case validation split (median $\rTwo{} = 0.6691$).
 The search trajectory evolved from broad family exploration in early rounds toward focused refinement of compact, parameter-efficient architectures in later rounds.
@@ -36,7 +36,7 @@ automated architecture search \sep workflow engine \sep code generation \sep hol
 \label{sec:intro}
 %% ============================================================
 
-Phase~9 of the Auto~V4 campaign applied closed-loop, AI-assisted architecture search to the problem of reconstructing urban pedestrian-level wind fields from sparse sensor measurements.
+Phase~9 of the Auto~Sequential campaign applied closed-loop, AI-assisted architecture search to the problem of reconstructing urban pedestrian-level wind fields from sparse sensor measurements.
 The search was not a static grid sweep; instead, a multi-agent workflow generated candidate architectures, tested them through automated smoke checks, trained surviving candidates for 200 epochs on a scheduled HPC backend, and fed consolidated results back to a planner that proposed the next round of candidates.
 This study reports the workflow design, the engineering challenges encountered during execution, the full validation performance record through Round~31, and the holdout evaluation of selected top candidates.
 
@@ -525,3 +525,6 @@ Round & Run & Arch & $n_c$ & Params & Val med.\ $\rTwo{}$ & Val MAE\\
 \end{landscape}
 
 \end{document}
+
+
+

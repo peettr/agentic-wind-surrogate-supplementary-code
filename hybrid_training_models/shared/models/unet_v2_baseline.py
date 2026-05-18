@@ -1,4 +1,4 @@
-"""v2's exact UNetLu7Level, wrapped as a BaseSurrogate.
+﻿"""v2's exact UNetLu7Level, wrapped as a BaseSurrogate.
 
 This is auto_v2's final model (unet_lu_7level.py) verbatim,
 with a thin adapter to satisfy v3's BaseSurrogate contract.
@@ -99,3 +99,6 @@ class UNetV2Baseline(BaseSurrogate):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self._model(x)
+
+
+

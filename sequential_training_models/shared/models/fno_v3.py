@@ -1,4 +1,4 @@
-"""2D Fourier Neural Operator conforming to the BaseSurrogate contract.
+﻿"""2D Fourier Neural Operator conforming to the BaseSurrogate contract.
 
 Standard FNO (Li et al., 2020) adapted to the locked ``(B, 1, 640, 640)``
 contract. Includes a learnable lift, ``depth`` spectral blocks with pointwise
@@ -33,7 +33,7 @@ class SpectralConv2d(nn.Module):
 
     @staticmethod
     def _complex_mul(x: torch.Tensor, w: torch.Tensor) -> torch.Tensor:
-        # (B, I, m1, m2) × (I, O, m1, m2) → (B, O, m1, m2)
+        # (B, I, m1, m2) Ã— (I, O, m1, m2) â†’ (B, O, m1, m2)
         return torch.einsum("bixy,ioxy->boxy", x, w)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -98,3 +98,6 @@ if __name__ == "__main__":
     with torch.no_grad():
         y = m(x)
     print(f"FNO2d params={n_params:,}  out={tuple(y.shape)}")
+
+
+

@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -122,3 +122,5 @@ class allaround_strip_mixer_unet(nn.Module):
             y = F.interpolate(y, size=x.shape[-2:], mode="bilinear", align_corners=False)
 
         return y.masked_fill(~valid.expand(-1, self.out_channels, -1, -1), float("nan"))
+
+

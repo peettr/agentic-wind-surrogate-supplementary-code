@@ -1,4 +1,4 @@
-"""HRNet backbone for wind field regression.
+﻿"""HRNet backbone for wind field regression.
 
 High-Resolution Network maintains multi-resolution parallel streams throughout,
 never collapsing to a low-resolution bottleneck. Preserves fine-grained spatial
@@ -192,3 +192,6 @@ class HRNetSurrogate(BaseSurrogate):
         # Upsample to original resolution
         x = F.interpolate(x, size=(orig_h, orig_w), mode='bilinear', align_corners=False)
         return x
+
+
+

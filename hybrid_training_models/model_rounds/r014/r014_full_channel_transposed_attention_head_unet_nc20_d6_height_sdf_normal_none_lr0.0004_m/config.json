@@ -1,6 +1,6 @@
-{
+﻿{
   "experiment_id": "r014_full_channel_transposed_attention_head_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_huber",
-  "strategy": "v6_full",
+  "strategy": "hybrid_full",
   "arch_name": "channel_transposed_attention_head_unet",
   "arch_kwargs": {
     "n_c": 20,
@@ -18,8 +18,10 @@
     "val"
   ],
   "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
-  "results_dir": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r014_full_channel_transposed_attention_head_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_huber",
+  "results_dir": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r014_full_channel_transposed_attention_head_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_huber",
   "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
   "heartbeat_interval_epochs": 10,
-  "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r014_full_channel_transposed_attention_head_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_huber/model.py"
+  "script_path": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r014_full_channel_transposed_attention_head_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_huber/model.py"
 }
+
+

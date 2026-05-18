@@ -1,6 +1,8 @@
-{
-  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\reduced_kv_context_unet.py",
+﻿{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\hybrid\\models\\generated\\reduced_kv_context_unet.py",
   "model_source_kind": "generated",
   "model_sha256": "bdd0fc13e8571714dabae481bcf234456b2ee2d196dfbb098cb2ea94c0d3324c",
-  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r003_full_reduced_kv_context_unet_nc16_lr0.0005_masked_l1/model.py"
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/hybrid/runs/r003_full_reduced_kv_context_unet_nc16_lr0.0005_masked_l1/model.py"
 }
+
+

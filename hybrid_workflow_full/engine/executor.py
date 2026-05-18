@@ -1,9 +1,9 @@
-"""Executor: CRC Condor batch submission + sentinel-driven monitoring.
+﻿"""Executor: CRC Condor batch submission + sentinel-driven monitoring.
 
 Runs from **Windows**; all Condor commands are issued on CRC's ``<HPC_FILE_LOGIN>``
 login node over SSH via WSL's ControlMaster socket. Files are staged on
 ``<HPC_PATH>`` (AFS-shared across CRC nodes) so Condor's
-``transfer_input_files`` / ``transfer_output_files`` machinery is unused —
+``transfer_input_files`` / ``transfer_output_files`` machinery is unused â€”
 jobs read inputs and write outputs directly to shared storage (fix #6).
 
 Responsibilities
@@ -42,7 +42,7 @@ from typing import Optional
 from shared.configs.schema import ExperimentConfig, JobHandle
 
 
-LOGGER = logging.getLogger("auto_v3.executor")
+LOGGER = logging.getLogger("baseline_source.executor")
 
 DEFAULT_TEMPLATE = (
     Path(__file__).resolve().parent.parent
@@ -73,8 +73,8 @@ _LOGICAL = {
     "C": "completed",
     "H": "held",
     "X": "evicted",
-    "T": "running",   # transferring output — treat as running
-    "S": "idle",      # suspended — requeue-eligible, keep tracking
+    "T": "running",   # transferring output â€” treat as running
+    "S": "idle",      # suspended â€” requeue-eligible, keep tracking
 }
 
 
@@ -207,7 +207,7 @@ class Executor:
         self.remote = remote or RemoteLayout()
         self.campaign_id = campaign_id or self.campaign_dir.name
         # ``local_mode`` falls back to True iff we cannot find the WSL
-        # binary AND cannot find condor_submit locally — this is mostly
+        # binary AND cannot find condor_submit locally â€” this is mostly
         # useful for offline unit tests.
         self.local_mode = (
             local_mode
@@ -426,7 +426,7 @@ class Executor:
         if exe is None:
             return RemoteResult(
                 ok=False,
-                error="condor_submit not on PATH (local_mode) — mark failed.",
+                error="condor_submit not on PATH (local_mode) â€” mark failed.",
             )
         try:
             r = subprocess.run(
@@ -478,7 +478,7 @@ class Executor:
             else:
                 logical = _LOGICAL.get(code, h.status)
                 # Treat Removed/3 as an outright failure unless a
-                # checkpoint exists (fix #8 — allow eviction recovery).
+                # checkpoint exists (fix #8 â€” allow eviction recovery).
                 if code == "X" and not (rd / "checkpoint.pt").exists():
                     h.status = "failed"
                     if not (rd / "FAILED").exists():
@@ -548,7 +548,7 @@ class Executor:
             if now >= deadline and pending:
                 LOGGER.error(
                     "collect_results timeout after %ds; %d job(s) still "
-                    "pending — marking as failed.",
+                    "pending â€” marking as failed.",
                     timeout, len(pending),
                 )
                 for h in pending:
@@ -789,3 +789,6 @@ class Executor:
 
 
 __all__ = ["Executor", "SSHSettings", "RemoteLayout", "build_ssh_cmd"]
+
+
+
