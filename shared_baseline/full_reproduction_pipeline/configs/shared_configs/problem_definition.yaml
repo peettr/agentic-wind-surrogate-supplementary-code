@@ -1,0 +1,107 @@
+﻿# baseline_source problem definition â€” declarative input to SearchSpaceBuilder.
+# Non-engineer reviewable. Changes here may invalidate a campaign's config_hash.
+
+task: 2D_spatial_field_prediction
+
+# ---------------------------------------------------------------------------
+# I/O spatial contract (v2 locked â€” Appendix A.4)
+# ---------------------------------------------------------------------------
+input:
+  channels: 1               # single-channel: building height pre-rotation
+  resolution: 640           # fmt_shape = 640 (v2 validated better than 320/400/1280)
+  description: "Building height encoded; wind speed pixels set to zero before training."
+output:
+  channels: 1               # wind speed magnitude
+  resolution: 640
+  activation: relu          # non-negative wind speed
+  description: "Raw Uped wind speed; building interiors preserved as NaN in target."
+
+# ---------------------------------------------------------------------------
+# Dataset
+# ---------------------------------------------------------------------------
+data:
+  source: UrbanTALES
+  n_cases: 512
+  case_types: [VA, VS, UA, US]
+  dx_m: 1.0
+  raw_path_crc: <PROJECT_HPC_ROOT>/data/urbantales/raw
+  data_formatter: DataFormatterFixed
+  data_formatter_path_crc: <PROJECT_HPC_ROOT>/auto_v2/full_dataset/references/data_formatter.py
+  n_patches_total: 878      # DataFormatter produces 1â€“9 patches per case
+  wind_angle_parse: "re.search(r'_d(\\d+)$', case_name)"
+
+# ---------------------------------------------------------------------------
+# Three-way split (v3 only)
+# ---------------------------------------------------------------------------
+split:
+  train_frac: 0.78          # ~400 cases
+  val_frac: 0.10            # ~50 cases
+  holdout_frac: 0.12        # ~62 cases
+  seed: 42                  # FIXED
+  stratify_by: [case_type, density_bin, wind_dir_bin]
+
+# ---------------------------------------------------------------------------
+# Physical constraints (soft; inform codegen prompts, not enforced)
+# ---------------------------------------------------------------------------
+physical_constraints:
+  - spatial_continuity
+  - mass_conservation
+  - non_negative_wind
+
+# ---------------------------------------------------------------------------
+# Resource limits
+# ---------------------------------------------------------------------------
+vram_limit_gb: 80
+batch_size_default: 16
+batch_size_fallback: 8
+
+# ---------------------------------------------------------------------------
+# Training contract (defaults; lr/batch/scheduler explorable by search)
+# ---------------------------------------------------------------------------
+training:
+  optimizer: Adam
+  lr_default: 1.0e-3
+  lr_range: [5.0e-4, 2.0e-3]
+  batch_size_default: 16
+  batch_size_range: [8, 64]
+  scheduler: explorable  # null / CosineAnnealing / warmup, etc.
+  epochs_search: 500
+  epochs_final: 1000
+  seeds_search: [1, 7, 42]
+  seeds_final: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  checkpoint_interval: 50
+  best_metric: val_loss_min
+  grad_cleanup: zero_grad_set_to_none
+
+# ---------------------------------------------------------------------------
+# Evaluation contract (LOCKED â€” mirrored verbatim in eval_module.py)
+# ---------------------------------------------------------------------------
+evaluation:
+  domain: raw_wind_speed
+  primary_metric: per_case_r2_median
+  r2_formula: "1 - SS_res/SS_tot on truth>=0 & finite pixels"
+  global_r2: concat_all_valid_pixels
+  patch_merge: nanmean_axis0
+  mae: mean_abs_truth_minus_pred_valid
+
+# ---------------------------------------------------------------------------
+# Building-mask + NaN safety (LOCKED)
+# ---------------------------------------------------------------------------
+masking:
+  x_building_rule: "X > 0"
+  y_building_rule: "isnan(Y)"
+  loss_valid_mask: "(~isnan(Y)) & (X <= 0)"
+  loss_nan_safety: "torch.where(mask, ...); NEVER mask * ..."
+
+# ---------------------------------------------------------------------------
+# Data preprocessing (LOCKED â€” Appendix A.1)
+# ---------------------------------------------------------------------------
+preprocessing:
+  topo_flipud: true
+  combined_matrix: "combined = Uped.copy(); combined[topo>0] = -topo[topo>0]"
+  x_nan_handling: "np.nan_to_num(X, nan=0.0)"
+  y_nan_handling: preserve
+  wind_angle_encoding: rot90_plus_ndimage_rotate
+
+
+

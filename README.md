@@ -4,7 +4,8 @@ This package contains source code and supporting artifacts for the shared baseli
 
 ## Contents
 
-- `shared_baseline/ contains the compact common baseline reference files used by all search modes.`r`n- `hybrid_workflow_full/`: complete Hybrid workflow implementation.
+- `shared_baseline/`: common reproduced Lu et al. (2025) U-Net baseline, including the full reproduction pipeline from original data formatting and split definition through training, restoration, and evaluation.
+- `hybrid_workflow_full/`: complete Hybrid workflow implementation.
 - `hybrid_training_models/`: Hybrid training/evaluation code plus models organized by round in `model_rounds/`.
 - `sequential_training_models/`: Sequential training/evaluation code plus models organized by round in `model_rounds/`.
 - `grid_training_models/`: final 200 Grid candidates, organized as 20 rounds with 10 model folders per round.
@@ -19,5 +20,4 @@ Large checkpoints, raw run directories, duplicate source dumps, exploratory orth
 
 
 Round model layout note: each search mode stores models as model_rounds/<round>/model_XX_<architecture>/ with model.py and config.json. A duplicate round-level configs/ directory is also provided under each round for quick side-by-side configuration review.
-
 

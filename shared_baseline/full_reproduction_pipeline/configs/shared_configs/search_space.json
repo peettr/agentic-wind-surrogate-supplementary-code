@@ -1,0 +1,63 @@
+﻿{
+  "version": "1.0",
+  "generated_from": "problem_definition.yaml",
+  "architectures": [
+    {
+      "name": "unet_v3_5level",
+      "module": "shared.models.unet_v3",
+      "class": "UNet",
+      "kwargs": {"depth": 5, "n_c": 16},
+      "param_estimate_m": 7.7,
+      "vram_estimate_gb": 9.0
+    },
+    {
+      "name": "unet_v3_6level",
+      "module": "shared.models.unet_v3",
+      "class": "UNet",
+      "kwargs": {"depth": 6, "n_c": 16},
+      "param_estimate_m": 31.0,
+      "vram_estimate_gb": 14.0
+    },
+    {
+      "name": "unet_v3_7level",
+      "module": "shared.models.unet_v3",
+      "class": "UNet",
+      "kwargs": {"depth": 7, "n_c": 16},
+      "param_estimate_m": 124.0,
+      "vram_estimate_gb": 18.0
+    },
+    {
+      "name": "fno_v3",
+      "module": "shared.models.fno_v3",
+      "class": "FNO2d",
+      "kwargs": {"modes": 12, "width": 32, "depth": 4},
+      "param_estimate_m": 3.6,
+      "vram_estimate_gb": 12.0
+    }
+  ],
+  "losses": [
+    {"name": "masked_l1",          "module": "shared.losses", "class": "MaskedL1Loss"},
+    {"name": "masked_l1_gradient", "module": "shared.losses", "class": "MaskedL1GradientLoss"},
+    {"name": "masked_huber",       "module": "shared.losses", "class": "MaskedHuberLoss"}
+  ],
+  "hyperparams": {
+    "n_c": [16, 32],
+    "lr": [1.0e-3, 5.0e-4, 2.0e-3],
+    "batch_size": [16],
+    "epochs": [500],
+    "scheduler": [null, "cosine"],
+    "weight_decay": [0, 1.0e-4],
+    "grad_clip": [null, 0.5],
+    "dropout": [0, 0.1],
+    "activation": ["relu", "gelu"],
+    "ema_decay": [null, 0.999],
+    "norm_type": ["batch", "group"],
+    "data_augment": [false, true]
+  },
+  "seeds_search": [1],
+  "seeds_final": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  "vram_limit_gb": 80
+}
+
+
+
