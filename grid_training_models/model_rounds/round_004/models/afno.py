@@ -8,7 +8,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.checkpoint import checkpoint
 
 
 from abc import ABC, abstractmethod
@@ -39,9 +38,6 @@ def _gn(ch: int) -> nn.GroupNorm:
 class AFNOLayer(nn.Module):
     """Adaptive Fourier layer with block-diagonal spectral mixing and mode limiting."""
 
-    _MIN_SPECTRAL_SIZE = 32
-    _MODE_OVERSAMPLE = 8
-
     def __init__(self, hidden_size: int, num_blocks: int = 8, sparsity_threshold: float = 0.01,
                  hard_thresholding_fraction: float = 1.0, max_modes: int = 0) -> None:
         super().__init__()
@@ -58,12 +54,11 @@ class AFNOLayer(nn.Module):
         self.b1 = nn.Parameter(torch.zeros(num_blocks, self.block_size))
         self.b2 = nn.Parameter(torch.zeros(num_blocks, self.block_size))
 
-        # Keep the repair path activation-light; default max_modes=0 behavior is unchanged.
-        mlp_hidden = hidden_size if max_modes > 0 else hidden_size * 2
+        # Channel mixing MLP
         self.mlp = nn.Sequential(
-            nn.Conv2d(hidden_size, mlp_hidden, 1),
+            nn.Conv2d(hidden_size, hidden_size * 2, 1),
             nn.GELU(),
-            nn.Conv2d(mlp_hidden, hidden_size, 1),
+            nn.Conv2d(hidden_size * 2, hidden_size, 1),
         )
         self.norm = _gn(hidden_size)
 
@@ -72,23 +67,15 @@ class AFNOLayer(nn.Module):
         residual = x
         x = self.norm(x)
 
-        if self.max_modes > 0:
-            spectral_size = max(self._MIN_SPECTRAL_SIZE, self.max_modes * self._MODE_OVERSAMPLE)
-            spec_h = min(H, spectral_size)
-            spec_w = min(W, spectral_size)
-            if spec_h != H or spec_w != W:
-                x = F.adaptive_avg_pool2d(x, (spec_h, spec_w))
-
         # FFT
         x_ft = torch.fft.rfft2(x, norm="ortho")
-        fft_h, fft_w = x.shape[-2:]
 
         # Mode selection: use max_modes if set, otherwise hard_thresholding_fraction
         if self.max_modes > 0:
-            h_modes = min(fft_h, self.max_modes)
+            h_modes = min(H, self.max_modes)
             w_modes = min(x_ft.shape[-1], self.max_modes)
         else:
-            h_modes = max(1, int(fft_h * self.hard_thresholding_fraction))
+            h_modes = max(1, int(H * self.hard_thresholding_fraction))
             w_modes = max(1, int(x_ft.shape[-1] * self.hard_thresholding_fraction))
 
         # Reshape for block-diagonal multiplication
@@ -121,9 +108,7 @@ class AFNOLayer(nn.Module):
         x_ft = x_ft * (torch.abs(x_ft) > self.sparsity_threshold)
 
         # iFFT
-        out = torch.fft.irfft2(x_ft, s=(fft_h, fft_w), norm="ortho")
-        if out.shape[-2:] != (H, W):
-            out = F.interpolate(out, size=(H, W), mode="bilinear", align_corners=False)
+        out = torch.fft.irfft2(x_ft, s=(H, W), norm="ortho")
 
         # MLP + residual
         out = out + self.mlp(residual)
@@ -147,7 +132,6 @@ class AFNO(BaseSurrogate):
                  n_layers: int = 2, max_modes: int = 0) -> None:
         super().__init__()
         self.depth = depth
-        self.use_checkpoint = max_modes > 0
 
         self.input_proj = nn.Sequential(
             nn.Conv2d(1, width, 3, padding=1, bias=False),
@@ -181,19 +165,14 @@ class AFNO(BaseSurrogate):
             nn.ReLU(),
         )
 
-    def _run_block(self, block: nn.Module, x: torch.Tensor) -> torch.Tensor:
-        if self.use_checkpoint and self.training and torch.is_grad_enabled():
-            return checkpoint(block, x, use_reentrant=False)
-        return block(x)
-
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.input_proj(x)
         skips = []
         for blocks, down in zip(self.enc_blocks, self.down):
-            x = self._run_block(blocks, x)
+            x = blocks(x)
             skips.append(x)
             x = down(x)
-        x = self._run_block(self.bottleneck, x)
+        x = self.bottleneck(x)
         for k in range(self.depth):
             x = self.up[k](x)
             skip = skips[self.depth - 1 - k]
@@ -202,7 +181,7 @@ class AFNO(BaseSurrogate):
             if dh != 0 or dw != 0:
                 x = F.pad(x, [dw // 2, dw - dw // 2, dh // 2, dh - dh // 2])
             x = torch.cat([x, skip], dim=1)
-            x = self._run_block(self.dec_blocks[k], x)
+            x = self.dec_blocks[k](x)
         return self.output_proj(x)
 
 

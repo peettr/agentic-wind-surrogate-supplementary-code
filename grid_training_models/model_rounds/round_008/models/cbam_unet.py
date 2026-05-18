@@ -101,6 +101,10 @@ class CBAMUNet(BaseSurrogate):
         depth: number of encoder stages (5, 6, or 7).
         n_c: base channel count.
         use_spatial: whether to include spatial attention (True=CBAM, False=SE only).
+
+    The default depth/base-width pair is sized for 640x640 smoke runs on
+    16GB-tier GPUs. The original depth=7, n_c=32 default had about 500.7M
+    parameters and exceeded the repair target.
     """
 
     SUPPORTED_DEPTHS = (5, 6, 7)

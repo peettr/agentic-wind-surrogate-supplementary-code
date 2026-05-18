@@ -8,7 +8,7 @@ This package contains source code and supporting artifacts for the baseline mode
 - `hybrid_workflow_full/`: complete Hybrid workflow implementation.
 - `hybrid_training_models/`: Hybrid training/evaluation code plus models organized by round in `model_rounds/`.
 - `sequential_training_models/`: Sequential training/evaluation code plus models organized by round in `model_rounds/`.
-- `grid_training_models/`: final Grid subset only, retaining the last 20 rounds with 10 candidates per round where available, organized in `model_rounds/`.
+- `grid_training_models/`: final Grid subset only, retaining 20 complete 10-candidate rounds, 200 models total, organized in `model_rounds/`.
 - `prompts_and_prompt_generators/`: prompt templates/builders, representative prompts, and prompt manifest.
 - `results_summary/`: cleaned summary result files.
 - `documentation/`: code inventory, cleaning report, and release checklist.

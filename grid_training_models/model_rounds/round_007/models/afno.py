@@ -58,8 +58,7 @@ class AFNOLayer(nn.Module):
         self.b1 = nn.Parameter(torch.zeros(num_blocks, self.block_size))
         self.b2 = nn.Parameter(torch.zeros(num_blocks, self.block_size))
 
-        # Channel mixing MLP. The max_modes repair path is selected only for
-        # downsized OOM repairs, where activation memory is the limiting factor.
+        # Keep the repair path activation-light; default max_modes=0 behavior is unchanged.
         mlp_hidden = hidden_size if max_modes > 0 else hidden_size * 2
         self.mlp = nn.Sequential(
             nn.Conv2d(hidden_size, mlp_hidden, 1),

@@ -1,4 +1,4 @@
-# Code Inventory
+﻿# Code Inventory
 
 ## Baseline
 
@@ -25,8 +25,8 @@
 
 ## Grid
 
-- `grid_training_models/generated_models/`: final Grid generated model directories only, `v5_controller_auto11_001` through `v5_controller_auto11_020`.
-- `grid_training_models/model_rounds/`: the same final Grid candidates reorganized as 20 rounds, 10 candidate models per round where available.
+- `grid_training_models/generated_models/`: final Grid generated model directories only, 20 complete 10-candidate rounds, `v5_controller_auto10_006` through `v5_controller_auto10_008` and `v5_controller_auto11_001` through `v5_controller_auto11_017`.
+- `grid_training_models/model_rounds/`: the same final Grid candidates reorganized as 20 rounds, 10 candidate models per round.
 - `grid_training_models/model_rounds_manifest.csv`: round-level model inventory.
 - `grid_training_models/shared/`: Grid shared training/evaluation/config code.
 - `grid_training_models/scripts/`: Grid run/evaluation scripts.
@@ -53,3 +53,4 @@
 - Raw model provider streams and transient JSON/JSONL prompt outputs.
 - Non-representative duplicated full prompt artifacts.
 - Earlier Grid exploratory/codegen/test rounds outside the final 20 Grid rounds.
+

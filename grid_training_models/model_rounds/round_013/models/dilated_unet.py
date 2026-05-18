@@ -112,29 +112,37 @@ class DilatedUNet(BaseSurrogate):
         dilation: dilation rate for conv layers (default 2).
         spectral_modes: number of frequency modes for bottleneck spectral conv.
             0 = disabled (original DilatedUNet).
+        max_ch: optional channel cap for smoke repairs. The default keeps the
+            depth-7 receptive field while preventing the 4096-channel
+            bottleneck that produced the PARAM_TOO_LARGE failure. Set to
+            None to recover the original uncapped channel schedule.
     """
 
     SUPPORTED_DEPTHS = (5, 6, 7)
 
     def __init__(self, depth: int = 7, n_c: int = 32, dilation: int = 2,
-                 spectral_modes: int = 0) -> None:
+                 spectral_modes: int = 0, max_ch: int | None = 256) -> None:
         super().__init__()
         if depth not in self.SUPPORTED_DEPTHS:
             raise ValueError(f"depth must be in {self.SUPPORTED_DEPTHS}, got {depth}")
         self.depth = depth
         self.n_c = n_c
         self.dilation = dilation
+        self.max_ch = max_ch
+        channel_schedule = [
+            min(n_c * 2 ** k, max_ch) if max_ch is not None else n_c * 2 ** k
+            for k in range(depth + 1)
+        ]
 
         self.enc = nn.ModuleList()
         self.pool = nn.ModuleList()
         ch_in = 1
-        for k in range(depth):
-            ch_out = n_c * 2 ** k
+        for ch_out in channel_schedule[:-1]:
             self.enc.append(DilatedConvBlock(ch_in, ch_out, dilation=dilation))
             self.pool.append(nn.MaxPool2d(2))
             ch_in = ch_out
 
-        bottleneck_ch = n_c * 2 ** depth
+        bottleneck_ch = channel_schedule[-1]
         self.bottleneck = DilatedConvBlock(ch_in, bottleneck_ch, dilation=dilation)
 
         # Spectral conv side-branch in bottleneck
@@ -146,13 +154,12 @@ class DilatedUNet(BaseSurrogate):
         self.up = nn.ModuleList()
         self.dec = nn.ModuleList()
         ch_in = bottleneck_ch
-        for k in reversed(range(depth)):
-            ch_skip = n_c * 2 ** k
+        for ch_skip in reversed(channel_schedule[:-1]):
             self.up.append(nn.ConvTranspose2d(ch_in, ch_skip, 2, stride=2))
             self.dec.append(DilatedConvBlock(ch_skip * 2, ch_skip, dilation=dilation))
             ch_in = ch_skip
 
-        self.head = nn.Sequential(nn.Conv2d(n_c, 1, 1), nn.ReLU())
+        self.head = nn.Sequential(nn.Conv2d(channel_schedule[0], 1, 1), nn.ReLU())
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         skips = []

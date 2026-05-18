@@ -99,7 +99,7 @@ class FNO2d(BaseSurrogate):
         n_blocks: number of FNO blocks per stage.
     """
 
-    def __init__(self, width: int = 32, modes: int = 16, depth: int = 4,
+    def __init__(self, width: int = 48, modes: int = 16, depth: int = 4,
                  n_blocks: int = 2) -> None:
         super().__init__()
         self.depth = depth

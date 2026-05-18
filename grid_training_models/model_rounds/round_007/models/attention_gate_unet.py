@@ -110,9 +110,9 @@ class AttentionGateUNet(BaseSurrogate):
         depth: number of encoder stages (5, 6, or 7).
         n_c: base channel count; doubles per stage.
 
-    Defaults target the smoke20 16GB-tier contract at batch=16. The original
-    depth=7, n_c=32 default produced roughly 503M parameters and OOMed before
-    training.
+    The default depth/base-width pair is sized for 640x640 smoke runs on
+    16GB-tier GPUs. The original depth=7, n_c=32 default had about 503M
+    parameters and exceeded the repair target.
     """
 
     SUPPORTED_DEPTHS = (5, 6, 7)

@@ -102,9 +102,9 @@ class CBAMUNet(BaseSurrogate):
         n_c: base channel count.
         use_spatial: whether to include spatial attention (True=CBAM, False=SE only).
 
-    The default depth/base-width pair is sized for 640x640 smoke runs on
-    16GB-tier GPUs. The original depth=7, n_c=32 default had about 500.7M
-    parameters and exceeded the repair target.
+    Defaults target the smoke20 16GB-tier contract at batch=16. The original
+    depth=7, n_c=32 default produced roughly 501M parameters and OOMed before
+    training.
     """
 
     SUPPORTED_DEPTHS = (5, 6, 7)
