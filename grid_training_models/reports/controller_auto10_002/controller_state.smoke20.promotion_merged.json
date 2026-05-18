@@ -1,0 +1,516 @@
+{
+  "runs": {
+    "r_auto10c_00_mamba_attention_smoke20": {
+      "base_run_id": "r_auto10c_00_mamba_attention_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19133",
+      "current_run_id": "r_auto10c_00_mamba_attention_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 22135133,
+        "shape_ok": true,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T21:38:37.091784+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00"
+    },
+    "r_auto10c_01_nafnet_smoke20": {
+      "base_run_id": "r_auto10c_01_nafnet_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19134",
+      "current_run_id": "r_auto10c_01_nafnet_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 2859313,
+        "shape_ok": true,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T21:38:37.091784+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00"
+    },
+    "r_auto10c_02_perceiver_io_smoke20": {
+      "base_run_id": "r_auto10c_02_perceiver_io_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "CUDA OOM on non-safest tier",
+          "params=7082753"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RETRY",
+        "recommended_batch_size": 8,
+        "recommended_tier": "h100_only_12gb",
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19135",
+      "current_run_id": "r_auto10c_02_perceiver_io_smoke20_retry1",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": true,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": "failed",
+        "params": 7082753,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T21:26:13.202249+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RETRY",
+        "batch_size": 8,
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "new_run_id": "r_auto10c_02_perceiver_io_smoke20_retry1",
+        "resume_from_checkpoint": null,
+        "tier": "h100_only_12gb",
+        "walltime_sec": null
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00",
+      "promotion_source": "retry_state",
+      "promotion_retry_run_id": "r_auto10c_02_perceiver_io_smoke20_retry1"
+    },
+    "r_auto10c_03_sac_mamba_smoke20": {
+      "base_run_id": "r_auto10c_03_sac_mamba_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19136",
+      "current_run_id": "r_auto10c_03_sac_mamba_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 16552777,
+        "shape_ok": true,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T21:38:37.091784+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00"
+    },
+    "r_auto10c_04_swin_unetr_smoke20": {
+      "base_run_id": "r_auto10c_04_swin_unetr_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19137",
+      "current_run_id": "r_auto10c_04_swin_unetr_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 6859867,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T21:38:37.091784+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00"
+    },
+    "r_auto10c_05_transolver_smoke20": {
+      "base_run_id": "r_auto10c_05_transolver_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "CUDA OOM on non-safest tier",
+          "params=121316065"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RETRY",
+        "recommended_batch_size": 8,
+        "recommended_tier": "h100_only_12gb",
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19138",
+      "current_run_id": "r_auto10c_05_transolver_smoke20_retry1",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": true,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": "failed",
+        "params": 121316065,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T21:26:13.202249+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RETRY",
+        "batch_size": 8,
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "new_run_id": "r_auto10c_05_transolver_smoke20_retry1",
+        "resume_from_checkpoint": null,
+        "tier": "h100_only_12gb",
+        "walltime_sec": null
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00",
+      "promotion_source": "retry_state",
+      "promotion_retry_run_id": "r_auto10c_05_transolver_smoke20_retry1"
+    },
+    "r_auto10c_06_transolver_lite_smoke20": {
+      "base_run_id": "r_auto10c_06_transolver_lite_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "CUDA OOM on non-safest tier",
+          "params=1023425"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RETRY",
+        "recommended_batch_size": 8,
+        "recommended_tier": "h100_only_12gb",
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19139",
+      "current_run_id": "r_auto10c_06_transolver_lite_smoke20_retry1",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": true,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": "failed",
+        "params": 1023425,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T21:26:13.202249+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RETRY",
+        "batch_size": 8,
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "new_run_id": "r_auto10c_06_transolver_lite_smoke20_retry1",
+        "resume_from_checkpoint": null,
+        "tier": "h100_only_12gb",
+        "walltime_sec": null
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00",
+      "promotion_source": "retry_state",
+      "promotion_retry_run_id": "r_auto10c_06_transolver_lite_smoke20_retry1"
+    },
+    "r_auto10c_07_unet_v3_smoke20": {
+      "base_run_id": "r_auto10c_07_unet_v3_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19140",
+      "current_run_id": "r_auto10c_07_unet_v3_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 138432529,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T21:38:37.091784+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00"
+    },
+    "r_auto10c_08_uno_smoke20": {
+      "base_run_id": "r_auto10c_08_uno_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "CUDA OOM on non-safest tier",
+          "params=105601345"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RETRY",
+        "recommended_batch_size": 8,
+        "recommended_tier": "h100_only_12gb",
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19141",
+      "current_run_id": "r_auto10c_08_uno_smoke20_retry1",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": true,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": "failed",
+        "params": 105601345,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T21:26:13.202249+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RETRY",
+        "batch_size": 8,
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "HIGH_VRAM",
+        "condor_event": null,
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "new_run_id": "r_auto10c_08_uno_smoke20_retry1",
+        "resume_from_checkpoint": null,
+        "tier": "h100_only_12gb",
+        "walltime_sec": null
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00",
+      "promotion_source": "retry_state",
+      "promotion_retry_run_id": "r_auto10c_08_uno_smoke20_retry1"
+    },
+    "r_auto10c_09_mamba_attention_smoke20": {
+      "base_run_id": "r_auto10c_09_mamba_attention_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19142",
+      "current_run_id": "r_auto10c_09_mamba_attention_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 22135133,
+        "shape_ok": true,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T21:38:37.091784+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T22:55:48.975273+00:00"
+    }
+  }
+}

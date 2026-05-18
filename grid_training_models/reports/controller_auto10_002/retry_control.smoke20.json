@@ -1,0 +1,47 @@
+{
+  "campaign": "v5_controller_auto10_002_smoke20",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "stage": "smoke20",
+  "runs": [
+    {
+      "source_campaign": "v5_controller_auto10_002_smoke20",
+      "source_run_id": "r_auto10c_02_perceiver_io_smoke20",
+      "run_id": "r_auto10c_02_perceiver_io_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/perceiver_io.py",
+      "module_name": "codegen_perceiver_io",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_002_smoke20",
+      "source_run_id": "r_auto10c_05_transolver_smoke20",
+      "run_id": "r_auto10c_05_transolver_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/transolver.py",
+      "module_name": "codegen_transolver",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_002_smoke20",
+      "source_run_id": "r_auto10c_06_transolver_lite_smoke20",
+      "run_id": "r_auto10c_06_transolver_lite_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/transolver_lite.py",
+      "module_name": "codegen_transolver_lite",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_002_smoke20",
+      "source_run_id": "r_auto10c_08_uno_smoke20",
+      "run_id": "r_auto10c_08_uno_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/uno.py",
+      "module_name": "codegen_uno",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "campaign": "v5_controller_auto10_001_benchmark200",
+  "created_at": "2026-04-26T18:25:30.655280+00:00",
+  "log_root": "/users/lhu1/condor_v5_logs/v5_controller_auto10_001_benchmark200",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "runs": {
+    "r_auto10b_00_afno_benchmark200_retry1": {
+      "base_run_id": "r_auto10b_00_afno_benchmark200_retry1",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "IDLE_IN_QUEUE",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "condor job is idle",
+          "no training artifacts yet"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "WAIT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19115",
+      "current_run_id": "r_auto10b_00_afno_benchmark200_retry1",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": "1",
+        "failed": false,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": null,
+        "tier": "h100_only_12gb"
+      },
+      "last_transition_at": "2026-04-26T18:25:30.655280+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "WAIT",
+        "classification": "IDLE_IN_QUEUE"
+      },
+      "state_key": "IDLE_IN_QUEUE:WAIT",
+      "updated_at": "2026-04-26T18:25:30.655280+00:00"
+    },
+    "r_auto10b_07_fno_encoder_decoder_benchmark200_retry1": {
+      "base_run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200_retry1",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "IDLE_IN_QUEUE",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "condor job is idle",
+          "no training artifacts yet"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "WAIT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19116",
+      "current_run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200_retry1",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": "1",
+        "failed": false,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": null,
+        "tier": "h100_only_12gb"
+      },
+      "last_transition_at": "2026-04-26T18:25:30.655280+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "WAIT",
+        "classification": "IDLE_IN_QUEUE"
+      },
+      "state_key": "IDLE_IN_QUEUE:WAIT",
+      "updated_at": "2026-04-26T18:25:30.655280+00:00"
+    },
+    "r_auto10b_08_hrdcn_benchmark200_retry1": {
+      "base_run_id": "r_auto10b_08_hrdcn_benchmark200_retry1",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "IDLE_IN_QUEUE",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "condor job is idle",
+          "no training artifacts yet"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "WAIT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "19117",
+      "current_run_id": "r_auto10b_08_hrdcn_benchmark200_retry1",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": "1",
+        "failed": false,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": null,
+        "tier": "h100_only_12gb"
+      },
+      "last_transition_at": "2026-04-26T18:25:30.655280+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "WAIT",
+        "classification": "IDLE_IN_QUEUE"
+      },
+      "state_key": "IDLE_IN_QUEUE:WAIT",
+      "updated_at": "2026-04-26T18:25:30.655280+00:00"
+    }
+  },
+  "stage": "benchmark200",
+  "updated_at": "2026-04-26T18:25:30.655280+00:00"
+}

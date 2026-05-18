@@ -1,0 +1,3386 @@
+You are proposing experiments for a neural architecture search on wind pressure prediction.
+Round: 0
+
+You are an independent scout, not a policy controller. Your job is to propose a high-value next batch.
+You receive all available V4 review history, candidate code summaries, V3-derived architecture/HP ranges, and hard workflow contracts.
+Do not blindly follow the latest review. Treat reviews as evidence and choose freely: exploit winners or explore new families/mechanisms, as long as the rationale is technically coherent and compatible with the hard constraints.
+Do not use V3 performance values/rankings/tiers/conclusions. V3 architecture definitions and HP ranges are allowed.
+
+Full planner context JSON:
+{
+  "campaign": {
+    "round_num": 0,
+    "phase": "propose",
+    "status_note": "Resuming clean R0 planner after Gemini web scout timeout hardening: query_limit=6, query_timeout=120s, planner_worker_timeout=5400s, reuse seed enabled.",
+    "experiments_per_round": 12
+  },
+  "hard_rules": {
+    "planner_role": "Scout proposes experiments only; runner/controller handle execution and retry/repair.",
+    "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
+    "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
+    "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
+    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
+    "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
+    "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
+    "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
+    "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
+    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
+    "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
+    "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
+    "exact_output": "Return only JSON in the form {\"proposals\": [hypothesis-bundle proposals or concrete experiment configs]}. No markdown, no prose outside JSON."
+  },
+  "anti_endless_finetune_rules": {
+    "max_same_arch_per_round": 2,
+    "max_local_hp_refinements_per_round": 4,
+    "min_architecture_families_per_round": 6,
+    "max_augmentation_ablations_per_round": 1,
+    "stagnation_trigger": "If the last two completed rounds do not improve best val R2 median by at least 0.01, bias the next round toward explorer proposals rather than another local HP/capacity sweep.",
+    "local_hp_refinement_definition": "An exploit proposal that keeps a previously successful architecture family and mainly tweaks lr/n_c/depth/loss/EMA/augmentation.",
+    "family_cooldown": "Architectures repeatedly failing, repeatedly repaired, or producing low-value variants should cool down unless included as an explicit exploit baseline or capacity-matched comparison.",
+    "planner_split": "Use a simple two-track split: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit does not explore; explorer must introduce new model/mechanism value.",
+    "explorer_definition": "Explorer proposals should be new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Reusing an old arch_name with only n_c/depth/lr/loss changes is not explorer.",
+    "capacity_bias_warning": "Do not let the search collapse into larger n_c/depth. Treat parameter efficiency as a scientific objective: prefer capacity-matched or smaller variants when they can test the same mechanism, and require explicit justification for high-n_c/high-depth proposals."
+  },
+  "train_config_contract": {
+    "required_fields": [
+      "experiment_id",
+      "arch_name",
+      "n_c",
+      "depth",
+      "loss_name",
+      "lr",
+      "batch_size",
+      "input_features",
+      "epochs",
+      "seed",
+      "use_ema",
+      "ema_decay",
+      "augmentation"
+    ],
+    "default_input_features": "height",
+    "valid_input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "locked_seed": 1,
+    "current_seed_policy": "Hard rule: seed must be 1. Multi-seed is not allowed in this campaign unless the human researcher explicitly changes the hard rule.",
+    "full_epochs": 200,
+    "smoke_epochs": 20
+  },
+  "candidate_library_from_code": [
+    {
+      "filename": "afno.py",
+      "arch_name": "afno",
+      "code_summary": "Classes: AFNOLayer"
+    },
+    {
+      "filename": "afno_block.py",
+      "arch_name": "afno_block",
+      "code_summary": "Classes: AFNOBlock"
+    },
+    {
+      "filename": "attention_gate_unet.py",
+      "arch_name": "attention_gate_unet",
+      "code_summary": "Classes: ConvBlock, AttentionGate"
+    },
+    {
+      "filename": "attention_mamba.py",
+      "arch_name": "attention_mamba",
+      "code_summary": "Classes: AttentionGate, SimpleSSM, ConvBlock"
+    },
+    {
+      "filename": "base.py",
+      "arch_name": "base",
+      "code_summary": "Classes: for, BaseSurrogate"
+    },
+    {
+      "filename": "cbam_unet.py",
+      "arch_name": "cbam_unet",
+      "code_summary": "Classes: SEBlock, CBAMBlock, ConvBlock"
+    },
+    {
+      "filename": "cnn_deeponet.py",
+      "arch_name": "cnn_deeponet",
+      "code_summary": "Classes: CNNEncoder, MLPTrunk"
+    },
+    {
+      "filename": "cno.py",
+      "arch_name": "cno",
+      "code_summary": "Classes: CNOBlock"
+    },
+    {
+      "filename": "convnext_v2_unet.py",
+      "arch_name": "convnext_v2_unet",
+      "code_summary": "Classes: ConvNeXtV2Block"
+    },
+    {
+      "filename": "dcn_unet.py",
+      "arch_name": "dcn_unet",
+      "code_summary": "Classes: DeformableConvBlock"
+    },
+    {
+      "filename": "dilated_fno.py",
+      "arch_name": "dilated_fno",
+      "code_summary": "Classes: SpectralSkip, DilatedConvBlock"
+    },
+    {
+      "filename": "dilated_hrformer.py",
+      "arch_name": "dilated_hrformer",
+      "code_summary": "Classes: WindowAttention"
+    },
+    {
+      "filename": "dilated_unet.py",
+      "arch_name": "dilated_unet",
+      "code_summary": "Classes: DilatedConvBlock, SpectralConv2d"
+    },
+    {
+      "filename": "ffno.py",
+      "arch_name": "ffno",
+      "code_summary": "Classes: FactorizedSpectralConv2d"
+    },
+    {
+      "filename": "fno2d.py",
+      "arch_name": "fno2d",
+      "code_summary": "Classes: SpectralConv2d"
+    },
+    {
+      "filename": "fno_encoder_decoder.py",
+      "arch_name": "fno_encoder_decoder",
+      "code_summary": "Classes: SpectralConv, FNOEncoderBlock, ConvDecoderBlock"
+    },
+    {
+      "filename": "fno_v3.py",
+      "arch_name": "fno_v3",
+      "code_summary": "Classes: SpectralConv2d"
+    },
+    {
+      "filename": "fourier_unet.py",
+      "arch_name": "fourier_unet",
+      "code_summary": "Classes: ConvBlock, FourierUpsample"
+    },
+    {
+      "filename": "hrdcn.py",
+      "arch_name": "hrdcn",
+      "code_summary": "Classes: DCNv2, HRBlock"
+    },
+    {
+      "filename": "hrformer.py",
+      "arch_name": "hrformer",
+      "code_summary": "Classes: WindowSelfAttention"
+    },
+    {
+      "filename": "hrnet.py",
+      "arch_name": "hrnet",
+      "code_summary": "Classes: BasicBlock, HRStage"
+    },
+    {
+      "filename": "kan_unet.py",
+      "arch_name": "kan_unet",
+      "code_summary": "Classes: KANLayer"
+    },
+    {
+      "filename": "mamba2d.py",
+      "arch_name": "mamba2d",
+      "code_summary": "Classes: SS2DDirection, SS2DBlock"
+    },
+    {
+      "filename": "mamba_attention.py",
+      "arch_name": "mamba_attention",
+      "code_summary": "Classes: CBAM, SimpleSSM, MambaAttentionBlock"
+    },
+    {
+      "filename": "multiscale_conv.py",
+      "arch_name": "multiscale_conv",
+      "code_summary": "Classes: ChannelAttention, MultiScaleBlock"
+    },
+    {
+      "filename": "nafnet.py",
+      "arch_name": "nafnet",
+      "code_summary": "Classes: SimpleGate, SimpleChannelAttention, NAFBlock"
+    },
+    {
+      "filename": "perceiver.py",
+      "arch_name": "perceiver",
+      "code_summary": "Classes: CrossAttention, SelfAttention"
+    },
+    {
+      "filename": "quadmamba.py",
+      "arch_name": "quadmamba",
+      "code_summary": "Classes: QuadScanBlock"
+    },
+    {
+      "filename": "residual_spectral.py",
+      "arch_name": "residual_spectral",
+      "code_summary": "Classes: ResBlock, SpectralBottleneck"
+    },
+    {
+      "filename": "sac_mamba.py",
+      "arch_name": "sac_mamba",
+      "code_summary": "Classes: SelfAdaptiveConv, SimpleSSMBlock"
+    },
+    {
+      "filename": "sac_unet.py",
+      "arch_name": "sac_unet",
+      "code_summary": "Classes: SpatialAdaptiveConv"
+    },
+    {
+      "filename": "swin_unetr.py",
+      "arch_name": "swin_unetr",
+      "code_summary": "Classes: WindowAttention"
+    },
+    {
+      "filename": "transolver.py",
+      "arch_name": "transolver",
+      "code_summary": "Classes: PhysicsAttention"
+    },
+    {
+      "filename": "transolver_lite.py",
+      "arch_name": "transolver_lite",
+      "code_summary": "Classes: SliceAttention, TransolverBlock"
+    },
+    {
+      "filename": "ufno.py",
+      "arch_name": "ufno",
+      "code_summary": "Classes: FactorizedSpectralConv2d"
+    },
+    {
+      "filename": "umamba.py",
+      "arch_name": "umamba",
+      "code_summary": "Classes: SimpleSSMBlock"
+    },
+    {
+      "filename": "unet_afno.py",
+      "arch_name": "unet_afno",
+      "code_summary": "Classes: ConvBlock"
+    },
+    {
+      "filename": "unet_sdf_7level.py",
+      "arch_name": "unet_sdf_7level",
+      "code_summary": "Classes: DoubleConv, Down, Up"
+    },
+    {
+      "filename": "unet_v2_baseline.py",
+      "arch_name": "unet_v2_baseline",
+      "code_summary": "Classes: ConvBlock, UNetLu7Level"
+    },
+    {
+      "filename": "unet_v3.py",
+      "arch_name": "unet_v3",
+      "code_summary": "Classes: ConvBlock"
+    },
+    {
+      "filename": "uno.py",
+      "arch_name": "uno",
+      "code_summary": "Classes: SpectralConv2d, UNOLayer"
+    }
+  ],
+  "candidate_catalog_v3_architecture_only": {
+    "models": [
+      {
+        "name": "unet_v2_baseline",
+        "category": "baseline",
+        "params_million": 34.6,
+        "depth_options": [
+          5,
+          6,
+          7
+        ],
+        "n_c_options": [
+          8,
+          16,
+          32,
+          48
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "7-level UNet, V3 reference. 6 ConvBlock encoder + decoder + skip concat."
+      },
+      {
+        "name": "unet_v3",
+        "category": "baseline",
+        "params_million": 34.6,
+        "depth_options": [
+          5,
+          6,
+          7
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "V3 variant of baseline UNet."
+      },
+      {
+        "name": "unet_sdf_7level",
+        "category": "baseline",
+        "params_million": 34.6,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 3,
+        "enabled": true,
+        "notes": "UNet with 3-channel input (height, SDF, normal angle)."
+      },
+      {
+        "name": "unet_afno",
+        "category": "baseline",
+        "params_million": 11.9,
+        "depth_options": [
+          5,
+          6,
+          7
+        ],
+        "n_c_options": [
+          16,
+          24,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "UNet with AFNO spectral bottleneck at deepest level."
+      },
+      {
+        "name": "attention_gate_unet",
+        "params_million": 503.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Schlemper attention gates on every skip connection."
+      },
+      {
+        "name": "cbam_unet",
+        "params_million": 501.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "CBAM (channel + spatial) attention on skips."
+      },
+      {
+        "name": "dilated_unet",
+        "params_million": 498.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          32,
+          48
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "DilatedConvBlock with dilation=2. Effective 5x5 receptive field at same params."
+      },
+      {
+        "name": "dcn_unet",
+        "params_million": 135.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Deformable convolution (approximated via dense warp via grid_sample)."
+      },
+      {
+        "name": "sac_unet",
+        "params_million": 134.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Spatial adaptive conv: standard conv + per-pixel scale/shift modulation."
+      },
+      {
+        "name": "nafnet",
+        "params_million": 5.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          8,
+          16
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "SimpleGate blocks, no activation. Very small (5M params)."
+      },
+      {
+        "name": "kan_unet",
+        "params_million": 22.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Kolmogorov-Arnold Network blocks in UNet shell."
+      },
+      {
+        "name": "hrnet",
+        "params_million": 20.0,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Multi-resolution parallel streams. Stride-4 stem limits internal res to 160x160."
+      },
+      {
+        "name": "transolver",
+        "params_million": 121.0,
+        "depth_options": [
+          6
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Transformer with solver-style attention. V3 runs all failed (timeout/killed)."
+      },
+      {
+        "name": "umamba",
+        "params_million": 288.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "UNet + bidirectional selective SSM in bottleneck. 4-direction EMA scan."
+      },
+      {
+        "name": "mamba2d",
+        "params_million": 423.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "4-direction serial EMA scan (Python loop). Slow wall time."
+      },
+      {
+        "name": "quadmamba",
+        "params_million": 338.0,
+        "depth_options": [
+          7
+        ],
+        "n_c_options": [
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Four-quadrant EMA scan with shared projection weights."
+      },
+      {
+        "name": "hrformer",
+        "params_million": 13.0,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Window self-attention HRNet. Stride-2 stem."
+      },
+      {
+        "name": "swin_unetr",
+        "params_million": 12.7,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Swin Transformer encoder + conv decoder. Stride-4 patch embed."
+      },
+      {
+        "name": "perceiver",
+        "params_million": 7.0,
+        "depth_options": [
+          6
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Latent cross-attention. 8-fold stride conv + 32x32 latent array."
+      },
+      {
+        "name": "cnn_deeponet",
+        "params_million": 2.0,
+        "depth_options": [
+          6
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "CNN branch (global avg pool) + MLP trunk. Very small."
+      },
+      {
+        "name": "fno2d",
+        "params_million": 12.1,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "2D Fourier Neural Operator. Truncated-mode spectral mixing."
+      },
+      {
+        "name": "afno",
+        "params_million": 11.9,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Adaptive FNO. Block-diagonal complex MLP in FFT domain."
+      },
+      {
+        "name": "cno",
+        "params_million": 14.2,
+        "depth_options": [
+          4,
+          5
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Convolutional Neural Operator. CNOBlocks with channel lifting."
+      },
+      {
+        "name": "uno",
+        "params_million": 20.0,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "U-shaped Neural Operator."
+      },
+      {
+        "name": "transolver_lite",
+        "params_million": 2.5,
+        "depth_options": [
+          4,
+          6
+        ],
+        "n_c_options": [
+          16,
+          32
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Simplified Transolver. Very small."
+      },
+      {
+        "name": "dilated_fno",
+        "params_million": 15.0,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Multi-rate dilated conv (1,2,4 parallel) + spectral skip."
+      },
+      {
+        "name": "sac_mamba",
+        "params_million": 16.6,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "SAC + Mamba bottleneck hybrid."
+      },
+      {
+        "name": "hrdcn",
+        "params_million": 15.0,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "HRNet + DCNv2 (deformable conv)."
+      },
+      {
+        "name": "fourier_unet",
+        "params_million": 8.6,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "UNet with FFT-domain upsampling in decoder."
+      },
+      {
+        "name": "dilated_hrformer",
+        "params_million": 18.9,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Dilated conv + HRFormer window attention."
+      },
+      {
+        "name": "fno_encoder_decoder",
+        "params_million": 14.9,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "FNO block in encoder-decoder shell."
+      },
+      {
+        "name": "mamba_attention",
+        "params_million": 16.0,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Attention + Mamba hybrid variant."
+      },
+      {
+        "name": "multiscale_conv",
+        "params_million": 8.4,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "4-rate dilated conv (1,2,4,8) + SE channel attention."
+      },
+      {
+        "name": "residual_spectral",
+        "params_million": 6.4,
+        "depth_options": [
+          4
+        ],
+        "n_c_options": [
+          16,
+          24
+        ],
+        "input_channels": 1,
+        "enabled": true,
+        "notes": "Residual spectral convolution."
+      }
+    ],
+    "hp_space": {
+      "loss_name": [
+        "masked_l1",
+        "masked_l1_gradient",
+        "masked_huber"
+      ],
+      "lr": [
+        0.0003,
+        0.0005,
+        0.0007,
+        0.001,
+        0.002
+      ],
+      "weight_decay": [
+        0.0,
+        1e-05,
+        0.0001
+      ],
+      "scheduler": [
+        null,
+        "cosine"
+      ],
+      "gradient_clip": [
+        null,
+        0.5
+      ],
+      "use_ema": [
+        false,
+        true
+      ],
+      "augmentation": [
+        false,
+        true
+      ],
+      "input_features": [
+        "height",
+        "height_sdf",
+        "height_sdf_normal"
+      ],
+      "batch_size": [
+        8,
+        16
+      ],
+      "epochs": [
+        20,
+        200,
+        1000
+      ],
+      "depth": [
+        5,
+        6,
+        7
+      ],
+      "n_c": [
+        8,
+        16,
+        32,
+        48
+      ]
+    }
+  },
+  "hp_search_space_v3_ranges_only": {
+    "search_space": {
+      "architecture": {
+        "type": "categorical",
+        "values": [
+          "unet_v2_baseline",
+          "dilated_unet",
+          "quadmamba",
+          "mamba2d",
+          "umamba",
+          "ag_unet",
+          "sac_unet",
+          "hrdcn",
+          "fourier_unet",
+          "cno"
+        ]
+      },
+      "n_c": {
+        "type": "integer",
+        "min": 8,
+        "max": 48,
+        "step": 8
+      },
+      "depth": {
+        "type": "integer",
+        "min": 5,
+        "max": 7
+      },
+      "loss_name": {
+        "type": "categorical",
+        "values": [
+          "masked_l1",
+          "masked_l1_gradient",
+          "masked_huber"
+        ]
+      },
+      "lr": {
+        "type": "float",
+        "min": 0.0003,
+        "max": 0.002
+      },
+      "scheduler": {
+        "type": "categorical",
+        "values": [
+          null,
+          "cosine"
+        ]
+      },
+      "weight_decay": {
+        "type": "float",
+        "min": 0.0,
+        "max": 0.0001
+      },
+      "use_ema": {
+        "type": "boolean"
+      },
+      "augmentation": {
+        "type": "boolean"
+      },
+      "input_features": {
+        "type": "categorical",
+        "values": [
+          "height",
+          "height_sdf",
+          "height_sdf_normal"
+        ]
+      },
+      "epochs": {
+        "type": "integer",
+        "values": [
+          200,
+          500,
+          1000
+        ]
+      }
+    },
+    "constraints": {
+      "max_params_million": 150,
+      "max_vram_gb": 48,
+      "max_wall_time_min": 120,
+      "forbidden_combinations": [
+        {
+          "augmentation": true
+        }
+      ]
+    }
+  },
+  "shared_train_search_space_contract": {
+    "version": "1.0",
+    "generated_from": "problem_definition.yaml",
+    "architectures": [
+      {
+        "name": "unet_v3_5level",
+        "module": "shared.models.unet_v3",
+        "class": "UNet",
+        "kwargs": {
+          "depth": 5,
+          "n_c": 16
+        },
+        "param_estimate_m": 7.7,
+        "vram_estimate_gb": 9.0
+      },
+      {
+        "name": "unet_v3_6level",
+        "module": "shared.models.unet_v3",
+        "class": "UNet",
+        "kwargs": {
+          "depth": 6,
+          "n_c": 16
+        },
+        "param_estimate_m": 31.0,
+        "vram_estimate_gb": 14.0
+      },
+      {
+        "name": "unet_v3_7level",
+        "module": "shared.models.unet_v3",
+        "class": "UNet",
+        "kwargs": {
+          "depth": 7,
+          "n_c": 16
+        },
+        "param_estimate_m": 124.0,
+        "vram_estimate_gb": 18.0
+      },
+      {
+        "name": "fno_v3",
+        "module": "shared.models.fno_v3",
+        "class": "FNO2d",
+        "kwargs": {
+          "modes": 12,
+          "width": 32,
+          "depth": 4
+        },
+        "param_estimate_m": 3.6,
+        "vram_estimate_gb": 12.0
+      }
+    ],
+    "losses": [
+      {
+        "name": "masked_l1",
+        "module": "shared.losses",
+        "class": "MaskedL1Loss"
+      },
+      {
+        "name": "masked_l1_gradient",
+        "module": "shared.losses",
+        "class": "MaskedL1GradientLoss"
+      },
+      {
+        "name": "masked_huber",
+        "module": "shared.losses",
+        "class": "MaskedHuberLoss"
+      }
+    ],
+    "hyperparams": {
+      "n_c": [
+        16,
+        32
+      ],
+      "lr": [
+        0.001,
+        0.0005,
+        0.002
+      ],
+      "batch_size": [
+        16
+      ],
+      "epochs": [
+        500
+      ],
+      "scheduler": [
+        null,
+        "cosine"
+      ],
+      "weight_decay": [
+        0,
+        0.0001
+      ],
+      "grad_clip": [
+        null,
+        0.5
+      ],
+      "dropout": [
+        0,
+        0.1
+      ],
+      "activation": [
+        "relu",
+        "gelu"
+      ],
+      "ema_decay": [
+        null,
+        0.999
+      ],
+      "norm_type": [
+        "batch",
+        "group"
+      ],
+      "data_augment": [
+        false,
+        true
+      ]
+    },
+    "seeds_search": [
+      1
+    ],
+    "seeds_final": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "vram_limit_gb": 80
+  },
+  "hard_constraints_text": "﻿# V3 â†’ V4 Hard Constraints (A + D ç±»)\n\nPeter ç¡®è®¤ï¼šA ç±»ï¼ˆç¡¬ä»¶/ç‰©ç†çº¦æŸï¼‰å’Œ D ç±»ï¼ˆå·¥ç¨‹çº¦æŸï¼‰å¯ä»¥åŠ å…¥ V4ã€‚\nB ç±»ï¼ˆå®žéªŒå‘çŽ°ï¼‰å’Œ C ç±»ï¼ˆæž¶æž„ç»“è®ºï¼‰ä¸å¯åŠ å…¥â€”â€”Explorer å¿…é¡»è‡ªå·±å‘çŽ°ã€‚\n\n---\n\n## A ç±»ï¼šç¡¬ä»¶/ç‰©ç†çº¦æŸ\n\n### A1. batch_size = 16ï¼ˆç¡¬é”å®šï¼‰\n- **çº¦æŸ**ï¼š`batch_size` å›ºå®šä¸º 16ï¼Œä¸è¿› HP ç©ºé—´\n- **fallback**ï¼štrain.py å†…éƒ¨ OOM æ—¶è‡ªåŠ¨é™ä¸º 8ï¼ˆè¿™æ˜¯ train.py çš„é€»è¾‘ï¼ŒV4 ä¸éœ€è¦ç®¡ï¼‰\n- **åŽŸå› **ï¼šV3 æ‰€æœ‰æ­£å¼å®žéªŒå‡ç”¨ batch=16ï¼Œè¿™æ˜¯ç»è¿‡éªŒè¯çš„ç¨³å®šé…ç½®\n- **å®žçŽ°**ï¼šHPSpace ä¸­ç§»é™¤ `batch_size` ç»´åº¦ï¼Œæˆ–å›ºå®šä¸º `[16]`\n\n### A2. GPU VRAM åˆ†çº§çº¦æŸï¼ˆç¡¬çº¦æŸï¼‰\nä¸åŒæ¨¡åž‹ Ã— n_c ç»„åˆéœ€è¦ä¸åŒç­‰çº§çš„ GPUï¼š\n\n| æ¨¡åž‹å‚æ•°é‡ | éœ€è¦ GPU VRAM | Condor requirements |\n|-----------|:------------:|---------------------|\n| < 35M (n_c=16, 7-level UNet) | â‰¥ 22GB | `GPUs_GlobalMemoryMb >= 22000` |\n| 35-150M (n_c=32, 7-level UNet) | â‰¥ 40GB | `GPUs_GlobalMemoryMb >= 40000` |\n| 150-500M (DilatedUNet n_c=32) | â‰¥ 45GB | `GPUs_GlobalMemoryMb >= 45000` |\n| > 500M | ä¸å…è®¸ | ï¼ˆPeter æŒ‡å®šä¸Šé™ 150Mï¼Œä½† DilatedUNet 498M å·²åœ¨ V3 ä¸­è¿è¡Œï¼‰ |\n\n**æ³¨æ„**ï¼šDilatedUNet depth=7 n_c=32 = 498M paramsï¼Œè™½ç„¶è¶…è¿‡ 150M ä¸Šé™ï¼Œä½† V3 ä¸­åœ¨ L40S(45GB) ä¸ŠæˆåŠŸè¿è¡Œã€‚V4 ä¸­ä¿ç•™æ­¤æ¨¡åž‹ã€‚\n\n**å®žçŽ°**ï¼š`generate_v6_round.py` æ ¹æ® arch_name + n_c è‡ªåŠ¨è®¡ç®— paramsï¼Œè®¾ç½®å¯¹åº”çš„ Condor requirementsã€‚\n\n### A3. activation å†…å­˜æ˜¯ OOM æ ¹å› ï¼ˆæŒ‡å¯¼åŽŸåˆ™ï¼‰\n- **çº¦æŸ**ï¼šä¸åªæ˜¯å‚æ•°é‡ï¼Œactivation å†…å­˜ï¼ˆchÂ²Ã—HÂ²Ã—WÂ²Ã—depthÃ—batchï¼‰æ‰æ˜¯ OOM çš„çœŸæ­£åŽŸå› \n- **å½±å“**ï¼šé«˜åˆ†è¾¨çŽ‡ï¼ˆ640Ã—640ï¼‰+ å¤§ channelï¼ˆn_c=48ï¼‰+ æ·±ç½‘ç»œï¼ˆdepth=7ï¼‰ç»„åˆå¯èƒ½ OOMï¼Œå³ä½¿å‚æ•°é‡ < 150M\n- **å®žçŽ°**ï¼š`generate_v6_round.py` ä¸­å¯¹ VRAM æ•æ„Ÿçš„é…ç½®ï¼ˆn_câ‰¥48 + depth=7ï¼‰è‡ªåŠ¨è¦æ±‚ â‰¥45GB GPU\n\n### A4. stride-2 stem é™ä½Žåˆ†è¾¨çŽ‡ï¼ˆå·²çŸ¥ä»£ä»·ï¼‰\n- **å®žçŽ°**ï¼šåœ¨ candidate_library çš„ notes ä¸­æ³¨æ˜Žå“ªäº›æ¨¡åž‹ç”¨ stride-2\n\n### A5. SDF æ•°æ®å¿…é¡»é¢„ç”Ÿæˆ\n- **çº¦æŸ**ï¼š`input_features=height_sdf_normal` éœ€è¦ `shared/sdf.py` é¢„ç”Ÿæˆçš„ 3ch .npy æ–‡ä»¶\n- **æ•°æ®è·¯å¾„**ï¼š`<PROJECT_HPC_ROOT>/data/lu_sdf_640/`\n- **å®žçŽ°**ï¼š`generate_v6_round.py` æ£€æŸ¥ SDF æ•°æ®ç›®å½•æ˜¯å¦å­˜åœ¨ï¼Œä¸å­˜åœ¨åˆ™è·³è¿‡ SDF input é€‰é¡¹\n\n### A6. eval_module.py é”å®š\n- **çº¦æŸ**ï¼ševal_module.py çš„ SHA-256 hash å†™å…¥æ¯ä¸ª metrics.json çš„ `eval_hash` å­—æ®µ\n- **åŽŸå› **ï¼šä¿è¯æ‰€æœ‰å®žéªŒä½¿ç”¨ç›¸åŒçš„è¯„ä¼°æ–¹æ³•ï¼Œå¯å¯¹æ¯”\n- **å®žçŽ°**ï¼šV4 campaign init é˜¶æ®µéªŒè¯ eval_hash ä¸Ž V3 ä¸€è‡´\n\n---\n\n## D ç±»ï¼šå·¥ç¨‹çº¦æŸï¼ˆCondor/æäº¤ï¼‰\n\n### D1. Condor GPU regexp çº¦æŸï¼ˆç¡¬çº¦æŸï¼‰\n- **æ­£ç¡®å†™æ³•**ï¼š\n  ```\n  requirements = (regexp(\"qa-h100-\", Machine) || regexp(\"qa-a100-\", Machine) || regexp(\"qa-l40s-\", Machine))\n  ```\n- **ä¸èƒ½ç”¨**ï¼š`GPUs_GlobalMemoryMb`ï¼ˆCondor å°† undefined å±žæ€§è§†ä¸ºåŒ¹é…ï¼Œå¯¼è‡´åˆ†åˆ°æ—  GPU èŠ‚ç‚¹ï¼‰\n- **GPU ç±»åž‹**ï¼š\n  - H100: 80GB VRAM, ~60 TFLOPS FP32\n  - L40S: 48GB VRAM, ~90 TFLOPS FP32\n  - A40: 48GB VRAM, ~37 TFLOPS FP32\n  - A6000: 48GB VRAM, ~39 TFLOPS FP32\n  - RTX6000 Ada: 48GB VRAM, ~91 TFLOPS FP32\n  - A10: 24GB VRAM, ~31 TFLOPS FP32\n  - 2080 Ti: 11GB VRAM, ~13 TFLOPSï¼ˆå¤ªå°ï¼Œä¸ç”¨äºŽè®­ç»ƒï¼‰\n- **å®žçŽ°**ï¼š`generate_v6_round.py` æ ¹æ®æ¨¡åž‹ VRAM éœ€æ±‚è‡ªåŠ¨ç”Ÿæˆ requirements\n\n### D2. request_memory = 16GBï¼ˆç¡¬çº¦æŸï¼‰\n- **è®­ç»ƒ**ï¼š`request_memory = 16 GB`ï¼ˆ8GB è¯„ä¼° OOMï¼‰\n- **æ³¨æ„**ï¼š`request_memory = 64 GB` ä¼šè¿‡æ»¤æŽ‰æ‰€æœ‰ H100 slot\n- **å®žçŽ°**ï¼šå›ºå®šä¸º 16GB\n\n### D3. æŽ’é™¤ qa-a10-005ï¼ˆç¡¬çº¦æŸï¼‰\n- **çº¦æŸ**ï¼š`requirements = && Machine != \"<HPC_GPU_NODE>\"`\n- **åŽŸå› **ï¼šauto_v2 ä¸­åå¤å‡ºæƒé™/æ—¥å¿—å†™å…¥é—®é¢˜\n- **å®žçŽ°**ï¼šæ‰€æœ‰ submit æ–‡ä»¶åŠ å…¥æ­¤æŽ’é™¤\n\n### D4. Condor wrapper è„šæœ¬ï¼ˆå›ºå®šæ¨¡æ¿ï¼‰\n```bash\n#!/bin/bash\nif [ -r /opt/crc/Modules/current/init/bash ]; then\n  source /opt/crc/Modules/current/init/bash\nfi\nmodule load conda/25.9.1\nsource /software/c/conda/25.9.1/etc/profile.d/conda.sh\nconda activate graphwind\ncd <BASELINE_HPC_SOURCE_ROOT>\n```\n- **æ³¨æ„**ï¼šV4 çš„ shared/ åœ¨ CRC ä¸Šä½äºŽ auto_v3/shared/ï¼ˆV4 å¤ç”¨ V3 çš„ shared/ï¼‰\n- **å®žçŽ°**ï¼š`templates/condor_wrapper.sh` å›ºå®šä¸å˜\n\n### D5. CRLF å¤„ç†ï¼ˆæ¯æ¬¡æäº¤å‰ï¼‰\n- **çº¦æŸ**ï¼šæ‰€æœ‰ä»Ž Windows ä¸Šä¼ çš„ .sh/.json å¿…é¡» `tr -d '\\r'`\n- **å®žçŽ°**ï¼š`generate_v6_round.py` ç”Ÿæˆæ–‡ä»¶åŽï¼Œåœ¨ä¸Šä¼ å‰ç»Ÿä¸€å¤„ç† CRLF\n\n### D6. SSH è¿žæŽ¥æ–¹å¼ï¼ˆå›ºå®šï¼‰\n- **æ­£ç¡®**ï¼š`wsl bash -lc \"ssh -o ControlPath=<SSH_CONTROL_PATH> lhu1@<HPC_FILE_LOGIN> '...'\"`\n- **è¶…æ—¶**ï¼šexec â‰¥ 60sï¼ŒConnectTimeout â‰¥ 30s\n- **æ¢å¤**ï¼šPeter æ‰‹åŠ¨åœ¨ WSL ç»ˆç«¯é‡å»º ControlMaster socket\n\n### D7. æ–‡ä»¶æƒé™ï¼ˆæ¯æ¬¡æäº¤å‰ï¼‰\n- **çº¦æŸ**ï¼š`chmod 666 train.out train.err` é˜²æ­¢ Permission denied hold\n- **å®žçŽ°**ï¼šsubmit è„šæœ¬ä¸­ç»Ÿä¸€å¤„ç†\n\n### D8. CRC é¡¹ç›®è·¯å¾„ï¼ˆå›ºå®šï¼‰\n- **é¡¹ç›®æ ¹**ï¼š`<BASELINE_HPC_SOURCE_ROOT>`\n- **æ•°æ®**ï¼š`<PROJECT_HPC_ROOT>/data`\n- **V4 ä»£ç **ï¼š`<BASELINE_HPC_SOURCE_ROOT>/`ï¼ˆV4 çš„ shared/models/engine/templates å¤ç”¨ V3 è·¯å¾„ï¼‰\n\n### D9. H100 ä¸“å±žçº¦æŸ\n- **Condor cgroup memory limit ä¸¥æ ¼**ï¼š`request_memory` å¿…é¡» â‰¥ 32GB ç³»ç»Ÿå†…å­˜ï¼ˆä¸åªæ˜¯ GPUï¼‰\n- **H100 æ˜¯ condo èŠ‚ç‚¹**ï¼šbackfill æ¨¡å¼ï¼Œowner ä¸ç”¨æ—¶åŠ¨æ€åŠ å…¥ï¼Œå¯èƒ½è¢«æŠ¢å \n- **å®žçŽ°**ï¼šå¯¹ 498M+ å‚æ•°æ¨¡åž‹ï¼ˆDilatedUNetï¼‰ï¼Œrequest_memory=32GB\n\n---\n\n## æ±‡æ€»ï¼šV4 HP ç©ºé—´ï¼ˆåŠ å…¥ A+D çº¦æŸåŽï¼‰\n\n### å›ºå®šå€¼ï¼ˆä¸è¿›æœç´¢ç©ºé—´ï¼‰\n| ç»´åº¦ | å›ºå®šå€¼ | çº¦æŸç¼–å· |\n|------|--------|---------|\n| batch_size | 16 | A1 |\n| epochs | æŒ‰é˜¶æ®µï¼š20/smoke, 200/focus, 1000/long | æµç¨‹çº¦æŸ |\n| seed | 1ï¼ˆå¤š seed é˜¶æ®µé™¤å¤–ï¼‰ | æµç¨‹çº¦æŸ |\n\n### æœç´¢ç©ºé—´\n| ç»´åº¦ | å€¼ | çº¦æŸ |\n|------|-----|------|\n| arch_name | 34 ä¸ªæ¨¡åž‹ï¼ˆå…¨éƒ¨ï¼‰ | æ— æŽ’é™¤ |\n| depth | 5, 6, 7 | â€” |\n| n_c | 8, 16, 32, 48 | A2ï¼ˆè‡ªåŠ¨é€‰ GPUï¼‰ |\n| loss_name | masked_l1, masked_l1_gradient, masked_huber | â€” |\n| lr | 3e-4, 5e-4, 7e-4, 1e-3, 2e-3 | â€” |\n| weight_decay | 0, 1e-5, 1e-4 | â€” |\n| scheduler | none, cosine | â€” |\n| gradient_clip | none, 0.5 | â€” |\n| use_ema | false, true | â€” |\n| ema_decay | 0.999 | â€” |\n| augmentation | false, true | â€” |\n| input_features | height, height_sdf, height_sdf_normal | A5ï¼ˆæ£€æŸ¥æ•°æ®å­˜åœ¨ï¼‰ |\n\n### Condor è‡ªåŠ¨é…ç½®ï¼ˆæ ¹æ®æ¨¡åž‹ï¼‰\n| æ¡ä»¶ | requirements | request_memory |\n|------|-------------|----------------|\n| params < 35M | GPUs_GlobalMemoryMb >= 22000 | 16 GB |\n| params 35-150M | GPUs_GlobalMemoryMb >= 40000 | 16 GB |\n| params > 150M | GPUs_GlobalMemoryMb >= 45000 | 32 GB |\n\næ‰€æœ‰ submit æ–‡ä»¶é™„åŠ ï¼š`&& Machine != \"<HPC_GPU_NODE>\"`ï¼ˆD3ï¼‰",
+  "locked_files_contract": "﻿# V4 Locked Files â€” ä»Ž V3 å¤åˆ¶ï¼Œä¸å¯ä¿®æ”¹\n\nè¿™äº›æ–‡ä»¶æ˜¯ V3 è®­ç»ƒç®¡çº¿çš„ä¸€éƒ¨åˆ†ï¼ŒV4 çš„ codegen å’Œ workflow å¿…é¡»å…¼å®¹è¿™äº›æ–‡ä»¶çš„æŽ¥å£ã€‚\n\n## é”å®šæ–‡ä»¶ï¼ˆä¸å¯ä¿®æ”¹ï¼‰\n\n| æ–‡ä»¶ | è¯´æ˜Ž | CRC è·¯å¾„ |\n|------|------|---------|\n| `shared/train.py` | è®­ç»ƒä¸»è„šæœ¬ï¼Œè¯» train_config.jsonï¼Œå†™ metrics.json + FINISHED | `<HYBRID_HPC_SOURCE_ROOT>/shared/train.py` |\n| `shared/losses.py` | Loss å‡½æ•°å®šä¹‰ï¼ˆmasked_l1, huber ç­‰ï¼‰ | åŒä¸Š |\n| `shared/eval_module.py` | è¯„ä¼°é€»è¾‘ + hash æ ¡éªŒ | åŒä¸Š |\n| `shared/data/split_manifest.json` | 20 seed çš„ train/val/holdout åˆ’åˆ† | åŒä¸Š |\n| `shared/data/all_data.pt` | 4.1GBï¼Œ993 patchesï¼ˆCRC onlyï¼‰ | åŒä¸Š |\n| `templates/condor_submit.template` | Condor æäº¤æ¨¡æ¿ | åŒä¸Š |\n| `templates/condor_wrapper.sh` | Conda æ¿€æ´»è„šæœ¬ | åŒä¸Š |\n\n## å‚è€ƒæ–‡ä»¶ï¼ˆå¯ä¿®æ”¹ï¼‰\n\n| æ–‡ä»¶ | è¯´æ˜Ž |\n|------|------|\n| `shared/models/*.py` | V3 çš„ 34 ä¸ªæ¨¡åž‹å®žçŽ°ï¼Œä½œä¸º codegen çš„å‚è€ƒèµ·ç‚¹ |\n\n## Train.py åˆçº¦ï¼ˆcodegen å¿…é¡»éµå®ˆï¼‰\n\ntrain.py æœŸæœ›çš„ `train_config.json` æ ¼å¼ï¼š\n```json\n{\n  \"experiment_id\": \"string\",\n  \"arch_name\": \"string\",\n  \"arch_kwargs\": {\"n_c\": 16, \"depth\": 7, ...},\n  \"loss_name\": \"string\",\n  \"loss_kwargs\": {},\n  \"seed\": 1,\n  \"epochs\": 200,\n  \"lr\": 0.001,\n  \"batch_size\": 16,\n  \"checkpoint_interval\": 50,\n  \"data_dir\": \"<HPC_PATH>/auto_v3/shared/data\",\n  \"results_dir\": \"<HPC_PATH>/auto_v6/campaigns/xxx/runs/exp_id\",\n  \"split_manifest_path\": \"<HPC_PATH>/auto_v3/shared/data/split_manifest.json\",\n  \"eval_splits\": [\"val\"],\n  \"script_path\": \"optional codegen .py path\"\n}\n```\n\ntrain.py çš„è¾“å‡ºï¼š\n- `$RESULTS_DIR/metrics.json` â€” åŒ…å« val_r2_median, val_r2_mean ç­‰\n- `$RESULTS_DIR/FINISHED` â€” å®Œæˆæ ‡è®°\n- `$RESULTS_DIR/FAILED` â€” å¤±è´¥æ ‡è®°\n- `$RESULTS_DIR/checkpoint.pt` â€” æ¯ 50 epoch ä¿å­˜\n\n## ç¦æ­¢ä¼ é€’çš„ V3 ä¿¡æ¯\n\n- RÂ² å€¼ã€æŽ’åã€åˆ†çº§ï¼ˆTier A/B/C/Dï¼‰\n- ä»»ä½•å®žéªŒç»“è®ºï¼ˆ\"FNO ä¸å¦‚ UNet\" ç­‰ï¼‰\n- V4 å¿…é¡»ä»Žé›¶å‘çŽ°ä¸€åˆ‡\n\n## CRC æ“ä½œè§„åˆ™\n\n- **æäº¤ CRC å·¥ä½œå‰å¿…é¡»è¯» `CRC-WORKFLOW.md`**\n- ä¸åˆ  ControlMaster socketï¼Œä¸å°è¯• reconnect\n- SSH è¶…æ—¶ â‰¥ 30 ç§’\n- GPU è®­ç»ƒç”¨ Condorï¼ŒCPU ä»»åŠ¡ç”¨ SGE qsub\n- wrapper è„šæœ¬å¿…é¡»å…ˆ `module load conda` + `conda activate graphwind`\n- `initialdir` å¿…é¡»æ˜¯é¡¹ç›®æ ¹ç›®å½•ï¼ˆ`train.py` çš„ import éœ€è¦ `shared/` åœ¨ Python è·¯å¾„ä¸Šï¼‰\n\n",
+  "all_review_history": [],
+  "recent_experiment_history": [],
+  "v6_knowledge_files": {
+    "all_results_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\all_results_summary.jsonl",
+    "arch_family_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "auto_v6\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
+    "recent_knowledge_bundle": "auto_v6\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+    "knowledge_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
+    "initial_knowledge_auto11": "auto_v6\\campaigns\\auto_v6\\knowledge\\initial_knowledge_auto11.md",
+    "model_results": "auto_v6\\campaigns\\auto_v6\\knowledge\\model_results.csv",
+    "initial_knowledge_csv_digest": "auto_v6\\campaigns\\auto_v6\\knowledge\\initial_knowledge_csv_digest.json"
+  },
+  "v6_knowledge_digest": {
+    "knowledge_policy": "All files are V4-only history. V3 performance remains forbidden.",
+    "quota_target": {
+      "exploit": 6,
+      "explorer": 6
+    },
+    "exploit_definition": "Exploit proposals do not explore. They refine, reproduce, or cleanly compare known strong directions using existing architectures and controlled HP/loss/EMA/augmentation changes.",
+    "explorer_requirement": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications from adjacent tasks/literature mechanisms. Reusing an old arch_name with only width/depth/lr/loss changes is not explorer.",
+    "parameter_efficiency_requirement": "Treat parameter efficiency as an objective alongside R2. Avoid drifting toward ever-larger n_c/depth; include capacity-matched or smaller mechanism tests when possible, and require explicit justification for high-capacity proposals.",
+    "initial_knowledge_file": "auto_v6\\campaigns\\auto_v6\\knowledge\\initial_knowledge_auto11.md",
+    "initial_knowledge_excerpt": "# Auto V6 Initial Knowledge Package\n\n## 0. Provenance\n\n- Source session / project: Auto V5, controller_auto11_001 to controller_auto11_020\n- Authoring agent: Hermes Agent in the human researcher's Auto V5 workspace\n- Date: 2026-05-06 EDT\n- Data source: local Auto V5 artifacts under `<LOCAL_HOME_PATH>`\n- Any known deviations from Auto V6 contract: This package contains only Auto11 / Auto V5 controller evidence. It does not import any other phase result, ranking, proposal rationale, or report.\n\n## 1. Executive summary\n\n- Auto11 covered 20 controller rounds and 200 source candidates from `v5_ai_curated_002`.\n- The full ledger resolves to 172 benchmark200 ranked rows and 28 formal parameter-cap skipped rows, with no missing or inconsistent rows in the generated ledger.\n- The search baseline is `grid18_200ep_baseline` from `auto_v3/campaigns/grid18_200ep/baseline`, with val R2_median 0.708503411.\n- Only 8 of 172 benchmark200 ranked rows exceeded the val R2_median baseline, so the median-R2 gate is strict.\n- `unet_sdf_7level` is the strongest and most stable family: 5/5 ranked rows exceeded the val R2_median baseline.\n- Oversized mamba2d, ufno, hrformer, and unet_afno variants should not be repeated unless redesigned below the 150M formal cap.\n\n## 2. Baseline and metric definitions\n\n- Search metric: primary search metric is val R2_median. Secondary evidence includes val R2_global and val MAE_median.\n- Validation split size: Auto11 selected candidate val per-case metrics contain 55 val cases.\n- Baseline model: `grid18_200ep_baseline`, architecture `unet_v2_baseline`, source `<BASELINE_HPC_SOURCE_ROOT>/campaigns/grid18_200ep/baseline`.\n- Baseline metric values:\n\n| split | source | R2_median | R2_mean | R2_global | MAE_median | MAE_mean | n_cases | use |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| val | auto_v5/shared/data/v5_baseline_reference.json | 0.708503411 | 0.622875278 | 0.656619483 | 0.093510993 | 0.085752743 | 55 for Auto11 candidate val metrics; baseline reference stores scalar values | search and benchmark200 screening |\n\n\n## 3. Full model result table\n\nThe full one-row-per-source-candidate table is written to the companion CSV:\n\n```text\n<LOCAL_HOME_PATH>```\n\nThe CSV has 200 rows and uses the exact requested columns:\n\n```text\n```\n\nFor readability, the highest 30 benchmark200 rows by val R2_median are excerpted here.\n\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| auto11_003_05_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.734949 | 0.702937 | 0.085048 | 0.749991 | benchmark200_ranked |\n| auto11_017_06_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.729361 | 0.709460 | 0.086881 | 0.766345 | benchmark200_ranked |\n| auto11_018_04_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.726549 | 0.710891 | 0.084685 | 0.774666 | benchmark200_ranked |\n| auto11_011_03_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.721341 | 0.690672 | 0.083326 | 0.749812 | benchmark200_ranked |\n| auto11_019_04_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.721115 | 0.700792 | 0.084222 | 0.761668 | benchmark200_ranked |\n| auto11_009_04_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.710953 | 0.686029 | 0.087191 | 0.752305 | benchmark200_ranked |\n| auto11_019_00_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.708871 | 0.692494 | 0.088401 | 0.725684 | benchmark200_ranked |\n| auto11_019_05_unet_v2_baseline | unet_v2_baseline | 34,610,193 (34.6M) | 0.708585 | 0.691738 | 0.087149 | 0.714447 | benchmark200_ranked |\n| auto11_004_05_cno_v2 | cno_v2 | 144,933,361 (144.9M) | 0.705373 | 0.684045 | 0.086512 |  | benchmark200_ranked |\n| auto11_007_09_dilated_unet | dilated_unet | 14,780,705 (14.8M) | 0.703875 | 0.669857 | 0.088735 |  | benchmark200_ranked |\n| auto11_012_06_multiscale_conv | multiscale_conv | 75,159,889 (75.2M) | 0.702762 | 0.687898 | 0.085647 |  | benchmark200_ranked |\n| auto11_006_05_cno_v2 | cno_v2 | 144,933,361 (144.9M) | 0.700826 | 0.674971 | 0.090017 |  | benchmark200_ranked |\n| auto11_004_02_attention_mamba | attention_mamba | 35,969,713 (36.0M) | 0.696389 | 0.671235 | 0.086492 |  | benchmark200_ranked |\n| auto11_002_06_quadmamba | quadmamba | 132,194,421 (132.2M) | 0.696235 | 0.675200 | 0.086326 |  | benchmark200_ranked |\n| auto11_020_09_unet_v2_baseline | unet_v2_baseline | 34,610,193 (34.6M) | 0.695249 | 0.683756 | 0.093230 | 0.723541 | benchmark200_ranked |\n| auto11_005_02_attention_mamba | attention_mamba | 35,969,713 (36.0M) | 0.692225 | 0.660658 | 0.088225 |  | benchmark200_ranked |\n| auto11_014_01_multiscale_conv | multiscale_conv | 75,159,889 (75.2M) | 0.691417 | 0.682706 | 0.087844 |  | benchmark200_ranked |\n| auto11_004_08_dilated_fno | dilated_fno | 60,726,001 (60.7M) | 0.691132 | 0.665984 | 0.087023 |  | benchmark200_ranked |\n| auto11_019_02_unet_v3 | unet_v3 | 138,432,529 (138.4M) | 0.690247 | 0.675043 | 0.089471 |  | benchmark200_ranked |\n| auto11_015_05_sac_unet | sac_unet | 133,726,297 (133.7M) | 0.690088 | 0.670633 | 0.091746 |  | benchmark200_ranked |\n| auto11_004_01_attention_gate_unet | attention_gate_unet | 31,467,765 (31.5M) | 0.688523 | 0.661787 | 0.092307 |  | benchmark200_ranked |\n| auto11_012_01_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.686502 | 0.653833 | 0.087260 |  | benchmark200_ranked |\n| auto11_001_01_attention_mamba | attention_mamba | 35,969,713 (36.0M) | 0.686384 | 0.651668 | 0.092644 |  | benchmark200_ranked |\n| auto11_005_05_cno_v2 | cno_v2 | 144,933,361 (144.9M) | 0.685325 | 0.673261 | 0.089400 |  | benchmark200_ranked |\n| auto11_018_06_unet_v3 | unet_v3 | 138,432,529 (138.4M) | 0.685211 | 0.673424 | 0.092541 |  | benchmark200_ranked |\n| auto11_008_03_dilated_unet | dilated_unet | 14,780,705 (14.8M) | 0.684894 | 0.679513 | 0.091503 |  | benchmark200_ranked |\n| auto11_010_04_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.682787 | 0.642210 | 0.088299 |  | benchmark200_ranked |\n| auto11_003_09_attention_gate_unet | attention_gate_unet | 31,467,765 (31.5M) | 0.681540 | 0.667969 | 0.092386 |  | benchmark200_ranked |\n| auto11_003_06_unet_v3 | unet_v3 | 138,432,529 (138.4M) | 0.680521 | 0.690057 | 0.089692 |  | benchmark200_ranked |\n| auto11_010_00_dilated_unet | dilated_unet | 14,780,705 (14.8M) | 0.678897 | 0.691298 | 0.089102 |  | benchmark200_ranked |\n\n## 4. Per-family synthesis\n\n### Architecture-level summary table\n\n| arch | source | ranked | skipped | params | best_val_R2med | median_val_R2med | n>val_base | n>global_base | n_better_MAE |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| unet_sdf_7level | 5 | 5 | 0 | 125,771,905 (125.8M) | 0.734949 | 0.726549 | 5 | 5 | 5 |\n| fourier_unet | 5 | 5 | 0 | 34,201,393 (34.2M) | 0.721341 | 0.686502 | 2 | 3 | 5 |\n| unet_v2_baseline | 16 | 16 | 0 | 34,610,193 (34.6M) | 0.708585 | 0.656163 | 1 | 16 | 6 |\n| cno_v2 | 5 | 5 | 0 | 144,933,361 (144.9M) | 0.705373 | 0.685325 | 0 | 3 | 4 |\n| dilated_unet | 5 | 5 | 0 | 14,780,705 (14.8M) | 0.703875 | 0.678897 | 0 | 4 | 4 |\n| multiscale_conv | 5 | 5 | 0 | 75,159,889 (75.2M) | 0.702762 | 0.678585 | 0 | 5 | 5 |\n| attention_mamba | 5 | 5 | 0 | 35,969,713 (36.0M) | 0.696389 | 0.686384 | 0 | 3 | 4 |\n| quadmamba | 5 | 1 | 4 | 132.2M-338.4M | 0.696235 | 0.696235 | 0 | 1 | 1 |\n| dilated_fno | 5 | 5 | 0 | 60,726,001 (60.7M) | 0.691132 | 0.659440 | 0 | 1 | 4 |\n| unet_v3 | 5 | 5 | 0 | 138,432,529 (138.4M) | 0.690247 | 0.680521 | 0 | 5 | 4 |\n| sac_unet | 5 | 5 | 0 | 133,726,297 (133.7M) | 0.690088 | 0.669487 | 0 | 1 | 3 |\n| attention_gate_unet | 5 | 5 | 0 | 31,467,765 (31.5M) | 0.688523 | 0.669671 | 0 | 4 | 2 |\n| umamba | 5 | 5 | 0 | 72,089,137 (72.1M) | 0.674408 | 0.664584 | 0 | 3 | 0 |\n| dilated_hrformer | 5 | 5 | 0 | 42,474,673 (42.5M) | 0.672146 | 0.550113 | 0 | 1 | 0 |\n| hrdcn | 5 | 5 | 0 | 9,258,281 (9.3M) | 0.663423 | 0.647321 | 0 | 0 | 0 |\n| hrnet | 5 | 5 | 0 | 20,138,689 (20.1M) | 0.661625 | 0.651748 | 0 | 2 | 0 |\n| cbam_unet | 5 | 5 | 0 | 31,340,033 (31.3M) | 0.657932 | -3.323431 | 0 | 0 | 0 |\n| dcn_unet | 5 | 5 | 0 | 135,192,475 (135.2M) | 0.632272 | 0.627985 | 0 | 0 | 0 |\n| residual_spectral | 5 | 1 | 4 | 105.0M-171.0M | 0.628984 | 0.628984 | 0 | 0 | 0 |\n| sac_mamba | 5 | 5 | 0 | 16,552,777 (16.6M) | 0.623816 | 0.580979 | 0 | 0 | 0 |\n| mamba_attention | 5 | 5 | 0 | 22,135,133 (22.1M) | 0.618517 | 0.585293 | 0 | 0 | 0 |\n| fno_encoder_decoder | 5 | 5 | 0 | 62,924,353 (62.9M) | 0.606920 | 0.548157 | 0 | 0 | 0 |\n| swin_unetr | 5 | 5 | 0 | 6,859,867 (6.9M) | 0.539313 | 0.526485 | 0 | 0 | 0 |\n| ffno | 5 | 5 | 0 | 206,337 (0.2M) | 0.470370 | 0.450553 | 0 | 0 | 0 |\n| transolver | 5 | 5 | 0 | 121,316,065 (121.3M) | 0.413157 | 0.401936 | 0 | 0 | 0 |\n| kan_unet | 5 | 5 | 0 | 21,756,196 (21.8M) | 0.393951 | 0.343497 | 0 | 0 | 0 |\n| convnext_v2_unet | 5 | 5 | 0 | 7,463,841 (7.5M) | 0.387231 | 0.348415 | 0 | 0 | 0 |\n| fno2d | 5 | 5 | 0 | 42.8M-96.4M | 0.346560 | 0.337540 | 0 | 0 | 0 |\n| uno | 5 | 5 | 0 | 105,601,345 (105.6M) | 0.342392 | 0.327142 | 0 | 0 | 0 |\n| afno | 5 | 5 | 0 | 0.9M-11.9M | 0.243193 | 0.185428 | 0 | 0 | 0 |\n| nafnet | 4 | 4 | 0 | 2,859,313 (2.9M) | 0.009407 | 0.008129 | 0 | 0 | 0 |\n| perceiver_io | 5 | 5 | 0 | 7,082,753 (7.1M) | -0.017238 | -3.323431 | 0 | 0 | 0 |\n| transolver_lite | 5 | 5 | 0 | 1,023,425 (1.0M) | -1.238094 | -1.407186 | 0 | 0 | 0 |\n| cnn_deeponet | 5 | 5 | 0 | 1,680,577 (1.7M) | -3.323431 | -3.323431 | 0 | 0 | 0 |\n| hrformer | 5 | 0 | 5 | 215,350,593 (215.4M) |  |  | 0 | 0 | 0 |\n| mamba2d | 5 | 0 | 5 | 423,114,785 (423.1M) |  |  | 0 | 0 | 0 |\n| ufno | 5 | 0 | 5 | 242,225,153 (242.2M) |  |  | 0 | 0 | 0 |\n| unet_afno | 5 | 0 | 5 | 188,782,610 (188.8M) |  |  | 0 | 0 | 0 |\n\n### unet_sdf_7level\n\n- Best model_id: auto11_003_05_unet_sdf_7level\n- Parameter efficiency: parameter range 125.8M; best row params 125,771,905 (125.8M).\n- Failure modes: no repeated execution failure observed in the available evidence.\n- What seems not to work: none evident, but it is relatively large at about 125.8M params.\n- Confidence level: high\n- Suggested Auto V6 action: exploit\n\n### fourier_unet\n\n- Best model_id: auto11_011_03_fourier_unet\n- Parameter efficiency: parameter range 34.2M; best row params 34,201,393 (34.2M).\n- Failure modes: no repeated execution failure observed in the available evidence.\n- What seems not to work: performance varied by source candidate, so seed/config sensitivity remains.\n- Confidence level: high\n- Suggested Auto V6 action: exploit / ablate\n\n### unet_v2_baseline\n\n- Best model_id: auto11_019_05_unet_v2_baseline\n- Parameter efficiency: parameter range 34.6M; best row params 34,610,193 (34.6M).\n- Failure modes: no repeated execution failure observed in the available evidence.\n- What seems to work: stable control family with strong R2_global relative to baseline.\n- What seems not to work: only one of sixteen rows barely exceeded val R2_median baseline.\n- Confidence level: high\n- Suggested Auto V6 action: control\n\n### cno_v2\n\n- Best model_id: auto11_004_05_cno_v2\n- Main result: best val R2_median 0.705373, median across ranked rows 0.685325, ranked 5/5.\n- Parameter efficiency: parameter range 144.9M; best row params 144,933,361 (144.9M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### dilated_unet\n\n- Best model_id: auto11_007_09_dilated_unet\n- Main result: best val R2_median 0.703875, median across ranked rows 0.678897, ranked 5/5.\n- Parameter efficiency: parameter range 14.8M; best row params 14,780,705 (14.8M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE cri",
+    "initial_knowledge_csv_digest": {
+      "available": true,
+      "path": "auto_v6\\campaigns\\auto_v6\\knowledge\\model_results.csv",
+      "policy": "Allowed Auto V6 seed evidence from Auto V5/Auto11 only. Do not mix with Phase9 evidence.",
+      "baseline_val_R2_median": 0.708503411,
+      "row_count": 200,
+      "ranked_count": 172,
+      "skipped_count": 28,
+      "n_val_above_baseline": 8,
+      "top_val_rows": [
+        {
+          "model_id": "auto11_003_05_unet_sdf_7level",
+          "arch_name": "unet_sdf_7level",
+          "family": "UNet with SDF",
+          "params": 125771905,
+          "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7349490957626527,
+          "val_R2_global": 0.7029370118662326,
+          "val_MAE_median": 0.08504781872034073,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_sdf_7level_expanded_gradient_lr1e3_noema_nosched_828831925d; smoke_run_id=r_auto11_003_05_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_03_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val basel"
+        },
+        {
+          "model_id": "auto11_017_06_unet_sdf_7level",
+          "arch_name": "unet_sdf_7level",
+          "family": "UNet with SDF",
+          "params": 125771905,
+          "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7293613312501545,
+          "val_R2_global": 0.7094601137990584,
+          "val_MAE_median": 0.08688086271286011,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_sdf_7level_gradient_cosine_a9173b3c34; smoke_run_id=r_auto11_017_06_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_04_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model_file=genera"
+        },
+        {
+          "model_id": "auto11_018_04_unet_sdf_7level",
+          "arch_name": "unet_sdf_7level",
+          "family": "UNet with SDF",
+          "params": 125771905,
+          "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7265490437564686,
+          "val_R2_global": 0.7108910052109128,
+          "val_MAE_median": 0.08468452841043472,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_sdf_7level_height_only_gradient_low_lr_d17eb132fc; smoke_run_id=r_auto11_018_04_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_02_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model"
+        },
+        {
+          "model_id": "auto11_011_03_fourier_unet",
+          "arch_name": "fourier_unet",
+          "family": "Fourier-UNet",
+          "params": 34201393,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1",
+          "val_R2_median": 0.7213412228588788,
+          "val_R2_global": 0.6906715987270413,
+          "val_MAE_median": 0.08332575112581253,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_fourier_unet_fourier_unet_l1_low_lr_ema_2c1933b10c; smoke_run_id=r_auto11_011_03_fourier_unet_smoke20; benchmark_run_id=r_benchmark_03_fourier_unet_benchmark200; resolution=original; val R2_median above grid18 val baseline; model_file=generated"
+        },
+        {
+          "model_id": "auto11_019_04_unet_sdf_7level",
+          "arch_name": "unet_sdf_7level",
+          "family": "UNet with SDF",
+          "params": 125771905,
+          "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1",
+          "val_R2_median": 0.7211150199064167,
+          "val_R2_global": 0.7007923495084197,
+          "val_MAE_median": 0.08422154933214188,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_sdf_7level_height_only_l1_ema_3b3fd300dd; smoke_run_id=r_auto11_019_04_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_04_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model_file=gen"
+        },
+        {
+          "model_id": "auto11_009_04_fourier_unet",
+          "arch_name": "fourier_unet",
+          "family": "Fourier-UNet",
+          "params": 34201393,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7109528580049491,
+          "val_R2_global": 0.6860292816208198,
+          "val_MAE_median": 0.08719073981046677,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_fourier_unet_fourier_unet_gradient_low_lr_d9774085d5; smoke_run_id=r_auto11_009_04_fourier_unet_smoke20; benchmark_run_id=r_benchmark_04_fourier_unet_benchmark200; resolution=original; val R2_median above grid18 val baseline; model_file=generat"
+        },
+        {
+          "model_id": "auto11_019_00_unet_sdf_7level",
+          "arch_name": "unet_sdf_7level",
+          "family": "UNet with SDF",
+          "params": 125771905,
+          "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1",
+          "val_R2_median": 0.7088706703618013,
+          "val_R2_global": 0.6924940901540333,
+          "val_MAE_median": 0.08840114623308182,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_sdf_7level_height_only_l1_default_71c5781780; smoke_run_id=r_auto11_019_00_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_00_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model_file"
+        },
+        {
+          "model_id": "auto11_019_05_unet_v2_baseline",
+          "arch_name": "unet_v2_baseline",
+          "family": "UNet variants",
+          "params": 34610193,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7085853535753317,
+          "val_R2_global": 0.6917383326818419,
+          "val_MAE_median": 0.08714903891086578,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_v2_baseline_fullgrid_gradient_lr1e3_noema_nosched_3ee62337d9; smoke_run_id=r_auto11_019_05_unet_v2_baseline_smoke20; benchmark_run_id=r_benchmark_05_unet_v2_baseline_benchmark200; resolution=original; val R2_median above grid18 val baselin"
+        },
+        {
+          "model_id": "auto11_004_05_cno_v2",
+          "arch_name": "cno_v2",
+          "family": "CNO",
+          "params": 144933361,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7053733271064626,
+          "val_R2_global": 0.6840450730207099,
+          "val_MAE_median": 0.08651155233383179,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_cno_v2_cno_gradient_low_lr_ema_ffaf7a9335; smoke_run_id=r_auto11_004_05_cno_v2_smoke20; benchmark_run_id=r_benchmark_05_cno_v2_benchmark200_retry1; resolution=retry1; model_file=generated_models/v5_controller_auto11_004/cno_v2.py"
+        },
+        {
+          "model_id": "auto11_007_09_dilated_unet",
+          "arch_name": "dilated_unet",
+          "family": "UNet variants",
+          "params": 14780705,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7038752597690816,
+          "val_R2_global": 0.6698573292549892,
+          "val_MAE_median": 0.08873451501131058,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_dilated_unet_dilated_gradient_default_43765508cf; smoke_run_id=r_auto11_007_09_dilated_unet_smoke20; benchmark_run_id=r_benchmark_09_dilated_unet_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_007/dilated_un"
+        },
+        {
+          "model_id": "auto11_012_06_multiscale_conv",
+          "arch_name": "multiscale_conv",
+          "family": "Multi-scale CNN",
+          "params": 75159889,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.7027617587573396,
+          "val_R2_global": 0.6878976085837971,
+          "val_MAE_median": 0.08564749360084534,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_multiscale_conv_gradient_default_ee2ec9518f; smoke_run_id=r_auto11_012_06_multiscale_conv_smoke20; benchmark_run_id=r_benchmark_05_multiscale_conv_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_012/multiscal"
+        },
+        {
+          "model_id": "auto11_006_05_cno_v2",
+          "arch_name": "cno_v2",
+          "family": "CNO",
+          "params": 144933361,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.001,
+          "loss": "masked_l1",
+          "val_R2_median": 0.7008257399238096,
+          "val_R2_global": 0.6749706358752154,
+          "val_MAE_median": 0.09001719951629639,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_cno_v2_cno_l1_default_0458e950a8; smoke_run_id=r_auto11_006_05_cno_v2_smoke20; benchmark_run_id=r_benchmark_05_cno_v2_benchmark200_retry1; resolution=retry1; model_file=generated_models/v5_controller_auto11_006/cno_v2.py"
+        },
+        {
+          "model_id": "auto11_004_02_attention_mamba",
+          "arch_name": "attention_mamba",
+          "family": "Mamba variants",
+          "params": 35969713,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.6963887206709947,
+          "val_R2_global": 0.6712351278376605,
+          "val_MAE_median": 0.08649195730686188,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_attention_mamba_attention_mamba_gradient_low_lr_ema_801c612d44; smoke_run_id=r_auto11_004_02_attention_mamba_smoke20; benchmark_run_id=r_benchmark_02_attention_mamba_benchmark200; resolution=original; model_file=generated_models/v5_controller_a"
+        },
+        {
+          "model_id": "auto11_002_06_quadmamba",
+          "arch_name": "quadmamba",
+          "family": "Mamba variants",
+          "params": 132194421,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.696234744663454,
+          "val_R2_global": 0.6751996960281275,
+          "val_MAE_median": 0.0863259881734848,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_quadmamba_ema_stable_gradient_79264260fd; smoke_run_id=r_auto11_002_06_quadmamba_smoke20; benchmark_run_id=r_benchmark_04_quadmamba_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_002/quadmamba.py"
+        },
+        {
+          "model_id": "auto11_020_09_unet_v2_baseline",
+          "arch_name": "unet_v2_baseline",
+          "family": "UNet variants",
+          "params": 34610193,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1",
+          "val_R2_median": 0.6952489480753254,
+          "val_R2_global": 0.6837563385257552,
+          "val_MAE_median": 0.09323042631149292,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_v2_baseline_fullgrid_l1_lr5e4_noema_nosched_b103560ad9; smoke_run_id=r_auto11_020_09_unet_v2_baseline_smoke20; benchmark_run_id=r_benchmark_09_unet_v2_baseline_benchmark200; resolution=original; model_file=generated_models/v5_controller_au"
+        },
+        {
+          "model_id": "auto11_005_02_attention_mamba",
+          "arch_name": "attention_mamba",
+          "family": "Mamba variants",
+          "params": 35969713,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1",
+          "val_R2_median": 0.6922245494693888,
+          "val_R2_global": 0.6606584603819957,
+          "val_MAE_median": 0.08822549879550934,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_attention_mamba_attention_mamba_l1_low_lr_e3472d8920; smoke_run_id=r_auto11_005_02_attention_mamba_smoke20; benchmark_run_id=r_benchmark_02_attention_mamba_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_005/"
+        },
+        {
+          "model_id": "auto11_014_01_multiscale_conv",
+          "arch_name": "multiscale_conv",
+          "family": "Multi-scale CNN",
+          "params": 75159889,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.6914165032806037,
+          "val_R2_global": 0.6827060877348572,
+          "val_MAE_median": 0.08784438669681549,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_multiscale_conv_multiscale_gradient_low_lr_4fc18f1358; smoke_run_id=r_auto11_014_01_multiscale_conv_smoke20; benchmark_run_id=r_benchmark_01_multiscale_conv_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_014"
+        },
+        {
+          "model_id": "auto11_004_08_dilated_fno",
+          "arch_name": "dilated_fno",
+          "family": "Spectral/Fourier operators",
+          "params": 60726001,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.6911315712380651,
+          "val_R2_global": 0.6659835213021241,
+          "val_MAE_median": 0.08702345192432404,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_dilated_fno_dilated_fno_gradient_low_lr_7280915220; smoke_run_id=r_auto11_004_08_dilated_fno_smoke20; benchmark_run_id=r_benchmark_08_dilated_fno_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_004/dilated_fn"
+        },
+        {
+          "model_id": "auto11_019_02_unet_v3",
+          "arch_name": "unet_v3",
+          "family": "UNet variants",
+          "params": 138432529,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.6902473396848972,
+          "val_R2_global": 0.6750429149896541,
+          "val_MAE_median": 0.08947113901376724,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_unet_v3_ema_stable_gradient_c293d8c12d; smoke_run_id=r_auto11_019_02_unet_v3_smoke20; benchmark_run_id=r_benchmark_02_unet_v3_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_019/unet_v3.py"
+        },
+        {
+          "model_id": "auto11_015_05_sac_unet",
+          "arch_name": "sac_unet",
+          "family": "UNet variants",
+          "params": 133726297,
+          "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+          "lr": 0.0005,
+          "loss": "masked_l1_gradient",
+          "val_R2_median": 0.690088053020872,
+          "val_R2_global": 0.6706325962117282,
+          "val_MAE_median": 0.09174647182226181,
+          "status": "benchmark200_ranked",
+          "notes": "source_run_id=r_sac_unet_sac_gradient_low_lr_ema_cc32f34221; smoke_run_id=r_auto11_015_05_sac_unet_smoke20; benchmark_run_id=r_benchmark_03_sac_unet_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_015/sac_unet.py"
+        }
+      ],
+      "top_arch_family_summary": {
+        "unet_sdf_7level": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 125771905,
+          "params_max": 125771905,
+          "best_val_R2_median": 0.7349490957626527,
+          "median_val_R2_median": 0.7265490437564686,
+          "n_val_above_baseline": 5
+        },
+        "fourier_unet": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 34201393,
+          "params_max": 34201393,
+          "best_val_R2_median": 0.7213412228588788,
+          "median_val_R2_median": 0.6865019557823426,
+          "n_val_above_baseline": 2
+        },
+        "unet_v2_baseline": {
+          "source_rows": 16,
+          "ranked_rows": 16,
+          "skipped_rows": 0,
+          "params_min": 34610193,
+          "params_max": 34610193,
+          "best_val_R2_median": 0.7085853535753317,
+          "median_val_R2_median": 0.6563207068522976,
+          "n_val_above_baseline": 1
+        },
+        "cno_v2": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 144933361,
+          "params_max": 144933361,
+          "best_val_R2_median": 0.7053733271064626,
+          "median_val_R2_median": 0.6853252487281944,
+          "n_val_above_baseline": 0
+        },
+        "dilated_unet": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 14780705,
+          "params_max": 14780705,
+          "best_val_R2_median": 0.7038752597690816,
+          "median_val_R2_median": 0.6788971088815838,
+          "n_val_above_baseline": 0
+        },
+        "multiscale_conv": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 75159889,
+          "params_max": 75159889,
+          "best_val_R2_median": 0.7027617587573396,
+          "median_val_R2_median": 0.6785847406788731,
+          "n_val_above_baseline": 0
+        },
+        "attention_mamba": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 35969713,
+          "params_max": 35969713,
+          "best_val_R2_median": 0.6963887206709947,
+          "median_val_R2_median": 0.6863843349368338,
+          "n_val_above_baseline": 0
+        },
+        "quadmamba": {
+          "source_rows": 5,
+          "ranked_rows": 1,
+          "skipped_rows": 4,
+          "params_min": 132194421,
+          "params_max": 338380833,
+          "best_val_R2_median": 0.696234744663454,
+          "median_val_R2_median": 0.696234744663454,
+          "n_val_above_baseline": 0
+        },
+        "dilated_fno": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 60726001,
+          "params_max": 60726001,
+          "best_val_R2_median": 0.6911315712380651,
+          "median_val_R2_median": 0.6594401836668035,
+          "n_val_above_baseline": 0
+        },
+        "unet_v3": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 138432529,
+          "params_max": 138432529,
+          "best_val_R2_median": 0.6902473396848972,
+          "median_val_R2_median": 0.680521472392638,
+          "n_val_above_baseline": 0
+        },
+        "sac_unet": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 133726297,
+          "params_max": 133726297,
+          "best_val_R2_median": 0.690088053020872,
+          "median_val_R2_median": 0.6694873069451295,
+          "n_val_above_baseline": 0
+        },
+        "attention_gate_unet": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 31467765,
+          "params_max": 31467765,
+          "best_val_R2_median": 0.688522632842127,
+          "median_val_R2_median": 0.6696707232539612,
+          "n_val_above_baseline": 0
+        },
+        "umamba": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 72089137,
+          "params_max": 72089137,
+          "best_val_R2_median": 0.6744077749537852,
+          "median_val_R2_median": 0.6645840015109532,
+          "n_val_above_baseline": 0
+        },
+        "dilated_hrformer": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 42474673,
+          "params_max": 42474673,
+          "best_val_R2_median": 0.6721458849137698,
+          "median_val_R2_median": 0.5501130546962782,
+          "n_val_above_baseline": 0
+        },
+        "hrdcn": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 9258281,
+          "params_max": 9258281,
+          "best_val_R2_median": 0.6634227860840043,
+          "median_val_R2_median": 0.6473214155421008,
+          "n_val_above_baseline": 0
+        },
+        "hrnet": {
+          "source_rows": 5,
+          "ranked_rows": 5,
+          "skipped_rows": 0,
+          "params_min": 20138689,
+          "params_max": 20138689,
+          "best_val_R2_median": 0.6616249264032534,
+          "median_val_R2_median": 0.6517475383159288,
+          "n_val_above_baseline": 0
+        }
+      },
+      "formal_cap_or_oversize_arches": [
+        "hrformer",
+        "mamba2d",
+        "quadmamba",
+        "residual_spectral",
+        "ufno",
+        "unet_afno"
+      ],
+      "planner_implications": [
+        "Treat unet_sdf_7level as the primary exploit/ablation seed if it remains compatible with the locked feature contract.",
+        "Treat fourier_unet as the main parameter-efficient exploit seed.",
+        "Keep unet_v2_baseline as an in-campaign control.",
+        "Use a small secondary R2_global/MAE-aware validation gate for candidates like unet_v3; locked final-evaluation results are excluded from planner seed knowledge.",
+        "Reject or redesign mamba2d/ufno/hrformer/unet_afno-like configs above the 150M formal cap before benchmark."
+      ]
+    },
+    "knowledge_summary": {
+      "timestamp": "2026-05-07T11:27:10+00:00",
+      "total_results": 0,
+      "top_full_results": [],
+      "failure_counts": {},
+      "open_hypotheses_count": 5,
+      "closed_hypotheses_count": 0
+    },
+    "arch_family_summary": {},
+    "failure_taxonomy_summary": {
+      "overall": {},
+      "by_family": {}
+    },
+    "hypothesis_registry": {
+      "open": [
+        {
+          "id": "H-001",
+          "opened_round": 0,
+          "deadline_round": 3,
+          "claim": "SDF-augmented deep UNet is the primary exploit path.",
+          "decision_rule": "Continue if median val R2_median exceeds 0.708503 and717336 by at least 0.02.",
+          "paired_comparison": "unet_v2_baseline, unet_v3, and same-depth no-SDF UNet when available.",
+          "source": "Auto11 initial knowledge package"
+        },
+        {
+          "id": "H-002",
+          "opened_round": 0,
+          "deadline_round": 3,
+          "claim": "Fourier-UNet provides a parameter-efficient second exploit path.",
+          "decision_rule": "Keep if02 or val R2_median repeatedly exceeds 0.708503.",
+          "paired_comparison": "unet_v2_baseline at comparable parameter scale.",
+          "source": "Auto11 initial knowledge package"
+        },
+        {
+          "id": "H-003",
+          "opened_round": 0,
+          "deadline_round": 3,
+          "claim": "Val R2_median alone can under-rank useful candidates.",
+          "decision_rule": "Useful if a small secondary R2_global/MAE gate finds locked evaluation [removed from planner seed] winners missed by val median without excessive false positives.",
+          "source": "Auto11 initial knowledge package"
+        },
+        {
+          "id": "H-004",
+          "opened_round": 0,
+          "deadline_round": 3,
+          "claim": "Oversized operator families need explicit cap-aware redesign before reuse.",
+          "decision_rule": "Reject before benchmark if estimated params exceed 150M unless the human researcher approves a special resource probe.",
+          "source": "Auto11 initial knowledge package"
+        },
+        {
+          "id": "H-005",
+          "opened_round": 0,
+          "deadline_round": 3,
+          "claim": "Baseline UNet remains a required control but not the main improvement route.",
+          "decision_rule": "Exploit families should beat both stored baseline and contemporaneous control.",
+          "source": "Auto11 initial knowledge package"
+        }
+      ],
+      "closed": [],
+      "resolution_log": []
+    },
+    "recent_knowledge_bundle": {
+      "rounds": []
+    }
+  },
+  "novelty_index": {
+    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "seen_arch_names": [],
+    "seen_families": [],
+    "seen_config_keys": [],
+    "counts_by_arch": {},
+    "examples_by_arch": {},
+    "key_fields": [
+      "arch_name",
+      "n_c",
+      "depth",
+      "lr",
+      "loss_name"
+    ]
+  },
+  "initial_knowledge_file": "auto_v6\\campaigns\\auto_v6\\knowledge\\initial_knowledge_auto11.md",
+  "initial_knowledge_csv_file": "auto_v6\\campaigns\\auto_v6\\knowledge\\model_results.csv",
+  "initial_knowledge_excerpt": "# Auto V6 Initial Knowledge Package\n\n## 0. Provenance\n\n- Source session / project: Auto V5, controller_auto11_001 to controller_auto11_020\n- Authoring agent: Hermes Agent in the human researcher's Auto V5 workspace\n- Date: 2026-05-06 EDT\n- Data source: local Auto V5 artifacts under `<LOCAL_HOME_PATH>`\n- Any known deviations from Auto V6 contract: This package contains only Auto11 / Auto V5 controller evidence. It does not import any other phase result, ranking, proposal rationale, or report.\n\n## 1. Executive summary\n\n- Auto11 covered 20 controller rounds and 200 source candidates from `v5_ai_curated_002`.\n- The full ledger resolves to 172 benchmark200 ranked rows and 28 formal parameter-cap skipped rows, with no missing or inconsistent rows in the generated ledger.\n- The search baseline is `grid18_200ep_baseline` from `auto_v3/campaigns/grid18_200ep/baseline`, with val R2_median 0.708503411.\n- Only 8 of 172 benchmark200 ranked rows exceeded the val R2_median baseline, so the median-R2 gate is strict.\n- `unet_sdf_7level` is the strongest and most stable family: 5/5 ranked rows exceeded the val R2_median baseline.\n- Oversized mamba2d, ufno, hrformer, and unet_afno variants should not be repeated unless redesigned below the 150M formal cap.\n\n## 2. Baseline and metric definitions\n\n- Search metric: primary search metric is val R2_median. Secondary evidence includes val R2_global and val MAE_median.\n- Validation split size: Auto11 selected candidate val per-case metrics contain 55 val cases.\n- Baseline model: `grid18_200ep_baseline`, architecture `unet_v2_baseline`, source `<BASELINE_HPC_SOURCE_ROOT>/campaigns/grid18_200ep/baseline`.\n- Baseline metric values:\n\n| split | source | R2_median | R2_mean | R2_global | MAE_median | MAE_mean | n_cases | use |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| val | auto_v5/shared/data/v5_baseline_reference.json | 0.708503411 | 0.622875278 | 0.656619483 | 0.093510993 | 0.085752743 | 55 for Auto11 candidate val metrics; baseline reference stores scalar values | search and benchmark200 screening |\n\n\n## 3. Full model result table\n\nThe full one-row-per-source-candidate table is written to the companion CSV:\n\n```text\n<LOCAL_HOME_PATH>```\n\nThe CSV has 200 rows and uses the exact requested columns:\n\n```text\n```\n\nFor readability, the highest 30 benchmark200 rows by val R2_median are excerpted here.\n\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| auto11_003_05_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.734949 | 0.702937 | 0.085048 | 0.749991 | benchmark200_ranked |\n| auto11_017_06_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.729361 | 0.709460 | 0.086881 | 0.766345 | benchmark200_ranked |\n| auto11_018_04_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.726549 | 0.710891 | 0.084685 | 0.774666 | benchmark200_ranked |\n| auto11_011_03_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.721341 | 0.690672 | 0.083326 | 0.749812 | benchmark200_ranked |\n| auto11_019_04_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.721115 | 0.700792 | 0.084222 | 0.761668 | benchmark200_ranked |\n| auto11_009_04_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.710953 | 0.686029 | 0.087191 | 0.752305 | benchmark200_ranked |\n| auto11_019_00_unet_sdf_7level | unet_sdf_7level | 125,771,905 (125.8M) | 0.708871 | 0.692494 | 0.088401 | 0.725684 | benchmark200_ranked |\n| auto11_019_05_unet_v2_baseline | unet_v2_baseline | 34,610,193 (34.6M) | 0.708585 | 0.691738 | 0.087149 | 0.714447 | benchmark200_ranked |\n| auto11_004_05_cno_v2 | cno_v2 | 144,933,361 (144.9M) | 0.705373 | 0.684045 | 0.086512 |  | benchmark200_ranked |\n| auto11_007_09_dilated_unet | dilated_unet | 14,780,705 (14.8M) | 0.703875 | 0.669857 | 0.088735 |  | benchmark200_ranked |\n| auto11_012_06_multiscale_conv | multiscale_conv | 75,159,889 (75.2M) | 0.702762 | 0.687898 | 0.085647 |  | benchmark200_ranked |\n| auto11_006_05_cno_v2 | cno_v2 | 144,933,361 (144.9M) | 0.700826 | 0.674971 | 0.090017 |  | benchmark200_ranked |\n| auto11_004_02_attention_mamba | attention_mamba | 35,969,713 (36.0M) | 0.696389 | 0.671235 | 0.086492 |  | benchmark200_ranked |\n| auto11_002_06_quadmamba | quadmamba | 132,194,421 (132.2M) | 0.696235 | 0.675200 | 0.086326 |  | benchmark200_ranked |\n| auto11_020_09_unet_v2_baseline | unet_v2_baseline | 34,610,193 (34.6M) | 0.695249 | 0.683756 | 0.093230 | 0.723541 | benchmark200_ranked |\n| auto11_005_02_attention_mamba | attention_mamba | 35,969,713 (36.0M) | 0.692225 | 0.660658 | 0.088225 |  | benchmark200_ranked |\n| auto11_014_01_multiscale_conv | multiscale_conv | 75,159,889 (75.2M) | 0.691417 | 0.682706 | 0.087844 |  | benchmark200_ranked |\n| auto11_004_08_dilated_fno | dilated_fno | 60,726,001 (60.7M) | 0.691132 | 0.665984 | 0.087023 |  | benchmark200_ranked |\n| auto11_019_02_unet_v3 | unet_v3 | 138,432,529 (138.4M) | 0.690247 | 0.675043 | 0.089471 |  | benchmark200_ranked |\n| auto11_015_05_sac_unet | sac_unet | 133,726,297 (133.7M) | 0.690088 | 0.670633 | 0.091746 |  | benchmark200_ranked |\n| auto11_004_01_attention_gate_unet | attention_gate_unet | 31,467,765 (31.5M) | 0.688523 | 0.661787 | 0.092307 |  | benchmark200_ranked |\n| auto11_012_01_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.686502 | 0.653833 | 0.087260 |  | benchmark200_ranked |\n| auto11_001_01_attention_mamba | attention_mamba | 35,969,713 (36.0M) | 0.686384 | 0.651668 | 0.092644 |  | benchmark200_ranked |\n| auto11_005_05_cno_v2 | cno_v2 | 144,933,361 (144.9M) | 0.685325 | 0.673261 | 0.089400 |  | benchmark200_ranked |\n| auto11_018_06_unet_v3 | unet_v3 | 138,432,529 (138.4M) | 0.685211 | 0.673424 | 0.092541 |  | benchmark200_ranked |\n| auto11_008_03_dilated_unet | dilated_unet | 14,780,705 (14.8M) | 0.684894 | 0.679513 | 0.091503 |  | benchmark200_ranked |\n| auto11_010_04_fourier_unet | fourier_unet | 34,201,393 (34.2M) | 0.682787 | 0.642210 | 0.088299 |  | benchmark200_ranked |\n| auto11_003_09_attention_gate_unet | attention_gate_unet | 31,467,765 (31.5M) | 0.681540 | 0.667969 | 0.092386 |  | benchmark200_ranked |\n| auto11_003_06_unet_v3 | unet_v3 | 138,432,529 (138.4M) | 0.680521 | 0.690057 | 0.089692 |  | benchmark200_ranked |\n| auto11_010_00_dilated_unet | dilated_unet | 14,780,705 (14.8M) | 0.678897 | 0.691298 | 0.089102 |  | benchmark200_ranked |\n\n## 4. Per-family synthesis\n\n### Architecture-level summary table\n\n| arch | source | ranked | skipped | params | best_val_R2med | median_val_R2med | n>val_base | n>global_base | n_better_MAE |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| unet_sdf_7level | 5 | 5 | 0 | 125,771,905 (125.8M) | 0.734949 | 0.726549 | 5 | 5 | 5 |\n| fourier_unet | 5 | 5 | 0 | 34,201,393 (34.2M) | 0.721341 | 0.686502 | 2 | 3 | 5 |\n| unet_v2_baseline | 16 | 16 | 0 | 34,610,193 (34.6M) | 0.708585 | 0.656163 | 1 | 16 | 6 |\n| cno_v2 | 5 | 5 | 0 | 144,933,361 (144.9M) | 0.705373 | 0.685325 | 0 | 3 | 4 |\n| dilated_unet | 5 | 5 | 0 | 14,780,705 (14.8M) | 0.703875 | 0.678897 | 0 | 4 | 4 |\n| multiscale_conv | 5 | 5 | 0 | 75,159,889 (75.2M) | 0.702762 | 0.678585 | 0 | 5 | 5 |\n| attention_mamba | 5 | 5 | 0 | 35,969,713 (36.0M) | 0.696389 | 0.686384 | 0 | 3 | 4 |\n| quadmamba | 5 | 1 | 4 | 132.2M-338.4M | 0.696235 | 0.696235 | 0 | 1 | 1 |\n| dilated_fno | 5 | 5 | 0 | 60,726,001 (60.7M) | 0.691132 | 0.659440 | 0 | 1 | 4 |\n| unet_v3 | 5 | 5 | 0 | 138,432,529 (138.4M) | 0.690247 | 0.680521 | 0 | 5 | 4 |\n| sac_unet | 5 | 5 | 0 | 133,726,297 (133.7M) | 0.690088 | 0.669487 | 0 | 1 | 3 |\n| attention_gate_unet | 5 | 5 | 0 | 31,467,765 (31.5M) | 0.688523 | 0.669671 | 0 | 4 | 2 |\n| umamba | 5 | 5 | 0 | 72,089,137 (72.1M) | 0.674408 | 0.664584 | 0 | 3 | 0 |\n| dilated_hrformer | 5 | 5 | 0 | 42,474,673 (42.5M) | 0.672146 | 0.550113 | 0 | 1 | 0 |\n| hrdcn | 5 | 5 | 0 | 9,258,281 (9.3M) | 0.663423 | 0.647321 | 0 | 0 | 0 |\n| hrnet | 5 | 5 | 0 | 20,138,689 (20.1M) | 0.661625 | 0.651748 | 0 | 2 | 0 |\n| cbam_unet | 5 | 5 | 0 | 31,340,033 (31.3M) | 0.657932 | -3.323431 | 0 | 0 | 0 |\n| dcn_unet | 5 | 5 | 0 | 135,192,475 (135.2M) | 0.632272 | 0.627985 | 0 | 0 | 0 |\n| residual_spectral | 5 | 1 | 4 | 105.0M-171.0M | 0.628984 | 0.628984 | 0 | 0 | 0 |\n| sac_mamba | 5 | 5 | 0 | 16,552,777 (16.6M) | 0.623816 | 0.580979 | 0 | 0 | 0 |\n| mamba_attention | 5 | 5 | 0 | 22,135,133 (22.1M) | 0.618517 | 0.585293 | 0 | 0 | 0 |\n| fno_encoder_decoder | 5 | 5 | 0 | 62,924,353 (62.9M) | 0.606920 | 0.548157 | 0 | 0 | 0 |\n| swin_unetr | 5 | 5 | 0 | 6,859,867 (6.9M) | 0.539313 | 0.526485 | 0 | 0 | 0 |\n| ffno | 5 | 5 | 0 | 206,337 (0.2M) | 0.470370 | 0.450553 | 0 | 0 | 0 |\n| transolver | 5 | 5 | 0 | 121,316,065 (121.3M) | 0.413157 | 0.401936 | 0 | 0 | 0 |\n| kan_unet | 5 | 5 | 0 | 21,756,196 (21.8M) | 0.393951 | 0.343497 | 0 | 0 | 0 |\n| convnext_v2_unet | 5 | 5 | 0 | 7,463,841 (7.5M) | 0.387231 | 0.348415 | 0 | 0 | 0 |\n| fno2d | 5 | 5 | 0 | 42.8M-96.4M | 0.346560 | 0.337540 | 0 | 0 | 0 |\n| uno | 5 | 5 | 0 | 105,601,345 (105.6M) | 0.342392 | 0.327142 | 0 | 0 | 0 |\n| afno | 5 | 5 | 0 | 0.9M-11.9M | 0.243193 | 0.185428 | 0 | 0 | 0 |\n| nafnet | 4 | 4 | 0 | 2,859,313 (2.9M) | 0.009407 | 0.008129 | 0 | 0 | 0 |\n| perceiver_io | 5 | 5 | 0 | 7,082,753 (7.1M) | -0.017238 | -3.323431 | 0 | 0 | 0 |\n| transolver_lite | 5 | 5 | 0 | 1,023,425 (1.0M) | -1.238094 | -1.407186 | 0 | 0 | 0 |\n| cnn_deeponet | 5 | 5 | 0 | 1,680,577 (1.7M) | -3.323431 | -3.323431 | 0 | 0 | 0 |\n| hrformer | 5 | 0 | 5 | 215,350,593 (215.4M) |  |  | 0 | 0 | 0 |\n| mamba2d | 5 | 0 | 5 | 423,114,785 (423.1M) |  |  | 0 | 0 | 0 |\n| ufno | 5 | 0 | 5 | 242,225,153 (242.2M) |  |  | 0 | 0 | 0 |\n| unet_afno | 5 | 0 | 5 | 188,782,610 (188.8M) |  |  | 0 | 0 | 0 |\n\n### unet_sdf_7level\n\n- Best model_id: auto11_003_05_unet_sdf_7level\n- Parameter efficiency: parameter range 125.8M; best row params 125,771,905 (125.8M).\n- Failure modes: no repeated execution failure observed in the available evidence.\n- What seems not to work: none evident, but it is relatively large at about 125.8M params.\n- Confidence level: high\n- Suggested Auto V6 action: exploit\n\n### fourier_unet\n\n- Best model_id: auto11_011_03_fourier_unet\n- Parameter efficiency: parameter range 34.2M; best row params 34,201,393 (34.2M).\n- Failure modes: no repeated execution failure observed in the available evidence.\n- What seems not to work: performance varied by source candidate, so seed/config sensitivity remains.\n- Confidence level: high\n- Suggested Auto V6 action: exploit / ablate\n\n### unet_v2_baseline\n\n- Best model_id: auto11_019_05_unet_v2_baseline\n- Parameter efficiency: parameter range 34.6M; best row params 34,610,193 (34.6M).\n- Failure modes: no repeated execution failure observed in the available evidence.\n- What seems to work: stable control family with strong R2_global relative to baseline.\n- What seems not to work: only one of sixteen rows barely exceeded val R2_median baseline.\n- Confidence level: high\n- Suggested Auto V6 action: control\n\n### cno_v2\n\n- Best model_id: auto11_004_05_cno_v2\n- Main result: best val R2_median 0.705373, median across ranked rows 0.685325, ranked 5/5.\n- Parameter efficiency: parameter range 144.9M; best row params 144,933,361 (144.9M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### dilated_unet\n\n- Best model_id: auto11_007_09_dilated_unet\n- Main result: best val R2_median 0.703875, median across ranked rows 0.678897, ranked 5/5.\n- Parameter efficiency: parameter range 14.8M; best row params 14,780,705 (14.8M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### multiscale_conv\n\n- Best model_id: auto11_012_06_multiscale_conv\n- Main result: best val R2_median 0.702762, median across ranked rows 0.678585, ranked 5/5.\n- Parameter efficiency: parameter range 75.2M; best row params 75,159,889 (75.2M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### attention_mamba\n\n- Best model_id: auto11_004_02_attention_mamba\n- Main result: best val R2_median 0.696389, median across ranked rows 0.686384, ranked 5/5.\n- Parameter efficiency: parameter range 36.0M; best row params 35,969,713 (36.0M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### quadmamba\n\n- Best model_id: auto11_002_06_quadmamba\n- Main result: best val R2_median 0.696235, median across ranked rows 0.696235, ranked 1/5.\n- Parameter efficiency: parameter range 132.2M-338.4M; best row params 132,194,421 (132.2M).\n- Failure modes: 4 source candidates exceeded the 150M formal benchmark cap or were skipped after smoke evidence.\n- What seems to work: mechanism may be feasible only after down-scaling.\n- What seems not to work: current generated variants are too large for the formal 150M cap.\n- Confidence level: high\n- Suggested Auto V6 action: avoid unless scaled down\n\n### dilated_fno\n\n- Best model_id: auto11_004_08_dilated_fno\n- Main result: best val R2_median 0.691132, median across ranked rows 0.659440, ranked 5/5.\n- Parameter efficiency: parameter range 60.7M; best row params 60,726,001 (60.7M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### unet_v3\n\n- Best model_id: auto11_019_02_unet_v3\n- Parameter efficiency: parameter range 138.4M; best row params 138,432,529 (138.4M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems not to work: val R2_median alone under-ranked it in this evidence set.\n- Confidence level: medium\n- Suggested Auto V6 action: explore further / control\n\n### sac_unet\n\n- Best model_id: auto11_015_05_sac_unet\n- Main result: best val R2_median 0.690088, median across ranked rows 0.669487, ranked 5/5.\n- Parameter efficiency: parameter range 133.7M; best row params 133,726,297 (133.7M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: some benchmark200 rows approached the val baseline or exceeded global/MAE criteria.\n- What seems not to work: did not consistently exceed val R2_median baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: ablate / control\n\n### attention_gate_unet\n\n- Best model_id: auto11_004_01_attention_gate_unet\n- Main result: best val R2_median 0.688523, median across ranked rows 0.669671, ranked 5/5.\n- Parameter efficiency: parameter range 31.5M; best row params 31,467,765 (31.5M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### umamba\n\n- Best model_id: auto11_018_02_umamba\n- Main result: best val R2_median 0.674408, median across ranked rows 0.664584, ranked 5/5.\n- Parameter efficiency: parameter range 72.1M; best row params 72,089,137 (72.1M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### dilated_hrformer\n\n- Best model_id: auto11_005_09_dilated_hrformer\n- Main result: best val R2_median 0.672146, median across ranked rows 0.550113, ranked 5/5.\n- Parameter efficiency: parameter range 42.5M; best row params 42,474,673 (42.5M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### hrdcn\n\n- Best model_id: auto11_008_08_hrdcn\n- Main result: best val R2_median 0.663423, median across ranked rows 0.647321, ranked 5/5.\n- Parameter efficiency: parameter range 9.3M; best row params 9,258,281 (9.3M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### hrnet\n\n- Best model_id: auto11_009_07_hrnet\n- Main result: best val R2_median 0.661625, median across ranked rows 0.651748, ranked 5/5.\n- Parameter efficiency: parameter range 20.1M; best row params 20,138,689 (20.1M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### cbam_unet\n\n- Best model_id: auto11_006_03_cbam_unet\n- Main result: best val R2_median 0.657932, median across ranked rows -3.323431, ranked 5/5.\n- Parameter efficiency: parameter range 31.3M; best row params 31,340,033 (31.3M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### dcn_unet\n\n- Best model_id: auto11_007_06_dcn_unet\n- Main result: best val R2_median 0.632272, median across ranked rows 0.627985, ranked 5/5.\n- Parameter efficiency: parameter range 135.2M; best row params 135,192,475 (135.2M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### residual_spectral\n\n- Best model_id: auto11_002_07_residual_spectral\n- Main result: best val R2_median 0.628984, median across ranked rows 0.628984, ranked 1/5.\n- Parameter efficiency: parameter range 105.0M-171.0M; best row params 104,972,257 (105.0M).\n- Failure modes: 4 source candidates exceeded the 150M formal benchmark cap or were skipped after smoke evidence.\n- What seems to work: mechanism may be feasible only after down-scaling.\n- What seems not to work: current generated variants are too large for the formal 150M cap.\n- Confidence level: high\n- Suggested Auto V6 action: avoid unless scaled down\n\n### sac_mamba\n\n- Best model_id: auto11_016_02_sac_mamba\n- Main result: best val R2_median 0.623816, median across ranked rows 0.580979, ranked 5/5.\n- Parameter efficiency: parameter range 16.6M; best row params 16,552,777 (16.6M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### mamba_attention\n\n- Best model_id: auto11_013_01_mamba_attention\n- Main result: best val R2_median 0.618517, median across ranked rows 0.585293, ranked 5/5.\n- Parameter efficiency: parameter range 22.1M; best row params 22,135,133 (22.1M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### fno_encoder_decoder\n\n- Best model_id: auto11_010_03_fno_encoder_decoder\n- Main result: best val R2_median 0.606920, median across ranked rows 0.548157, ranked 5/5.\n- Parameter efficiency: parameter range 62.9M; best row params 62,924,353 (62.9M).\n- Failure modes: benchmark200 completed, but no row exceeded val R2_median baseline.\n- What seems to work: runs completed and may provide auxiliary controls.\n- What seems not to work: no clear median-R2 advantage over baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: control / low-priority ablate\n\n### swin_unetr\n\n- Best model_id: auto11_002_09_swin_unetr\n- Main result: best val R2_median 0.539313, median across ranked rows 0.526485, ranked 5/5.\n- Parameter efficiency: parameter range 6.9M; best row params 6,859,867 (6.9M).\n- Failure modes: benchmark200 completed but val R2_median remained far below baseline.\n- What seems to work: no clear positive signal in current Auto11 evidence.\n- What seems not to work: low val R2_median or unstable behavior relative to baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: avoid\n\n### ffno\n\n- Best model_id: auto11_008_04_ffno\n- Main result: best val R2_median 0.470370, median across ranked rows 0.450553, ranked 5/5.\n- Parameter efficiency: parameter range 0.2M; best row params 206,337 (0.2M).\n- Failure modes: benchmark200 completed but val R2_median remained far below baseline.\n- What seems to work: no clear positive signal in current Auto11 evidence.\n- What seems not to work: low val R2_median or unstable behavior relative to baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: avoid\n\n### transolver\n\n- Best model_id: auto11_017_01_transolver\n- Main result: best val R2_median 0.413157, median across ranked rows 0.401936, ranked 5/5.\n- Parameter efficiency: parameter range 121.3M; best row params 121,316,065 (121.3M).\n- Failure modes: benchmark200 completed but val R2_median remained far below baseline.\n- What seems to work: no clear positive signal in current Auto11 evidence.\n- What seems not to work: low val R2_median or unstable behavior relative to baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: avoid\n\n### kan_unet\n\n- Best model_id: auto11_010_08_kan_unet\n- Main result: best val R2_median 0.393951, median across ranked rows 0.343497, ranked 5/5.\n- Parameter efficiency: parameter range 21.8M; best row params 21,756,196 (21.8M).\n- Failure modes: benchmark200 completed but val R2_median remained far below baseline.\n- What seems to work: no clear positive signal in current Auto11 evidence.\n- What seems not to work: low val R2_median or unstable behavior relative to baseline.\n- Confidence level: medium\n- Suggested Auto V6 action: avoid\n\n### convnext_v2_unet\n\n- Best model_id: auto11_006_06_convnext_v2_unet\n- Main result: best val R2_median 0.387231, median across ranked rows 0.348415, ranked 5/5.\n- Parameter efficiency: parameter range 7.5M; best row params 7,463,841 (7.5M).\n- Failure modes: benchmark20",
+  "initial_knowledge_csv_digest": {
+    "available": true,
+    "path": "auto_v6\\campaigns\\auto_v6\\knowledge\\model_results.csv",
+    "policy": "Allowed Auto V6 seed evidence from Auto V5/Auto11 only. Do not mix with Phase9 evidence.",
+    "baseline_val_R2_median": 0.708503411,
+    "row_count": 200,
+    "ranked_count": 172,
+    "skipped_count": 28,
+    "n_val_above_baseline": 8,
+    "top_val_rows": [
+      {
+        "model_id": "auto11_003_05_unet_sdf_7level",
+        "arch_name": "unet_sdf_7level",
+        "family": "UNet with SDF",
+        "params": 125771905,
+        "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7349490957626527,
+        "val_R2_global": 0.7029370118662326,
+        "val_MAE_median": 0.08504781872034073,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_sdf_7level_expanded_gradient_lr1e3_noema_nosched_828831925d; smoke_run_id=r_auto11_003_05_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_03_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val basel"
+      },
+      {
+        "model_id": "auto11_017_06_unet_sdf_7level",
+        "arch_name": "unet_sdf_7level",
+        "family": "UNet with SDF",
+        "params": 125771905,
+        "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7293613312501545,
+        "val_R2_global": 0.7094601137990584,
+        "val_MAE_median": 0.08688086271286011,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_sdf_7level_gradient_cosine_a9173b3c34; smoke_run_id=r_auto11_017_06_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_04_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model_file=genera"
+      },
+      {
+        "model_id": "auto11_018_04_unet_sdf_7level",
+        "arch_name": "unet_sdf_7level",
+        "family": "UNet with SDF",
+        "params": 125771905,
+        "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7265490437564686,
+        "val_R2_global": 0.7108910052109128,
+        "val_MAE_median": 0.08468452841043472,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_sdf_7level_height_only_gradient_low_lr_d17eb132fc; smoke_run_id=r_auto11_018_04_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_02_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model"
+      },
+      {
+        "model_id": "auto11_011_03_fourier_unet",
+        "arch_name": "fourier_unet",
+        "family": "Fourier-UNet",
+        "params": 34201393,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1",
+        "val_R2_median": 0.7213412228588788,
+        "val_R2_global": 0.6906715987270413,
+        "val_MAE_median": 0.08332575112581253,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_fourier_unet_fourier_unet_l1_low_lr_ema_2c1933b10c; smoke_run_id=r_auto11_011_03_fourier_unet_smoke20; benchmark_run_id=r_benchmark_03_fourier_unet_benchmark200; resolution=original; val R2_median above grid18 val baseline; model_file=generated"
+      },
+      {
+        "model_id": "auto11_019_04_unet_sdf_7level",
+        "arch_name": "unet_sdf_7level",
+        "family": "UNet with SDF",
+        "params": 125771905,
+        "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1",
+        "val_R2_median": 0.7211150199064167,
+        "val_R2_global": 0.7007923495084197,
+        "val_MAE_median": 0.08422154933214188,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_sdf_7level_height_only_l1_ema_3b3fd300dd; smoke_run_id=r_auto11_019_04_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_04_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model_file=gen"
+      },
+      {
+        "model_id": "auto11_009_04_fourier_unet",
+        "arch_name": "fourier_unet",
+        "family": "Fourier-UNet",
+        "params": 34201393,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7109528580049491,
+        "val_R2_global": 0.6860292816208198,
+        "val_MAE_median": 0.08719073981046677,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_fourier_unet_fourier_unet_gradient_low_lr_d9774085d5; smoke_run_id=r_auto11_009_04_fourier_unet_smoke20; benchmark_run_id=r_benchmark_04_fourier_unet_benchmark200; resolution=original; val R2_median above grid18 val baseline; model_file=generat"
+      },
+      {
+        "model_id": "auto11_019_00_unet_sdf_7level",
+        "arch_name": "unet_sdf_7level",
+        "family": "UNet with SDF",
+        "params": 125771905,
+        "input_features": "Auto V5 standard gridded inputs plus SDF mechanism in wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1",
+        "val_R2_median": 0.7088706703618013,
+        "val_R2_global": 0.6924940901540333,
+        "val_MAE_median": 0.08840114623308182,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_sdf_7level_height_only_l1_default_71c5781780; smoke_run_id=r_auto11_019_00_unet_sdf_7level_smoke20; benchmark_run_id=r_benchmark_00_unet_sdf_7level_benchmark200_retry1; resolution=retry1; val R2_median above grid18 val baseline; model_file"
+      },
+      {
+        "model_id": "auto11_019_05_unet_v2_baseline",
+        "arch_name": "unet_v2_baseline",
+        "family": "UNet variants",
+        "params": 34610193,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7085853535753317,
+        "val_R2_global": 0.6917383326818419,
+        "val_MAE_median": 0.08714903891086578,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_v2_baseline_fullgrid_gradient_lr1e3_noema_nosched_3ee62337d9; smoke_run_id=r_auto11_019_05_unet_v2_baseline_smoke20; benchmark_run_id=r_benchmark_05_unet_v2_baseline_benchmark200; resolution=original; val R2_median above grid18 val baselin"
+      },
+      {
+        "model_id": "auto11_004_05_cno_v2",
+        "arch_name": "cno_v2",
+        "family": "CNO",
+        "params": 144933361,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7053733271064626,
+        "val_R2_global": 0.6840450730207099,
+        "val_MAE_median": 0.08651155233383179,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_cno_v2_cno_gradient_low_lr_ema_ffaf7a9335; smoke_run_id=r_auto11_004_05_cno_v2_smoke20; benchmark_run_id=r_benchmark_05_cno_v2_benchmark200_retry1; resolution=retry1; model_file=generated_models/v5_controller_auto11_004/cno_v2.py"
+      },
+      {
+        "model_id": "auto11_007_09_dilated_unet",
+        "arch_name": "dilated_unet",
+        "family": "UNet variants",
+        "params": 14780705,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7038752597690816,
+        "val_R2_global": 0.6698573292549892,
+        "val_MAE_median": 0.08873451501131058,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_dilated_unet_dilated_gradient_default_43765508cf; smoke_run_id=r_auto11_007_09_dilated_unet_smoke20; benchmark_run_id=r_benchmark_09_dilated_unet_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_007/dilated_un"
+      },
+      {
+        "model_id": "auto11_012_06_multiscale_conv",
+        "arch_name": "multiscale_conv",
+        "family": "Multi-scale CNN",
+        "params": 75159889,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.7027617587573396,
+        "val_R2_global": 0.6878976085837971,
+        "val_MAE_median": 0.08564749360084534,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_multiscale_conv_gradient_default_ee2ec9518f; smoke_run_id=r_auto11_012_06_multiscale_conv_smoke20; benchmark_run_id=r_benchmark_05_multiscale_conv_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_012/multiscal"
+      },
+      {
+        "model_id": "auto11_006_05_cno_v2",
+        "arch_name": "cno_v2",
+        "family": "CNO",
+        "params": 144933361,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.001,
+        "loss": "masked_l1",
+        "val_R2_median": 0.7008257399238096,
+        "val_R2_global": 0.6749706358752154,
+        "val_MAE_median": 0.09001719951629639,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_cno_v2_cno_l1_default_0458e950a8; smoke_run_id=r_auto11_006_05_cno_v2_smoke20; benchmark_run_id=r_benchmark_05_cno_v2_benchmark200_retry1; resolution=retry1; model_file=generated_models/v5_controller_auto11_006/cno_v2.py"
+      },
+      {
+        "model_id": "auto11_004_02_attention_mamba",
+        "arch_name": "attention_mamba",
+        "family": "Mamba variants",
+        "params": 35969713,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.6963887206709947,
+        "val_R2_global": 0.6712351278376605,
+        "val_MAE_median": 0.08649195730686188,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_attention_mamba_attention_mamba_gradient_low_lr_ema_801c612d44; smoke_run_id=r_auto11_004_02_attention_mamba_smoke20; benchmark_run_id=r_benchmark_02_attention_mamba_benchmark200; resolution=original; model_file=generated_models/v5_controller_a"
+      },
+      {
+        "model_id": "auto11_002_06_quadmamba",
+        "arch_name": "quadmamba",
+        "family": "Mamba variants",
+        "params": 132194421,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.696234744663454,
+        "val_R2_global": 0.6751996960281275,
+        "val_MAE_median": 0.0863259881734848,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_quadmamba_ema_stable_gradient_79264260fd; smoke_run_id=r_auto11_002_06_quadmamba_smoke20; benchmark_run_id=r_benchmark_04_quadmamba_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_002/quadmamba.py"
+      },
+      {
+        "model_id": "auto11_020_09_unet_v2_baseline",
+        "arch_name": "unet_v2_baseline",
+        "family": "UNet variants",
+        "params": 34610193,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1",
+        "val_R2_median": 0.6952489480753254,
+        "val_R2_global": 0.6837563385257552,
+        "val_MAE_median": 0.09323042631149292,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_v2_baseline_fullgrid_l1_lr5e4_noema_nosched_b103560ad9; smoke_run_id=r_auto11_020_09_unet_v2_baseline_smoke20; benchmark_run_id=r_benchmark_09_unet_v2_baseline_benchmark200; resolution=original; model_file=generated_models/v5_controller_au"
+      },
+      {
+        "model_id": "auto11_005_02_attention_mamba",
+        "arch_name": "attention_mamba",
+        "family": "Mamba variants",
+        "params": 35969713,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1",
+        "val_R2_median": 0.6922245494693888,
+        "val_R2_global": 0.6606584603819957,
+        "val_MAE_median": 0.08822549879550934,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_attention_mamba_attention_mamba_l1_low_lr_e3472d8920; smoke_run_id=r_auto11_005_02_attention_mamba_smoke20; benchmark_run_id=r_benchmark_02_attention_mamba_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_005/"
+      },
+      {
+        "model_id": "auto11_014_01_multiscale_conv",
+        "arch_name": "multiscale_conv",
+        "family": "Multi-scale CNN",
+        "params": 75159889,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.6914165032806037,
+        "val_R2_global": 0.6827060877348572,
+        "val_MAE_median": 0.08784438669681549,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_multiscale_conv_multiscale_gradient_low_lr_4fc18f1358; smoke_run_id=r_auto11_014_01_multiscale_conv_smoke20; benchmark_run_id=r_benchmark_01_multiscale_conv_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_014"
+      },
+      {
+        "model_id": "auto11_004_08_dilated_fno",
+        "arch_name": "dilated_fno",
+        "family": "Spectral/Fourier operators",
+        "params": 60726001,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.6911315712380651,
+        "val_R2_global": 0.6659835213021241,
+        "val_MAE_median": 0.08702345192432404,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_dilated_fno_dilated_fno_gradient_low_lr_7280915220; smoke_run_id=r_auto11_004_08_dilated_fno_smoke20; benchmark_run_id=r_benchmark_08_dilated_fno_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_004/dilated_fn"
+      },
+      {
+        "model_id": "auto11_019_02_unet_v3",
+        "arch_name": "unet_v3",
+        "family": "UNet variants",
+        "params": 138432529,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.6902473396848972,
+        "val_R2_global": 0.6750429149896541,
+        "val_MAE_median": 0.08947113901376724,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_unet_v3_ema_stable_gradient_c293d8c12d; smoke_run_id=r_auto11_019_02_unet_v3_smoke20; benchmark_run_id=r_benchmark_02_unet_v3_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_019/unet_v3.py"
+      },
+      {
+        "model_id": "auto11_015_05_sac_unet",
+        "arch_name": "sac_unet",
+        "family": "UNet variants",
+        "params": 133726297,
+        "input_features": "Auto V5 standard gridded inputs; architecture-specific processing inside generated wrapper",
+        "lr": 0.0005,
+        "loss": "masked_l1_gradient",
+        "val_R2_median": 0.690088053020872,
+        "val_R2_global": 0.6706325962117282,
+        "val_MAE_median": 0.09174647182226181,
+        "status": "benchmark200_ranked",
+        "notes": "source_run_id=r_sac_unet_sac_gradient_low_lr_ema_cc32f34221; smoke_run_id=r_auto11_015_05_sac_unet_smoke20; benchmark_run_id=r_benchmark_03_sac_unet_benchmark200; resolution=original; model_file=generated_models/v5_controller_auto11_015/sac_unet.py"
+      }
+    ],
+    "top_arch_family_summary": {
+      "unet_sdf_7level": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 125771905,
+        "params_max": 125771905,
+        "best_val_R2_median": 0.7349490957626527,
+        "median_val_R2_median": 0.7265490437564686,
+        "n_val_above_baseline": 5
+      },
+      "fourier_unet": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 34201393,
+        "params_max": 34201393,
+        "best_val_R2_median": 0.7213412228588788,
+        "median_val_R2_median": 0.6865019557823426,
+        "n_val_above_baseline": 2
+      },
+      "unet_v2_baseline": {
+        "source_rows": 16,
+        "ranked_rows": 16,
+        "skipped_rows": 0,
+        "params_min": 34610193,
+        "params_max": 34610193,
+        "best_val_R2_median": 0.7085853535753317,
+        "median_val_R2_median": 0.6563207068522976,
+        "n_val_above_baseline": 1
+      },
+      "cno_v2": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 144933361,
+        "params_max": 144933361,
+        "best_val_R2_median": 0.7053733271064626,
+        "median_val_R2_median": 0.6853252487281944,
+        "n_val_above_baseline": 0
+      },
+      "dilated_unet": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 14780705,
+        "params_max": 14780705,
+        "best_val_R2_median": 0.7038752597690816,
+        "median_val_R2_median": 0.6788971088815838,
+        "n_val_above_baseline": 0
+      },
+      "multiscale_conv": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 75159889,
+        "params_max": 75159889,
+        "best_val_R2_median": 0.7027617587573396,
+        "median_val_R2_median": 0.6785847406788731,
+        "n_val_above_baseline": 0
+      },
+      "attention_mamba": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 35969713,
+        "params_max": 35969713,
+        "best_val_R2_median": 0.6963887206709947,
+        "median_val_R2_median": 0.6863843349368338,
+        "n_val_above_baseline": 0
+      },
+      "quadmamba": {
+        "source_rows": 5,
+        "ranked_rows": 1,
+        "skipped_rows": 4,
+        "params_min": 132194421,
+        "params_max": 338380833,
+        "best_val_R2_median": 0.696234744663454,
+        "median_val_R2_median": 0.696234744663454,
+        "n_val_above_baseline": 0
+      },
+      "dilated_fno": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 60726001,
+        "params_max": 60726001,
+        "best_val_R2_median": 0.6911315712380651,
+        "median_val_R2_median": 0.6594401836668035,
+        "n_val_above_baseline": 0
+      },
+      "unet_v3": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 138432529,
+        "params_max": 138432529,
+        "best_val_R2_median": 0.6902473396848972,
+        "median_val_R2_median": 0.680521472392638,
+        "n_val_above_baseline": 0
+      },
+      "sac_unet": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 133726297,
+        "params_max": 133726297,
+        "best_val_R2_median": 0.690088053020872,
+        "median_val_R2_median": 0.6694873069451295,
+        "n_val_above_baseline": 0
+      },
+      "attention_gate_unet": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 31467765,
+        "params_max": 31467765,
+        "best_val_R2_median": 0.688522632842127,
+        "median_val_R2_median": 0.6696707232539612,
+        "n_val_above_baseline": 0
+      },
+      "umamba": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 72089137,
+        "params_max": 72089137,
+        "best_val_R2_median": 0.6744077749537852,
+        "median_val_R2_median": 0.6645840015109532,
+        "n_val_above_baseline": 0
+      },
+      "dilated_hrformer": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 42474673,
+        "params_max": 42474673,
+        "best_val_R2_median": 0.6721458849137698,
+        "median_val_R2_median": 0.5501130546962782,
+        "n_val_above_baseline": 0
+      },
+      "hrdcn": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 9258281,
+        "params_max": 9258281,
+        "best_val_R2_median": 0.6634227860840043,
+        "median_val_R2_median": 0.6473214155421008,
+        "n_val_above_baseline": 0
+      },
+      "hrnet": {
+        "source_rows": 5,
+        "ranked_rows": 5,
+        "skipped_rows": 0,
+        "params_min": 20138689,
+        "params_max": 20138689,
+        "best_val_R2_median": 0.6616249264032534,
+        "median_val_R2_median": 0.6517475383159288,
+        "n_val_above_baseline": 0
+      }
+    },
+    "formal_cap_or_oversize_arches": [
+      "hrformer",
+      "mamba2d",
+      "quadmamba",
+      "residual_spectral",
+      "ufno",
+      "unet_afno"
+    ],
+    "planner_implications": [
+      "Treat unet_sdf_7level as the primary exploit/ablation seed if it remains compatible with the locked feature contract.",
+      "Treat fourier_unet as the main parameter-efficient exploit seed.",
+      "Keep unet_v2_baseline as an in-campaign control.",
+      "Use a small secondary R2_global/MAE-aware validation gate for candidates like unet_v3; locked final-evaluation results are excluded from planner seed knowledge.",
+      "Reject or redesign mamba2d/ufno/hrformer/unet_afno-like configs above the 150M formal cap before benchmark."
+    ]
+  },
+  "external_web_scout": {
+    "enabled": true,
+    "status": "ok",
+    "policy": "External web scouts provide planner context only. They do not generate final train configs.",
+    "gemini_sources": {
+      "status": "ok",
+      "tool_calls": 6,
+      "source_count": 1,
+      "raw_source_count_after_cap": 10,
+      "excluded_source_count": 9,
+      "reliability_filter": {
+        "policy": "hard-exclude fake/placeholder/duplicate/homepage/unresolved redirect sources from Codex synthesis; mark unrecognized domains as weak but keep",
+        "source_count": 10,
+        "kept_count": 1,
+        "excluded_count": 9,
+        "flag_counts": {
+          "homepage_like_url": 6,
+          "unresolved_google_grounding_redirect": 3,
+          "unrecognized_publication_domain": 5,
+          "duplicate_url": 1
+        },
+        "excluded_examples": [
+          {
+            "title": "Hybrid Physics-Informed Latent Operator Architecture",
+            "url": "https://www.mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "Geometric Flexibility: Graph and Point-Cloud Operators",
+            "url": "https://arxiv.org",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "nsb-GAN: Wavelet Decoder Architecture for Super-Resolution",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn2QriIMeUT3z4PkVcmxPQnQvN1vfZN6B6PweirFkgoh09gHm_clwPsTNJYSzXpoBe4co8t-PlpFXDOPt4-LvLc7d0VwPyXN6v_FqXa9kOYqM_WTKJ0dcXGvlq1mlAuNE96S3owHWJrH6YbSa4PrdnzouBUQ==",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "RA-UNet: Mitigating Premature Dissipation in Radar Nowcasting",
+            "url": "https://mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "MambaVision",
+            "url": "https://nvidia.com",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Boundary-Embedded Neural Operator",
+            "url": "https://iclr.cc/",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Geometry-Informed Neural Operator (GINO)",
+            "url": "https://arxiv.org/",
+            "flags": [
+              "duplicate_url",
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "BATNet-Lite: Boundary-Aware Token Mixing",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmf6IrwT80z5QsyXE5FfJa-tfhehaq_JL9WtQAgxpsXy-tkevpT-6M2LcttVNyBibmCvxO48c_wtoYR8sd4uoDj_oK6TQKQMomkL3WRqT3l5XmqbS9H5VLT1CHDqqhCYTp93am",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          }
+        ],
+        "kept_weak_examples": []
+      },
+      "per_query_timeout_s": 120,
+      "query_runs": [
+        {
+          "query_id": 1,
+          "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "direct_cfd_neural_operator",
+          "status": "ok",
+          "runtime_s": 51.657,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 2
+        },
+        {
+          "query_id": 2,
+          "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "dense_regression_decoder",
+          "status": "ok",
+          "runtime_s": 68.043,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 1,
+          "excluded_count": 1
+        },
+        {
+          "query_id": 3,
+          "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "topic_cluster": "weather_nowcasting",
+          "status": "ok",
+          "runtime_s": 63.927,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 1
+        },
+        {
+          "query_id": 4,
+          "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+          "query_tier": "D_mechanism_only",
+          "topic_cluster": "mamba_ssm",
+          "status": "ok",
+          "runtime_s": 82.892,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 1
+        },
+        {
+          "query_id": 5,
+          "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "geometry_aware_cfd",
+          "status": "ok",
+          "runtime_s": 61.873,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 2
+        },
+        {
+          "query_id": 6,
+          "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "segmentation_boundary_refinement",
+          "status": "ok",
+          "runtime_s": 81.029,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 2
+        }
+      ],
+      "query_mode": "routine",
+      "query_rotation": 0,
+      "selected_query_count": 6,
+      "selected_reason": "routine_weighted_rotation",
+      "selected_queries": [
+        {
+          "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "direct_cfd_neural_operator",
+          "source_task": "direct_cfd_neural_operator",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "dense_regression_decoder",
+          "source_task": "dense_regression_decoder",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "topic_cluster": "weather_nowcasting",
+          "source_task": "weather_nowcasting",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+          "query_tier": "D_mechanism_only",
+          "topic_cluster": "mamba_ssm",
+          "source_task": "mamba_ssm",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "geometry_aware_cfd",
+          "source_task": "geometry_aware_cfd",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "segmentation_boundary_refinement",
+          "source_task": "segmentation_boundary_refinement",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        }
+      ],
+      "adaptive_policy": {
+        "query_weights": {
+          "direct_cfd_neural_operator": 1.0,
+          "geometry_aware_cfd": 1.0,
+          "cfd_geometry_sdf": 1.0,
+          "operator_decoder_efficiency": 1.0,
+          "cfd_pressure_surrogate": 1.0,
+          "dense_regression_decoder": 1.0,
+          "segmentation_boundary_refinement": 1.0,
+          "image_restoration": 1.0,
+          "super_resolution": 1.0,
+          "dense_prediction_transformer": 1.0,
+          "multi_scale_refinement": 1.0,
+          "weather_nowcasting": 1.0,
+          "weather_foundation_field": 1.0,
+          "scientific_surrogate": 1.0,
+          "spatiotemporal_field_modeling": 1.0,
+          "climate_downscaling": 1.0,
+          "mamba_ssm": 1.0,
+          "moe_conditional_computation": 1.0,
+          "inr_hypernetwork": 1.0,
+          "peft_tta_adapters": 1.0
+        },
+        "weight_reasons": {},
+        "cooldown_disabled": false,
+        "cooldown_clusters": [],
+        "cooldown_skipped_queries": [],
+        "adversarial_queries": [],
+        "adversarial_query_count": 0,
+        "adversarial_query_reason": "none",
+        "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+      },
+      "query_weights": {
+        "direct_cfd_neural_operator": 1.0,
+        "geometry_aware_cfd": 1.0,
+        "cfd_geometry_sdf": 1.0,
+        "operator_decoder_efficiency": 1.0,
+        "cfd_pressure_surrogate": 1.0,
+        "dense_regression_decoder": 1.0,
+        "segmentation_boundary_refinement": 1.0,
+        "image_restoration": 1.0,
+        "super_resolution": 1.0,
+        "dense_prediction_transformer": 1.0,
+        "multi_scale_refinement": 1.0,
+        "weather_nowcasting": 1.0,
+        "weather_foundation_field": 1.0,
+        "scientific_surrogate": 1.0,
+        "spatiotemporal_field_modeling": 1.0,
+        "climate_downscaling": 1.0,
+        "mamba_ssm": 1.0,
+        "moe_conditional_computation": 1.0,
+        "inr_hypernetwork": 1.0,
+        "peft_tta_adapters": 1.0
+      },
+      "weight_reasons": {},
+      "reuse_hints": {
+        "enabled": true,
+        "scanned_artifacts": [
+          "auto_v6\\campaigns\\auto_v6\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
+        ],
+        "cache_candidate_count": 0,
+        "cluster_cache_candidate_count": 0,
+        "by_query": {},
+        "by_topic_cluster": {}
+      },
+      "reuse_sources_enabled": true,
+      "selected_tiers": [
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision",
+        "C_weather_sciml_field_prediction",
+        "D_mechanism_only",
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision"
+      ],
+      "selected_topic_clusters": [
+        "direct_cfd_neural_operator",
+        "dense_regression_decoder",
+        "weather_nowcasting",
+        "mamba_ssm",
+        "geometry_aware_cfd",
+        "segmentation_boundary_refinement"
+      ],
+      "tier_counts": {
+        "B_dense_prediction_vision": 1
+      },
+      "topic_cluster_counts": {
+        "dense_regression_decoder": 1
+      },
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\external_sources_gemini.json"
+    },
+    "codex_web_ideas": {
+      "status": "ok",
+      "idea_count": 12,
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\external_ideas_codex_web.json"
+    },
+    "claude_local_review": {
+      "status": "ok",
+      "reviewed_count": 12,
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\external_ideas_review.json",
+      "topic_cluster_counts": {
+        "dense_regression_decoder": 1,
+        "segmentation_boundary_refinement": 2,
+        "multi_scale_refinement": 1,
+        "mamba_ssm": 1,
+        "peft_tta_adapters": 1,
+        "weather_nowcasting": 2,
+        "operator_decoder_efficiency": 1,
+        "scientific_surrogate": 1,
+        "geometry_aware_cfd": 1,
+        "direct_cfd_neural_operator": 1
+      },
+      "coverage_warning": "Acceptable round-0 coverage across 10 topic clusters with no single cluster dominating, but two near-overlap pairs exist (EXT_08/EXT_10 both gated local+global spectral; EXT_09 partially overlaps both). Planner should pick at most one of {EXT_08, EXT_10} and clearly differentiate EXT_09 by its basis-weighted-stencil claim. Mechanism diversity is good (residual head, adaptive refinement, deformable conv, wavelet, SSM, low-rank adapter, feature warp, spectral+local, local operator, gated mix, geometry tokens, low-rank basis), but cluster diversity is skewed toward decoder-side mechanisms — no representatives from cfd_pressure_surrogate, image_restoration, super_resolution, dense_prediction_transformer, weather_foundation_field, spatiotemporal_field_modeling, climate_downscaling, moe_conditional_computation, or inr_hypernetwork in this batch.",
+      "missing_clusters_for_next_round": [
+        "cfd_pressure_surrogate",
+        "image_restoration",
+        "super_resolution",
+        "dense_prediction_transformer",
+        "moe_conditional_computation",
+        "inr_hypernetwork",
+        "weather_foundation_field",
+        "cfd_geometry_sdf",
+        "direct_cfd_neural_operator",
+        "geometry_aware_cfd",
+        "operator_decoder_efficiency",
+        "segmentation_boundary_refinement",
+        "multi_scale_refinement",
+        "weather_nowcasting",
+        "scientific_surrogate",
+        "spatiotemporal_field_modeling",
+        "climate_downscaling",
+        "mamba_ssm",
+        "peft_tta_adapters"
+      ],
+      "summary": "All 12 external ideas pass the locked Auto V6 contract (height-only, single-frame, 2D grid I/O, existing train/eval/data paths, no new labels/meshes/solvers/metrics, seed=1, batch_size=16). None were rejected. Highest-confidence mechanisms: EV6_R0_EXT_04 wavelet adapter (4.5), followed by a tight cluster of EXT_01/02/03/05/06/07/08/11/12 at 4.0. Borderline: EXT_09 and EXT_10 (3.5) due to mechanism overlap with EXT_04/EXT_08 and ablation-isolation risk. Planner should treat each idea as a single-mechanism explorer slot, avoid bundling two mechanisms in one experiment, prefer capacity-matched paired comparisons (mechanism-on vs mechanism-off, not larger n_c/depth), and pick at most one of {EXT_08, EXT_10}. Round-1 web scout should target missing clusters listed above to broaden source-task diversity beyond decoder-side mechanisms."
+    },
+    "quality_report": {
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\web_scout_quality_report.json",
+      "status": "ok",
+      "query_mode": "routine",
+      "query_rotation": 0,
+      "selected_query_count": 6,
+      "selected_reason": "routine_weighted_rotation",
+      "adaptive_policy": {
+        "query_weights": {
+          "direct_cfd_neural_operator": 1.0,
+          "geometry_aware_cfd": 1.0,
+          "cfd_geometry_sdf": 1.0,
+          "operator_decoder_efficiency": 1.0,
+          "cfd_pressure_surrogate": 1.0,
+          "dense_regression_decoder": 1.0,
+          "segmentation_boundary_refinement": 1.0,
+          "image_restoration": 1.0,
+          "super_resolution": 1.0,
+          "dense_prediction_transformer": 1.0,
+          "multi_scale_refinement": 1.0,
+          "weather_nowcasting": 1.0,
+          "weather_foundation_field": 1.0,
+          "scientific_surrogate": 1.0,
+          "spatiotemporal_field_modeling": 1.0,
+          "climate_downscaling": 1.0,
+          "mamba_ssm": 1.0,
+          "moe_conditional_computation": 1.0,
+          "inr_hypernetwork": 1.0,
+          "peft_tta_adapters": 1.0
+        },
+        "weight_reasons": {},
+        "cooldown_disabled": false,
+        "cooldown_clusters": [],
+        "cooldown_skipped_queries": [],
+        "adversarial_queries": [],
+        "adversarial_query_count": 0,
+        "adversarial_query_reason": "none",
+        "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+      },
+      "adversarial_query_count": 0,
+      "cooldown_clusters": [],
+      "reuse_sources_enabled": true,
+      "selected_tiers": [
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision",
+        "C_weather_sciml_field_prediction",
+        "D_mechanism_only",
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision"
+      ],
+      "selected_topic_clusters": [
+        "direct_cfd_neural_operator",
+        "dense_regression_decoder",
+        "weather_nowcasting",
+        "mamba_ssm",
+        "geometry_aware_cfd",
+        "segmentation_boundary_refinement"
+      ],
+      "url_valid_count": 10,
+      "url_weak_count": 16,
+      "reliability_filter": {
+        "policy": "hard-exclude fake/placeholder/duplicate/homepage/unresolved redirect sources from Codex synthesis; mark unrecognized domains as weak but keep",
+        "source_count": 10,
+        "kept_count": 1,
+        "excluded_count": 9,
+        "flag_counts": {
+          "homepage_like_url": 6,
+          "unresolved_google_grounding_redirect": 3,
+          "unrecognized_publication_domain": 5,
+          "duplicate_url": 1
+        },
+        "excluded_examples": [
+          {
+            "title": "Hybrid Physics-Informed Latent Operator Architecture",
+            "url": "https://www.mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "Geometric Flexibility: Graph and Point-Cloud Operators",
+            "url": "https://arxiv.org",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "nsb-GAN: Wavelet Decoder Architecture for Super-Resolution",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn2QriIMeUT3z4PkVcmxPQnQvN1vfZN6B6PweirFkgoh09gHm_clwPsTNJYSzXpoBe4co8t-PlpFXDOPt4-LvLc7d0VwPyXN6v_FqXa9kOYqM_WTKJ0dcXGvlq1mlAuNE96S3owHWJrH6YbSa4PrdnzouBUQ==",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "RA-UNet: Mitigating Premature Dissipation in Radar Nowcasting",
+            "url": "https://mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "MambaVision",
+            "url": "https://nvidia.com",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Boundary-Embedded Neural Operator",
+            "url": "https://iclr.cc/",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Geometry-Informed Neural Operator (GINO)",
+            "url": "https://arxiv.org/",
+            "flags": [
+              "duplicate_url",
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "BATNet-Lite: Boundary-Aware Token Mixing",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmf6IrwT80z5QsyXE5FfJa-tfhehaq_JL9WtQAgxpsXy-tkevpT-6M2LcttVNyBibmCvxO48c_wtoYR8sd4uoDj_oK6TQKQMomkL3WRqT3l5XmqbS9H5VLT1CHDqqhCYTp93am",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          }
+        ],
+        "kept_weak_examples": []
+      },
+      "missing_clusters_for_next_round": [
+        "cfd_pressure_surrogate",
+        "image_restoration",
+        "super_resolution",
+        "dense_prediction_transformer",
+        "moe_conditional_computation",
+        "inr_hypernetwork",
+        "weather_foundation_field",
+        "cfd_geometry_sdf",
+        "direct_cfd_neural_operator",
+        "geometry_aware_cfd",
+        "operator_decoder_efficiency",
+        "segmentation_boundary_refinement",
+        "multi_scale_refinement",
+        "weather_nowcasting",
+        "scientific_surrogate",
+        "spatiotemporal_field_modeling",
+        "climate_downscaling",
+        "mamba_ssm",
+        "peft_tta_adapters"
+      ],
+      "retry_hints": [
+        {
+          "topic_cluster": "cfd_pressure_surrogate",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "airfoil building wind pressure field prediction neural operator 2025"
+        },
+        {
+          "topic_cluster": "image_restoration",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "image restoration lightweight state space model U-Net dense prediction 2025"
+        },
+        {
+          "topic_cluster": "super_resolution",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "efficient image super resolution feature modulation decoder architecture 2025"
+        },
+        {
+          "topic_cluster": "dense_prediction_transformer",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025"
+        },
+        {
+          "topic_cluster": "moe_conditional_computation",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "mixture of experts lightweight dense prediction adapter routing architecture 2025"
+        },
+        {
+          "topic_cluster": "inr_hypernetwork",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "implicit neural representation hypernetwork image to field prediction architecture"
+        },
+        {
+          "topic_cluster": "weather_foundation_field",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "weather forecasting neural operator field prediction high resolution 2025"
+        },
+        {
+          "topic_cluster": "cfd_geometry_sdf",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "geometry informed neural operator SDF aerodynamic flow field surrogate"
+        },
+        {
+          "topic_cluster": "direct_cfd_neural_operator",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "2025 neural operator CFD surrogate flow field prediction architecture"
+        },
+        {
+          "topic_cluster": "geometry_aware_cfd",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "boundary embedded neural operator complex geometry PDE 2024 2025"
+        },
+        {
+          "topic_cluster": "operator_decoder_efficiency",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "parameter efficient neural operator low rank adapter surrogate model"
+        },
+        {
+          "topic_cluster": "segmentation_boundary_refinement",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025"
+        },
+        {
+          "topic_cluster": "multi_scale_refinement",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "multi scale context refinement dense regression heatmap prediction architecture 2024"
+        },
+        {
+          "topic_cluster": "weather_nowcasting",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "precipitation nowcasting dense field prediction neural network architecture 2025"
+        },
+        {
+          "topic_cluster": "scientific_surrogate",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "scientific machine learning surrogate spatial field prediction parameter efficient architecture"
+        },
+        {
+          "topic_cluster": "spatiotemporal_field_modeling",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "spatiotemporal field prediction Mamba state space scientific machine learning 2025"
+        },
+        {
+          "topic_cluster": "climate_downscaling",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "climate downscaling super resolution dense field prediction neural network 2025"
+        },
+        {
+          "topic_cluster": "mamba_ssm",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "Mamba state space model vision dense prediction lightweight architecture 2025"
+        },
+        {
+          "topic_cluster": "peft_tta_adapters",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "parameter efficient adapters test time adaptation dense prediction boundary aware vision"
+        }
+      ]
+    },
+    "yield_artifact": {
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\web_query_yield.json",
+      "jsonl_artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\web_query_yield.jsonl",
+      "record_count": 6
+    },
+    "missing_clusters_for_next_round": [
+      "cfd_pressure_surrogate",
+      "image_restoration",
+      "super_resolution",
+      "dense_prediction_transformer",
+      "moe_conditional_computation",
+      "inr_hypernetwork",
+      "weather_foundation_field",
+      "cfd_geometry_sdf",
+      "direct_cfd_neural_operator",
+      "geometry_aware_cfd",
+      "operator_decoder_efficiency",
+      "segmentation_boundary_refinement",
+      "multi_scale_refinement",
+      "weather_nowcasting",
+      "scientific_surrogate",
+      "spatiotemporal_field_modeling",
+      "climate_downscaling",
+      "mamba_ssm",
+      "peft_tta_adapters"
+    ],
+    "retry_hints": [
+      {
+        "topic_cluster": "cfd_pressure_surrogate",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "airfoil building wind pressure field prediction neural operator 2025"
+      },
+      {
+        "topic_cluster": "image_restoration",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "image restoration lightweight state space model U-Net dense prediction 2025"
+      },
+      {
+        "topic_cluster": "super_resolution",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "efficient image super resolution feature modulation decoder architecture 2025"
+      },
+      {
+        "topic_cluster": "dense_prediction_transformer",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025"
+      },
+      {
+        "topic_cluster": "moe_conditional_computation",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "mixture of experts lightweight dense prediction adapter routing architecture 2025"
+      },
+      {
+        "topic_cluster": "inr_hypernetwork",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "implicit neural representation hypernetwork image to field prediction architecture"
+      },
+      {
+        "topic_cluster": "weather_foundation_field",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "weather forecasting neural operator field prediction high resolution 2025"
+      },
+      {
+        "topic_cluster": "cfd_geometry_sdf",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "geometry informed neural operator SDF aerodynamic flow field surrogate"
+      },
+      {
+        "topic_cluster": "direct_cfd_neural_operator",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "2025 neural operator CFD surrogate flow field prediction architecture"
+      },
+      {
+        "topic_cluster": "geometry_aware_cfd",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "boundary embedded neural operator complex geometry PDE 2024 2025"
+      },
+      {
+        "topic_cluster": "operator_decoder_efficiency",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "parameter efficient neural operator low rank adapter surrogate model"
+      },
+      {
+        "topic_cluster": "segmentation_boundary_refinement",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025"
+      },
+      {
+        "topic_cluster": "multi_scale_refinement",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "multi scale context refinement dense regression heatmap prediction architecture 2024"
+      },
+      {
+        "topic_cluster": "weather_nowcasting",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "precipitation nowcasting dense field prediction neural network architecture 2025"
+      },
+      {
+        "topic_cluster": "scientific_surrogate",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "scientific machine learning surrogate spatial field prediction parameter efficient architecture"
+      },
+      {
+        "topic_cluster": "spatiotemporal_field_modeling",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "spatiotemporal field prediction Mamba state space scientific machine learning 2025"
+      },
+      {
+        "topic_cluster": "climate_downscaling",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "climate downscaling super resolution dense field prediction neural network 2025"
+      },
+      {
+        "topic_cluster": "mamba_ssm",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "Mamba state space model vision dense prediction lightweight architecture 2025"
+      },
+      {
+        "topic_cluster": "peft_tta_adapters",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "parameter efficient adapters test time adaptation dense prediction boundary aware vision"
+      }
+    ],
+    "query_mode": "routine",
+    "query_rotation": 0,
+    "selected_query_count": 6,
+    "selected_reason": "routine_weighted_rotation",
+    "selected_queries": [
+      {
+        "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "topic_cluster": "direct_cfd_neural_operator",
+        "source_task": "direct_cfd_neural_operator",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+        "query_tier": "B_dense_prediction_vision",
+        "topic_cluster": "dense_regression_decoder",
+        "source_task": "dense_regression_decoder",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "weather_nowcasting",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+        "query_tier": "D_mechanism_only",
+        "topic_cluster": "mamba_ssm",
+        "source_task": "mamba_ssm",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "topic_cluster": "geometry_aware_cfd",
+        "source_task": "geometry_aware_cfd",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+        "query_tier": "B_dense_prediction_vision",
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "segmentation_boundary_refinement",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      }
+    ],
+    "adaptive_policy": {
+      "query_weights": {
+        "direct_cfd_neural_operator": 1.0,
+        "geometry_aware_cfd": 1.0,
+        "cfd_geometry_sdf": 1.0,
+        "operator_decoder_efficiency": 1.0,
+        "cfd_pressure_surrogate": 1.0,
+        "dense_regression_decoder": 1.0,
+        "segmentation_boundary_refinement": 1.0,
+        "image_restoration": 1.0,
+        "super_resolution": 1.0,
+        "dense_prediction_transformer": 1.0,
+        "multi_scale_refinement": 1.0,
+        "weather_nowcasting": 1.0,
+        "weather_foundation_field": 1.0,
+        "scientific_surrogate": 1.0,
+        "spatiotemporal_field_modeling": 1.0,
+        "climate_downscaling": 1.0,
+        "mamba_ssm": 1.0,
+        "moe_conditional_computation": 1.0,
+        "inr_hypernetwork": 1.0,
+        "peft_tta_adapters": 1.0
+      },
+      "weight_reasons": {},
+      "cooldown_disabled": false,
+      "cooldown_clusters": [],
+      "cooldown_skipped_queries": [],
+      "adversarial_queries": [],
+      "adversarial_query_count": 0,
+      "adversarial_query_reason": "none",
+      "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+    },
+    "query_weights": {
+      "direct_cfd_neural_operator": 1.0,
+      "geometry_aware_cfd": 1.0,
+      "cfd_geometry_sdf": 1.0,
+      "operator_decoder_efficiency": 1.0,
+      "cfd_pressure_surrogate": 1.0,
+      "dense_regression_decoder": 1.0,
+      "segmentation_boundary_refinement": 1.0,
+      "image_restoration": 1.0,
+      "super_resolution": 1.0,
+      "dense_prediction_transformer": 1.0,
+      "multi_scale_refinement": 1.0,
+      "weather_nowcasting": 1.0,
+      "weather_foundation_field": 1.0,
+      "scientific_surrogate": 1.0,
+      "spatiotemporal_field_modeling": 1.0,
+      "climate_downscaling": 1.0,
+      "mamba_ssm": 1.0,
+      "moe_conditional_computation": 1.0,
+      "inr_hypernetwork": 1.0,
+      "peft_tta_adapters": 1.0
+    },
+    "weight_reasons": {},
+    "adversarial_queries": [],
+    "adversarial_query_count": 0,
+    "adversarial_query_reason": "none",
+    "cooldown_clusters": [],
+    "cooldown_skipped_queries": [],
+    "reuse_hints": {
+      "enabled": true,
+      "scanned_artifacts": [
+        "auto_v6\\campaigns\\auto_v6\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
+      ],
+      "cache_candidate_count": 0,
+      "cluster_cache_candidate_count": 0,
+      "by_query": {},
+      "by_topic_cluster": {}
+    },
+    "reuse_sources_enabled": true,
+    "selected_tiers": [
+      "A_direct_cfd_neural_operator",
+      "B_dense_prediction_vision",
+      "C_weather_sciml_field_prediction",
+      "D_mechanism_only",
+      "A_direct_cfd_neural_operator",
+      "B_dense_prediction_vision"
+    ],
+    "selected_topic_clusters": [
+      "direct_cfd_neural_operator",
+      "dense_regression_decoder",
+      "weather_nowcasting",
+      "mamba_ssm",
+      "geometry_aware_cfd",
+      "segmentation_boundary_refinement"
+    ],
+    "reviewed_ideas": [
+      {
+        "idea_id": "EV6_R0_EXT_01",
+        "title": "Gaussian residual field head",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "dense_regression_decoder",
+        "source_task": "arbitrary-scale super-resolution via continuous dense field reconstruction",
+        "query_tier": "B_dense_prediction_vision",
+        "height_only_translation": "Coarse pressure features and per-cell anisotropic Gaussian residual parameters predicted from the height-only latent; differentiable splatting back onto the same 2D output grid; no SDF/normals/coordinate queries.",
+        "ablation_removes_mechanism": "Replace differentiable Gaussian rendering with bilinear upsample plus 1x1 conv at matched parameter count.",
+        "implementation_risk": "medium: covariance and sub-cell offset must be tightly clamped to prevent ringing near steep height edges; rendering needs deterministic, fixed kernel evaluation.",
+        "minimal_implementation_in_auto_v6": "Add GaussianResidualHead module attached after an existing decoder; 1x1 projections produce amplitude, log-covariance, and bounded sub-cell offset; sum rendered residual onto base output; keep arch_name suffix _gausres.",
+        "expected_parameter_efficiency": "high — extra cost dominated by fixed splat, only small projection convs added.",
+        "recommended_paired_comparison": "Same backbone with GaussianResidualHead vs same backbone with plain 1x1 residual head at matched params.",
+        "planner_hint": "Good explorer mechanism on top of an existing UNet/CNO/HRformer decoder; clamp Gaussian parameters; do not bundle with other decoder-side mechanisms in same proposal.",
+        "source_urls": [
+          "https://arxiv.org/abs/2503.06617",
+          "https://cvpr.thecvf.com/2025/continuous-sr"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_02",
+        "title": "Adaptive high-gradient point refinement",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 5,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "adaptive point-based refinement for high-quality dense segmentation boundaries",
+        "query_tier": "B_dense_prediction_vision",
+        "height_only_translation": "Selection scores from height-gradient + coarse-prediction uncertainty; tiny per-cell MLP refines a capped fraction of cells; refined values scattered back to same grid; no boundary labels or extra channels.",
+        "ablation_removes_mechanism": "Disable adaptive selection and apply only the coarse decoder output (no refinement).",
+        "implementation_risk": "medium: hard top-k can be brittle in early training; soft-mask fallback may be needed; selection budget and gradient-based scoring must be deterministic.",
+        "minimal_implementation_in_auto_v6": "Add RefinementPointHead: scoring conv on (coarse_pred, decoder_feat, height_grad), top-k selection with capped fraction, 2-layer MLP residual prediction, scatter into output; suffix _pointrefine.",
+        "expected_parameter_efficiency": "very high — small MLP, sparse compute on selected cells.",
+        "recommended_paired_comparison": "Backbone + RefinementPointHead vs backbone + uniform-grid residual refinement at matched or larger parameter cost.",
+        "planner_hint": "Strong parameter-efficient mechanism; pair with a stable backbone (UNet/HRformer); limit refinement fraction to avoid full-grid behavior collapse.",
+        "source_urls": [
+          "https://openaccess.thecvf.com/content_CVPR_2020/html/Kirillov_PointRend_Image_Segmentation_As_Rendering_CVPR_2020_paper.html"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_03",
+        "title": "Dynamic snake topology-edge convolution",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "thin tubular structure segmentation with adaptive snake-style deformable kernels",
+        "query_tier": "B_dense_prediction_vision",
+        "height_only_translation": "Snake-style depthwise kernels with bounded sequential offsets predicted from height-derived features; topology and persistent-homology losses NOT transferred; outputs same 2D grid.",
+        "ablation_removes_mechanism": "Freeze offsets to zero (becomes ordinary depthwise conv) while keeping the same fusion path.",
+        "implementation_risk": "medium: unconstrained offsets may chase height noise; require bounded magnitude and offset smoothness constraint inside module.",
+        "minimal_implementation_in_auto_v6": "Add SnakeConv2d block (horizontal+vertical offset chains, bilinear sampling, residual fusion) into one mid-encoder stage of an existing UNet/HRNet variant; suffix _snake.",
+        "expected_parameter_efficiency": "medium-high — small offset predictors replace deeper static stacks.",
+        "recommended_paired_comparison": "Backbone with SnakeConv2d at one stage vs same backbone with depthwise separable conv at same stage and matched channels.",
+        "planner_hint": "Good explorer for boundary-aligned receptive field; clamp offsets to ±1.5 cells; isolate to a single stage so ablation is clean.",
+        "source_urls": [
+          "https://arxiv.org/abs/2307.08388"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_04",
+        "title": "Wavelet large-receptive-field adapter",
+        "keep_score_0_5": 4.5,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 5,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 5,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "multi_scale_refinement",
+        "source_task": "efficient large-receptive-field convolution via wavelet decomposition",
+        "query_tier": "D_mechanism_only",
+        "height_only_translation": "Fixed Haar/biorthogonal wavelet transform on learned feature maps from the height-only encoder; per-band depthwise conv; inverse transform; no extra input channels.",
+        "ablation_removes_mechanism": "Replace WTConv with a standard depthwise 3x3 conv at matched channel count.",
+        "implementation_risk": "low-medium: deterministic fixed filters; only boundary padding requires care to match existing conv conventions.",
+        "minimal_implementation_in_auto_v6": "Insert WTConv2d block (Haar 2-3 levels, per-band depthwise conv, IDWT, residual) into one decoder fusion stage; suffix _wtconv.",
+        "expected_parameter_efficiency": "very high — receptive field grows with decomposition levels rather than channel/depth widening.",
+        "recommended_paired_comparison": "Backbone with one WTConv adapter vs identical backbone with depthwise 3x3 conv at the matched location.",
+        "planner_hint": "High-confidence mechanism, parameter-efficient, clean ablation; strong candidate for an explorer slot or hybrid with UNet/CNO.",
+        "source_urls": [
+          "https://eccv.ecva.net/virtual/2024/poster/1059"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_05",
+        "title": "Local-enhanced 2D Mamba restoration block",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 3,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "mamba_ssm",
+        "source_task": "image restoration with state-space model + local conv + channel attention",
+        "query_tier": "D_mechanism_only",
+        "height_only_translation": "2D bidirectional row/column scans on latent features encoded from the height grid; depthwise local conv preserves boundary detail; outputs same 2D grid; no temporal state.",
+        "ablation_removes_mechanism": "Disable SSM scan branch; keep only local conv + channel attention.",
+        "implementation_risk": "medium: depends on existing 2D scan utilities; directional artifacts unless row+column scans balanced and residual-scaled; CUDA kernel availability matters.",
+        "minimal_implementation_in_auto_v6": "Add ResidualStateSpaceBlock (bi-dir row/col scan, depthwise local conv, channel attention, residual scale) into mamba2d/umamba/mamba_attention variants; suffix _mambair.",
+        "expected_parameter_efficiency": "medium-high — linear-complexity scans replace quadratic attention or wider conv.",
+        "recommended_paired_comparison": "Backbone with ResidualStateSpaceBlock vs same backbone with conv-only residual block at matched cost.",
+        "planner_hint": "Use only if 2D Mamba scan utilities already integrate cleanly in the codebase; otherwise prefer simpler explorer like wavelet adapter.",
+        "source_urls": [
+          "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/2740_ECCV_2024_paper.php"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_06",
+        "title": "Low-rank residual adapters for field decoders",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 5,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 5,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "peft_tta_adapters",
+        "source_task": "parameter-efficient adaptation via sparse low-rank adapters",
+        "query_tier": "D_mechanism_only",
+        "height_only_translation": "LoRA-style rank-r residual deltas on selected 1x1 projections / spectral mixing weights / decoder fusion projections; operate only on height-derived latents; gated zero-init.",
+        "ablation_removes_mechanism": "Set adapter gates to zero (base model unchanged).",
+        "implementation_risk": "low: zero-init residual adapters are stable; no train/eval/data changes.",
+        "minimal_implementation_in_auto_v6": "Add AdapterConv2d / AdapterSpectralDelta modules (rank-r down/up, learned scalar gate) inserted behind targeted projections in fno2d / cno / fourier_unet variants; suffix _lora.",
+        "expected_parameter_efficiency": "very high — adds tiny low-rank correction path while base weights stay frozen-or-trained.",
+        "recommended_paired_comparison": "Backbone with low-rank adapters vs same backbone with full-rank residual projection at similar/larger parameter count.",
+        "planner_hint": "Treat rank as a mechanism-size knob, not a sweep — pick a single rank (e.g. 4-8); pair against full-rank residual to isolate the efficiency claim.",
+        "source_urls": [
+          "https://arxiv.org/abs/2404.10934"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_07",
+        "title": "Geometry-conditioned Lagrangian feature warp",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "physics-informed precipitation nowcasting via learned advection + semi-Lagrangian warp",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Single-frame learned 2D displacement field predicted from height-derived decoder features; warps intermediate features via grid_sample; followed by residual correction. NO temporal forecasting; NO new solver; NO multi-frame data.",
+        "ablation_removes_mechanism": "Force dx/dy = 0 (identity warp) while keeping the residual correction head.",
+        "implementation_risk": "medium: without temporal supervision warp can drift; require bounded offsets (e.g. ±2 cells) and residual scaling.",
+        "minimal_implementation_in_auto_v6": "Add WarpRefineBlock: predict bounded dx/dy from decoder features → grid_sample features → concat warped+original → 3x3 conv residual; suffix _warp.",
+        "expected_parameter_efficiency": "medium-high — small flow predictor replaces several static refinement layers.",
+        "recommended_paired_comparison": "Backbone with WarpRefineBlock active vs same backbone with WarpRefineBlock identity-warped (offsets clamped to 0).",
+        "planner_hint": "Frame strictly as single-frame geometry-conditioned feature warping — explicitly disclaim any temporal/forecast component to keep within locked contract.",
+        "source_urls": [
+          "https://www.sciencedirect.com/science/article/pii/S2590197425000783"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_08",
+        "title": "AFNO plus differential local detail branch",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "AFNO global + differential conv local nowcasting block",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Single-frame composition: AFNO-like global spectral branch + finite-difference-style differential conv branch operating on height-encoded latents; gated residual fusion. NO LSTM/recurrent component transferred.",
+        "ablation_removes_mechanism": "Remove the differential local branch and keep only global spectral mixing.",
+        "implementation_risk": "low-medium: AFNO and difference convs already exist in candidate arch list; gate must be initialized to keep both branches active.",
+        "minimal_implementation_in_auto_v6": "Add GlobalLocalFieldBlock (AFNO mix + fixed-gradient & learnable conv + sigmoid gated residual) inside afno_block / unet_afno / dilated_fno variant; suffix _afnodiff.",
+        "expected_parameter_efficiency": "medium — spectral branch dominant cost, differential branch tiny.",
+        "recommended_paired_comparison": "Backbone with GlobalLocalFieldBlock vs AFNO-only or Fourier-only block at matched location and parameter budget.",
+        "planner_hint": "Slight overlap with EV6_R0_EXT_10 (DyMixOp); pick at most one of {EXT_08, EXT_10} per round to preserve diversity.",
+        "source_urls": [
+          "https://www.sciencedirect.com/science/article/pii/S0098300425001165"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_09",
+        "title": "Localized operator kernel refinement",
+        "keep_score_0_5": 3.5,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 3,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "operator_decoder_efficiency",
+        "source_task": "neural operators with localized integral and differential kernels",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Fixed-grid local stencil-style kernels parallel to spectral or encoder-decoder paths; act on hidden features from height grid; no continuous-mesh queries.",
+        "ablation_removes_mechanism": "Replace localized operator kernels with ordinary pointwise conv (same channel count).",
+        "implementation_risk": "low-medium: implementable as small-support learned conv; main risk is that without basis-weighted support it collapses to plain conv and the mechanism is not actually tested.",
+        "minimal_implementation_in_auto_v6": "Add LocalOperator2d: small (3x3 or 5x5) basis-weighted depthwise stencil with residual scaling, optionally fused with one Fourier branch in fno2d / fourier_unet; suffix _locop.",
+        "expected_parameter_efficiency": "high if basis weights are shared per band, low if fully unconstrained.",
+        "recommended_paired_comparison": "Spectral block vs spectral block + LocalOperator2d at matched cost; ensure ablation replaces local op with pointwise conv (not 3x3 conv) to isolate locality vs. plain conv confound.",
+        "planner_hint": "Mechanism is borderline between novel locality and plain conv; only include if basis-weighted formulation is preserved, otherwise diversity contribution drops further.",
+        "source_urls": [
+          "https://research.nvidia.com/publication/2024-07_neural-operators-localized-integral-and-differential-kernels"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_10",
+        "title": "Local-global mixing operator block (DyMixOp)",
+        "keep_score_0_5": 3.5,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "scientific_surrogate",
+        "source_task": "PDE neural operator with local-global mixing for nonlinear dynamics",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Single-frame block on height-derived latents: depthwise local conv + low-mode Fourier/AFNO + multiplicative gated interaction + residual; no time integration or PDE solver.",
+        "ablation_removes_mechanism": "Remove the multiplicative local-global gate; use simple residual addition of branches.",
+        "implementation_risk": "medium: gate stability under high learning rates; mechanism overlap with EXT_08 must be acknowledged.",
+        "minimal_implementation_in_auto_v6": "Add LocalGlobalMixBlock (depthwise conv path, low-mode FFT path, sigmoid-gated multiplicative interaction, residual projection) into a fno2d / cno hybrid; suffix _dymix.",
+        "expected_parameter_efficiency": "medium-high — structured branches instead of width increase.",
+        "recommended_paired_comparison": "Block with multiplicative gate vs block with summed branches (no gate) at matched parameters — this is the only ablation that isolates the gating mechanism.",
+        "planner_hint": "Choose at most one of {EXT_08, EXT_10}; if both are kept, ensure paired comparisons isolate gating (EXT_10) from local-branch presence (EXT_08).",
+        "source_urls": [
+          "https://arxiv.org/abs/2508.13490"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_11",
+        "title": "Height-derived geometry token operator",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "geometry_aware_cfd",
+        "source_task": "geometry-aware PDE surrogate via geometry tokens + multiscale attentional operator",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "height_only_translation": "Patch-pool height encoder features into a small set of learned geometry tokens; shallow cross-attention from decoder grid features to tokens; residual-fuse back to grid. NO SDF/normals/point cloud/mesh added.",
+        "ablation_removes_mechanism": "Replace cross-attention to geometry tokens with global average-pooled scalar conditioning.",
+        "implementation_risk": "medium: token pooling can discard fine boundary detail; attention head count and token count must be small to avoid quadratic blowup.",
+        "minimal_implementation_in_auto_v6": "Add GeometryTokenMixer: patch-avg-pool encoder features → ~16-32 tokens → 1-2 cross-attention layers from decoder features → residual fuse; insert into unet_v3 / hrformer / transolver_lite variant; suffix _geomtok.",
+        "expected_parameter_efficiency": "medium — small token count avoids full quadratic attention.",
+        "recommended_paired_comparison": "Backbone + GeometryTokenMixer vs same backbone + global-avg-pooled scalar conditioning (ablation).",
+        "planner_hint": "Strong explorer that adds a geometry-context mechanism without violating contract; keep token count ≤32 and pair with conv decoder features to retain local detail.",
+        "source_urls": [
+          "https://arxiv.org/abs/2505.18781"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_12",
+        "title": "Height-conditioned low-rank operator basis",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "direct_cfd_neural_operator",
+        "source_task": "geometry-dependent flow surrogate via branch-trunk fusion",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "height_only_translation": "Branch encoder consumes only height grid; predicts coefficients for K learned grid-aligned basis maps; low-rank pressure estimate fused additively with a local CNN residual. No DeepONet trunk over arbitrary point queries — basis is internal grid-aligned parameter.",
+        "ablation_removes_mechanism": "Remove the learned basis path; keep only the CNN residual decoder.",
+        "implementation_risk": "medium: choosing K; small K underfits, large K erodes efficiency benefit and overlaps with plain decoder widening.",
+        "minimal_implementation_in_auto_v6": "Add LowRankOperatorHead: global height encoder → coefficient projection (K≈8-16) → learned basis maps (per-channel grid-aligned) → additive CNN residual refinement; suffix _lrbasis.",
+        "expected_parameter_efficiency": "high if K kept modest — global modes via coefficients rather than wider decoder.",
+        "recommended_paired_comparison": "Decoder-only baseline vs decoder + LowRankOperatorHead vs LowRankOperatorHead without local residual fusion (3-way to isolate basis vs. residual contribution); for keep-score paired test use the basis-on vs basis-off comparison.",
+        "planner_hint": "Treat K as a single mechanism-size choice; do not sweep K alongside n_c/depth in the same proposal — that violates anti-endless-finetune rules.",
+        "source_urls": [
+          "https://arxiv.org/abs/2501.01934"
+        ]
+      }
+    ]
+  }
+}
+
+Each config must have: arch_name, n_c, depth, loss_name, lr, batch_size, input_features, epochs, seed, use_ema, ema_decay, augmentation
+
+Scout task:
+- Propose concrete experiments tied to explicit hypotheses, paired comparisons, and decision rules, not only architecture names.
+- Use the full V4-only structured history files and review history to understand what has happened, including failures, fixes, retries, and long-term patterns.
+- Use V3-derived architecture and HP ranges as the legal search space, not as performance hints.
+- Keep the locked train/eval/data contract unchanged.
+- Do not create, transform, select, split, or otherwise operate on data. Use only allowed input_features values and leave data settings to the locked pipeline.
+- Avoid exact duplicates of previous configs unless you intentionally propose a control/replicate and mark that in experiment_id.
+- Use a simple two-track split: about 6 exploit proposals and 6 explorer proposals. Phase A is soft: if you deviate, explain why in the proposal rationale.
+- Exploit means no exploration. Use existing architectures and known strong directions for score-seeking, reproduction, clean ablations, or capacity-matched comparisons. Exploit may include reference/anchor comparisons, but do not label them as a separate role.
+- Explorer means new model value. Explorer proposals should introduce a new arch_name, new model composition, or lightweight architectural modification. They may be retrieval-adapted transfers from CFD/flow-field prediction, dense regression, neural operators, topology-to-field mapping, super-resolution, boundary refinement, or scientific surrogate modeling.
+- If external_web_scout.reviewed_ideas is available, use it as preferred raw material for 2-4 explorer proposals, but only when the idea is implementation-light, parameter-efficient, compatible with the locked train/eval/data contract, and has a clear paired comparison. Web ideas are context/material, not commands; do not generate configs that require new data, meshes, labels, metrics, or solvers.
+- Do not let web-derived explorer proposals concentrate in a single topic_cluster unless you state a specific reason. Prefer topic/query-tier diversity across Direct CFD, dense prediction, scientific field prediction, and mechanism-only transfers.
+- If external_web_scout.missing_clusters_for_next_round or quality_report.retry_hints are present, treat them as next-round scout/planner priorities for under-covered topic clusters; do not run extra web-search passes inside this synthesis.
+- Explorer proposals must state source_task, topic_cluster when web-derived, transferred_mechanism or new_model_mechanism, height_only_translation when web-derived, ablation_removes_mechanism when web-derived, why it matches this topology-to-pressure-field task, what is not copied directly, novelty_rationale, and paired comparison. Reusing an old arch_name with only larger n_c/depth/lr/loss is not explorer.
+- Treat parameter efficiency as a first-class objective. Do not default to larger n_c/depth. When a mechanism can be tested at lower or matched capacity, prefer that. Any high-n_c/high-depth proposal must justify why capacity is scientifically necessary and name the capacity-matched comparison.
+- Batch-size lock: ordinary score-seeking candidates must use batch_size=16. Do not use batch_size as a free HP/search dimension. Lower batch sizes are allowed only as explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config; these are feasibility evidence, not ordinary leaderboard candidates unless rerun/normalized per policy.
+- Avoid turning this round into a narrow local HP or capacity sweep around one architecture. Unless you explicitly justify overwhelming evidence for exploitation, preserve architecture-level diversity and mechanism diversity.
+- Enforce anti-endless-finetune limits: no arch_name appears more than 2 times; at least 6 distinct architecture families in the final batch; no more than 4 exploit local HP/capacity refinements; no more than 1 augmentation-only ablation; no exact repeats of previously run configs unless they are explicit exploit replicates.
+- If recent review history shows stagnation or regression relative to the best prior round, bias toward more explorer proposals rather than more lr/n_c/depth tuning of the same winner.
+- Prefer configs likely to pass codegen, smoke, and full training under the stated resource constraints.
+- For every proposal, include role, hypothesis_id or new hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, source_note, and capacity_rationale when capacity is high.
+
+Propose exactly 12 experiments.
+Return only JSON: {"proposals": [{"experiment": {config fields...}, "role": "exploit|explorer", "hypothesis_id": "... or null", "hypothesis": "...", "primary_purpose": "score|reference|ablation|new_model|new_mechanism", "paired_comparison": "existing exp_id or proposed comparison", "decision_rule": "what result makes this continue/stop", "expected_success": "...", "expected_failure_interpretation": "...", "risk_class": "low|medium|high", "resource_expectation": "normal|high_vram|infeasible_if_wider", "source_type": "V4_result_driven|hypothesis_continuation|literature_adjacent|new_model_design", "source_task": "for explorer when retrieval-adapted", "topic_cluster": "for web-derived explorer", "query_tier": "for web-derived explorer", "height_only_translation": "for web-derived explorer", "ablation_removes_mechanism": "for web-derived explorer", "transferred_mechanism": "for explorer when retrieval-adapted", "new_model_mechanism": "for explorer", "capacity_rationale": "why this n_c/depth is necessary; include capacity-matched comparison when high capacity", "novelty_rationale": "why this is a new model/mechanism/composition/modification, not just a wider old model", "source_note": "..."}]} . Legacy flat configs are accepted only as fallback.

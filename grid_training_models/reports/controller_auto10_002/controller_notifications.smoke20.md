@@ -1,0 +1,10 @@
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_00_mamba_attention_smoke20` -> `RUNNING:WAIT` action=`WAIT`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_01_nafnet_smoke20` -> `RUNNING:WAIT` action=`WAIT`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_02_perceiver_io_smoke20` -> `HIGH_VRAM:RETRY` action=`RETRY`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_03_sac_mamba_smoke20` -> `RUNNING:WAIT` action=`WAIT`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_04_swin_unetr_smoke20` -> `RUNNING:WAIT` action=`WAIT`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_05_transolver_smoke20` -> `HIGH_VRAM:RETRY` action=`RETRY`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_06_transolver_lite_smoke20` -> `HIGH_VRAM:RETRY` action=`RETRY`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_07_unet_v3_smoke20` -> `RUNNING:WAIT` action=`WAIT`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_08_uno_smoke20` -> `HIGH_VRAM:RETRY` action=`RETRY`
+- 2026-04-26T21:26:13.202249+00:00 `r_auto10c_09_mamba_attention_smoke20` -> `RUNNING:WAIT` action=`WAIT`

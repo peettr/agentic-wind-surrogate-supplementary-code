@@ -1,0 +1,200 @@
+{
+  "campaign": "v5_controller_auto10_001_benchmark200",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "stage": "benchmark200",
+  "summary": {
+    "runs": 10
+  },
+  "runs": [
+    {
+      "run_id": "r_auto10b_00_afno_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_00_afno_smoke20_repair4",
+      "model_file": "generated_models/v5_controller_auto10_001/afno.py",
+      "module_name": "codegen_afno",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_00_afno_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/afno.py",
+        "MODULE_NAME": "codegen_afno",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_01_attention_mamba_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_01_attention_mamba_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/attention_mamba.py",
+      "module_name": "codegen_attention_mamba",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_01_attention_mamba_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/attention_mamba.py",
+        "MODULE_NAME": "codegen_attention_mamba",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_02_cnn_deeponet_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_02_cnn_deeponet_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/cnn_deeponet.py",
+      "module_name": "codegen_cnn_deeponet",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_02_cnn_deeponet_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/cnn_deeponet.py",
+        "MODULE_NAME": "codegen_cnn_deeponet",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_03_convnext_v2_unet_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_03_convnext_v2_unet_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/convnext_v2_unet.py",
+      "module_name": "codegen_convnext_v2_unet",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_03_convnext_v2_unet_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/convnext_v2_unet.py",
+        "MODULE_NAME": "codegen_convnext_v2_unet",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_04_dilated_fno_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_04_dilated_fno_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/dilated_fno.py",
+      "module_name": "codegen_dilated_fno",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_04_dilated_fno_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/dilated_fno.py",
+        "MODULE_NAME": "codegen_dilated_fno",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_05_dilated_hrformer_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_05_dilated_hrformer_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/dilated_hrformer.py",
+      "module_name": "codegen_dilated_hrformer",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_05_dilated_hrformer_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/dilated_hrformer.py",
+        "MODULE_NAME": "codegen_dilated_hrformer",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_06_ffno_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_06_ffno_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/ffno.py",
+      "module_name": "codegen_ffno",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_06_ffno_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/ffno.py",
+        "MODULE_NAME": "codegen_ffno",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_07_fno_encoder_decoder_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/fno_encoder_decoder.py",
+      "module_name": "codegen_fno_encoder_decoder",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_07_fno_encoder_decoder_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/fno_encoder_decoder.py",
+        "MODULE_NAME": "codegen_fno_encoder_decoder",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_08_hrdcn_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_08_hrdcn_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/hrdcn.py",
+      "module_name": "codegen_hrdcn",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_08_hrdcn_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/hrdcn.py",
+        "MODULE_NAME": "codegen_hrdcn",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_09_hrnet_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_09_hrnet_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/hrnet.py",
+      "module_name": "codegen_hrnet",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_09_hrnet_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/hrnet.py",
+        "MODULE_NAME": "codegen_hrnet",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    }
+  ]
+}

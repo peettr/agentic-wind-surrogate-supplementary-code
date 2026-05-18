@@ -1,0 +1,387 @@
+You are the primary web-based external idea scout for Auto V6.
+Use live web search and the supplied Gemini source-scout results to propose model ideas only.
+The supplied Gemini sources have already been hard-filtered: fake/placeholder arXiv or DOI URLs, unresolved Google grounding redirects, duplicate URLs, and homepage-only URLs were excluded from this context. Do not use excluded/weak source examples as evidence.
+External ideas are mechanisms/context for the planner, not commands; do NOT directly generate TrainConfig candidates. Do NOT change data/eval/seed/input contracts.
+Locked feasibility contract: height-only, single-frame, 2D grid input/output, existing train/eval/data paths, no new labels/meshes/solvers/metrics.
+Prefer mechanisms that can become lightweight PyTorch modules or compositions in the existing Auto V6 codebase.
+Avoid just saying use bigger UNet/CNO/FNO. Focus on transferred mechanisms, boundary/geometry handling, local refinement, spectral/wavelet/low-rank adapters, or neural operator variants.
+Maintain diversity: Direct CFD/CFD-like ideas from query_tier A must be no more than 3 of the 12 ideas; include dense prediction, weather/scientific field prediction, and mechanism-only transfers when feasible.
+Return ONLY valid JSON with schema {"ideas":[...]} and exactly 12 ideas.
+Each idea must include idea_id, title, source_title, source_url, source_year, source_task, topic_cluster, query_tier, mechanism_hint, transferred_mechanism, height_only_translation, feasibility_under_locked_contract, why_relevant_to_topology_pressure, minimal_implementation_in_auto_v6, expected_parameter_efficiency, paired_comparison, ablation_removes_mechanism, risk, search_query_used.
+
+COMPACT_CONTEXT_JSON:
+{
+  "campaign": {
+    "round_num": 0,
+    "phase": "propose",
+    "status_note": "Resuming clean R0 planner after Gemini web scout timeout hardening: query_limit=6, query_timeout=120s, planner_worker_timeout=5400s, reuse seed enabled.",
+    "experiments_per_round": 12
+  },
+  "hard_rules": {
+    "planner_role": "Scout proposes experiments only; runner/controller handle execution and retry/repair.",
+    "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
+    "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
+    "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
+    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
+    "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
+    "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
+    "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
+    "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
+    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
+    "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
+    "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
+    "exact_output": "Return only JSON in the form {\"proposals\": [hypothesis-bundle proposals or concrete experiment configs]}. No markdown, no prose outside JSON."
+  },
+  "train_config_contract": {
+    "required_fields": [
+      "experiment_id",
+      "arch_name",
+      "n_c",
+      "depth",
+      "loss_name",
+      "lr",
+      "batch_size",
+      "input_features",
+      "epochs",
+      "seed",
+      "use_ema",
+      "ema_decay",
+      "augmentation"
+    ],
+    "default_input_features": "height",
+    "valid_input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "locked_seed": 1,
+    "current_seed_policy": "Hard rule: seed must be 1. Multi-seed is not allowed in this campaign unless the human researcher explicitly changes the hard rule.",
+    "full_epochs": 200,
+    "smoke_epochs": 20
+  },
+  "candidate_arch_names": [
+    "afno",
+    "afno_block",
+    "attention_gate_unet",
+    "attention_mamba",
+    "base",
+    "cbam_unet",
+    "cnn_deeponet",
+    "cno",
+    "convnext_v2_unet",
+    "dcn_unet",
+    "dilated_fno",
+    "dilated_hrformer",
+    "dilated_unet",
+    "ffno",
+    "fno2d",
+    "fno_encoder_decoder",
+    "fno_v3",
+    "fourier_unet",
+    "hrdcn",
+    "hrformer",
+    "hrnet",
+    "kan_unet",
+    "mamba2d",
+    "mamba_attention",
+    "multiscale_conv",
+    "nafnet",
+    "perceiver",
+    "quadmamba",
+    "residual_spectral",
+    "sac_mamba",
+    "sac_unet",
+    "swin_unetr",
+    "transolver",
+    "transolver_lite",
+    "ufno",
+    "umamba",
+    "unet_afno",
+    "unet_sdf_7level",
+    "unet_v2_baseline",
+    "unet_v3",
+    "uno"
+  ],
+  "novelty_index": {
+    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "seen_arch_names": [],
+    "seen_families": [],
+    "seen_config_keys": [],
+    "counts_by_arch": {},
+    "examples_by_arch": {},
+    "key_fields": [
+      "arch_name",
+      "n_c",
+      "depth",
+      "lr",
+      "loss_name"
+    ]
+  },
+  "gemini_sources": {
+    "status": "ok",
+    "tool_calls": 6,
+    "query_mode": "routine",
+    "query_rotation": 0,
+    "selected_query_count": 6,
+    "selected_reason": "routine_weighted_rotation",
+    "selected_queries": [
+      {
+        "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "topic_cluster": "direct_cfd_neural_operator",
+        "source_task": "direct_cfd_neural_operator",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+        "query_tier": "B_dense_prediction_vision",
+        "topic_cluster": "dense_regression_decoder",
+        "source_task": "dense_regression_decoder",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "weather_nowcasting",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+        "query_tier": "D_mechanism_only",
+        "topic_cluster": "mamba_ssm",
+        "source_task": "mamba_ssm",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "topic_cluster": "geometry_aware_cfd",
+        "source_task": "geometry_aware_cfd",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+        "query_tier": "B_dense_prediction_vision",
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "segmentation_boundary_refinement",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      }
+    ],
+    "adaptive_policy": {
+      "query_weights": {
+        "direct_cfd_neural_operator": 1.0,
+        "geometry_aware_cfd": 1.0,
+        "cfd_geometry_sdf": 1.0,
+        "operator_decoder_efficiency": 1.0,
+        "cfd_pressure_surrogate": 1.0,
+        "dense_regression_decoder": 1.0,
+        "segmentation_boundary_refinement": 1.0,
+        "image_restoration": 1.0,
+        "super_resolution": 1.0,
+        "dense_prediction_transformer": 1.0,
+        "multi_scale_refinement": 1.0,
+        "weather_nowcasting": 1.0,
+        "weather_foundation_field": 1.0,
+        "scientific_surrogate": 1.0,
+        "spatiotemporal_field_modeling": 1.0,
+        "climate_downscaling": 1.0,
+        "mamba_ssm": 1.0,
+        "moe_conditional_computation": 1.0,
+        "inr_hypernetwork": 1.0,
+        "peft_tta_adapters": 1.0
+      },
+      "weight_reasons": {},
+      "cooldown_disabled": false,
+      "cooldown_clusters": [],
+      "cooldown_skipped_queries": [],
+      "adversarial_queries": [],
+      "adversarial_query_count": 0,
+      "adversarial_query_reason": "none",
+      "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+    },
+    "query_weights": {
+      "direct_cfd_neural_operator": 1.0,
+      "geometry_aware_cfd": 1.0,
+      "cfd_geometry_sdf": 1.0,
+      "operator_decoder_efficiency": 1.0,
+      "cfd_pressure_surrogate": 1.0,
+      "dense_regression_decoder": 1.0,
+      "segmentation_boundary_refinement": 1.0,
+      "image_restoration": 1.0,
+      "super_resolution": 1.0,
+      "dense_prediction_transformer": 1.0,
+      "multi_scale_refinement": 1.0,
+      "weather_nowcasting": 1.0,
+      "weather_foundation_field": 1.0,
+      "scientific_surrogate": 1.0,
+      "spatiotemporal_field_modeling": 1.0,
+      "climate_downscaling": 1.0,
+      "mamba_ssm": 1.0,
+      "moe_conditional_computation": 1.0,
+      "inr_hypernetwork": 1.0,
+      "peft_tta_adapters": 1.0
+    },
+    "weight_reasons": {},
+    "adversarial_queries": [],
+    "adversarial_query_count": 0,
+    "adversarial_query_reason": "none",
+    "cooldown_clusters": [],
+    "cooldown_skipped_queries": [],
+    "reuse_hints": {
+      "enabled": true,
+      "scanned_artifacts": [
+        "auto_v6\\campaigns\\auto_v6\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
+      ],
+      "cache_candidate_count": 0,
+      "cluster_cache_candidate_count": 0,
+      "by_query": {},
+      "by_topic_cluster": {}
+    },
+    "reuse_sources_enabled": true,
+    "selected_tiers": [
+      "A_direct_cfd_neural_operator",
+      "B_dense_prediction_vision",
+      "C_weather_sciml_field_prediction",
+      "D_mechanism_only",
+      "A_direct_cfd_neural_operator",
+      "B_dense_prediction_vision"
+    ],
+    "selected_topic_clusters": [
+      "direct_cfd_neural_operator",
+      "dense_regression_decoder",
+      "weather_nowcasting",
+      "mamba_ssm",
+      "geometry_aware_cfd",
+      "segmentation_boundary_refinement"
+    ],
+    "tier_counts": {
+      "B_dense_prediction_vision": 1
+    },
+    "topic_cluster_counts": {
+      "dense_regression_decoder": 1
+    },
+    "reliability_filter": {
+      "policy": "hard-exclude fake/placeholder/duplicate/homepage/unresolved redirect sources from Codex synthesis; mark unrecognized domains as weak but keep",
+      "source_count": 10,
+      "kept_count": 1,
+      "excluded_count": 9,
+      "flag_counts": {
+        "homepage_like_url": 6,
+        "unresolved_google_grounding_redirect": 3,
+        "unrecognized_publication_domain": 5,
+        "duplicate_url": 1
+      },
+      "excluded_examples": [
+        {
+          "title": "Hybrid Physics-Informed Latent Operator Architecture",
+          "url": "https://www.mdpi.com",
+          "flags": [
+            "homepage_like_url"
+          ]
+        },
+        {
+          "title": "Geometric Flexibility: Graph and Point-Cloud Operators",
+          "url": "https://arxiv.org",
+          "flags": [
+            "homepage_like_url"
+          ]
+        },
+        {
+          "title": "nsb-GAN: Wavelet Decoder Architecture for Super-Resolution",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn2QriIMeUT3z4PkVcmxPQnQvN1vfZN6B6PweirFkgoh09gHm_clwPsTNJYSzXpoBe4co8t-PlpFXDOPt4-LvLc7d0VwPyXN6v_FqXa9kOYqM_WTKJ0dcXGvlq1mlAuNE96S3owHWJrH6YbSa4PrdnzouBUQ==",
+          "flags": [
+            "unresolved_google_grounding_redirect",
+            "unrecognized_publication_domain"
+          ]
+        },
+        {
+          "title": "RA-UNet: Mitigating Premature Dissipation in Radar Nowcasting",
+          "url": "https://mdpi.com",
+          "flags": [
+            "homepage_like_url"
+          ]
+        },
+        {
+          "title": "MambaVision",
+          "url": "https://nvidia.com",
+          "flags": [
+            "homepage_like_url",
+            "unrecognized_publication_domain"
+          ]
+        },
+        {
+          "title": "Boundary-Embedded Neural Operator",
+          "url": "https://iclr.cc/",
+          "flags": [
+            "homepage_like_url",
+            "unrecognized_publication_domain"
+          ]
+        },
+        {
+          "title": "Geometry-Informed Neural Operator (GINO)",
+          "url": "https://arxiv.org/",
+          "flags": [
+            "duplicate_url",
+            "homepage_like_url"
+          ]
+        },
+        {
+          "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
+          "flags": [
+            "unresolved_google_grounding_redirect",
+            "unrecognized_publication_domain"
+          ]
+        },
+        {
+          "title": "BATNet-Lite: Boundary-Aware Token Mixing",
+          "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmf6IrwT80z5QsyXE5FfJa-tfhehaq_JL9WtQAgxpsXy-tkevpT-6M2LcttVNyBibmCvxO48c_wtoYR8sd4uoDj_oK6TQKQMomkL3WRqT3l5XmqbS9H5VLT1CHDqqhCYTp93am",
+          "flags": [
+            "unresolved_google_grounding_redirect",
+            "unrecognized_publication_domain"
+          ]
+        }
+      ],
+      "kept_weak_examples": []
+    },
+    "excluded_source_count": 9,
+    "sources": [
+      {
+        "title": "ContinuousSR: 2D Gaussian Modeling for Dense Field Prediction",
+        "url": "https://cvpr.thecvf.com/2025/continuous-sr",
+        "year": 2025,
+        "topic_cluster": "dense_regression_decoder",
+        "source_task": "arbitrary-scale super-resolution via dense continuous field reconstruction",
+        "query_tier": "B_dense_prediction_vision",
+        "mechanism_hint": "predicts a continuous signal field using Implicit Neural Representations (INR) to avoid checkerboard artifacts",
+        "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+        "source_id": "G004",
+        "reliability_score": 1.0,
+        "reliability_flags": [],
+        "hard_excluded_from_codex": false
+      }
+    ]
+  }
+}

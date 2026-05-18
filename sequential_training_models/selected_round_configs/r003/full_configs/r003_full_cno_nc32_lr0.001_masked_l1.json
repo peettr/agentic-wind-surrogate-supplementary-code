@@ -1,0 +1,24 @@
+{
+  "experiment_id": "r003_full_cno_nc32_lr0.001_masked_l1",
+  "strategy": "v4_full",
+  "arch_name": "cno",
+  "arch_kwargs": {
+    "n_c": 32,
+    "depth": 5
+  },
+  "loss_name": "masked_l1",
+  "loss_kwargs": {},
+  "seed": 1,
+  "epochs": 200,
+  "lr": 0.001,
+  "batch_size": 16,
+  "checkpoint_interval": 50,
+  "input_features": "height",
+  "eval_splits": [
+    "val"
+  ],
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r003_full_cno_nc32_lr0.001_masked_l1",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 10
+}

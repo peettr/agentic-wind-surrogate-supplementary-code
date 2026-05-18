@@ -1,0 +1,26 @@
+{
+  "experiment_id": "r017_full_mamba2d_nc32_lr0.00032_masked_l1_gradient",
+  "strategy": "v4_full",
+  "arch_name": "mamba2d",
+  "arch_kwargs": {
+    "n_c": 32,
+    "depth": 6
+  },
+  "loss_name": "masked_l1_gradient",
+  "loss_kwargs": {},
+  "seed": 1,
+  "epochs": 200,
+  "lr": 0.00032,
+  "batch_size": 16,
+  "checkpoint_interval": 50,
+  "input_features": "height",
+  "eval_splits": [
+    "val"
+  ],
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r017_full_mamba2d_nc32_lr0.00032_masked_l1_gradient",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 10,
+  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\shared\\models\\mamba2d.py",
+  "model_source_kind": "reference_copy"
+}

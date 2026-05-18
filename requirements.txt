@@ -1,0 +1,9 @@
+﻿numpy
+scipy
+pandas
+scikit-learn
+matplotlib
+pyyaml
+tqdm
+torch
+# Optional: torchvision, einops, timm, mamba-ssm

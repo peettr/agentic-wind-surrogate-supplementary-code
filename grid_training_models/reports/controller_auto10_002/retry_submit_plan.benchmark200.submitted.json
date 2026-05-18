@@ -1,0 +1,73 @@
+{
+  "campaign": "v5_controller_auto10_002_benchmark200",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "stage": "benchmark200",
+  "runs": [
+    {
+      "source_campaign": "v5_controller_auto10_002_benchmark200",
+      "source_run_id": "r_auto10d_02_perceiver_io_benchmark200",
+      "run_id": "r_auto10d_02_perceiver_io_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/perceiver_io.py",
+      "module_name": "codegen_perceiver_io",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_002_benchmark200",
+      "source_run_id": "r_auto10d_05_transolver_benchmark200",
+      "run_id": "r_auto10d_05_transolver_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/transolver.py",
+      "module_name": "codegen_transolver",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_002_benchmark200",
+      "source_run_id": "r_auto10d_06_transolver_lite_benchmark200",
+      "run_id": "r_auto10d_06_transolver_lite_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/transolver_lite.py",
+      "module_name": "codegen_transolver_lite",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_002_benchmark200",
+      "source_run_id": "r_auto10d_08_uno_benchmark200",
+      "run_id": "r_auto10d_08_uno_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_002/uno.py",
+      "module_name": "codegen_uno",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    }
+  ],
+  "submit_results": [
+    {
+      "run_id": "r_auto10d_02_perceiver_io_benchmark200_retry1",
+      "returncode": 0,
+      "stdout_tail": "Submitting job(s).\n1 job(s) submitted to cluster 19162.",
+      "stderr_tail": ""
+    },
+    {
+      "run_id": "r_auto10d_05_transolver_benchmark200_retry1",
+      "returncode": 0,
+      "stdout_tail": "Submitting job(s).\n1 job(s) submitted to cluster 19163.",
+      "stderr_tail": ""
+    },
+    {
+      "run_id": "r_auto10d_06_transolver_lite_benchmark200_retry1",
+      "returncode": 0,
+      "stdout_tail": "Submitting job(s).\n1 job(s) submitted to cluster 19164.",
+      "stderr_tail": ""
+    },
+    {
+      "run_id": "r_auto10d_08_uno_benchmark200_retry1",
+      "returncode": 0,
+      "stdout_tail": "Submitting job(s).\n1 job(s) submitted to cluster 19165.",
+      "stderr_tail": ""
+    }
+  ]
+}

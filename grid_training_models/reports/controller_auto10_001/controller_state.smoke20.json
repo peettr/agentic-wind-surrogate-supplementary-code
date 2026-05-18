@@ -1,0 +1,800 @@
+{
+  "campaign": "v5_controller_auto10_001_smoke20",
+  "cluster_map": {
+    "r_auto10_00_afno_smoke20_repair2": 19090,
+    "r_auto10_00_afno_smoke20_repair3": 19091
+  },
+  "created_at": "2026-04-26T05:30:34.887991+00:00",
+  "log_root": "/users/lhu1/condor_v5_logs/v5_controller_auto10_001_smoke20",
+  "remote_root": "<BASELINE_HPC_SOURCE_ROOT>",
+  "repair_results": {
+    "r_auto10_00_afno_smoke20_repair1": {
+      "cluster_id": "19077",
+      "epochs_trained": 20,
+      "exit_code": 0,
+      "gpu": "NVIDIA H100 80GB HBM3",
+      "job_status": 4,
+      "peak_vram_gb": 66.66308096,
+      "status": "ok",
+      "timestamp": "2026-04-26T13:58:47.143878Z",
+      "val_mae_median": 0.14250516891479492,
+      "val_r2_global": 0.30777680961634246,
+      "val_r2_mean": 0.07761838461832753,
+      "val_r2_median": 0.11297665821886738,
+      "wall_time_sec": 2737.910338163376
+    },
+    "r_auto10_00_afno_smoke20_repair4": {
+      "batch_size": 8,
+      "cluster": 19092,
+      "condor_exit_code": 0,
+      "condor_job_status": 4,
+      "config_overrides": {
+        "arch_kwargs": {
+          "depth": 3,
+          "max_modes": 8,
+          "width": 32
+        }
+      },
+      "epochs_trained": 20,
+      "failed": false,
+      "finished": true,
+      "gpu": "NVIDIA L40S",
+      "interpretation": "L40S OOM resolved, but performance is below promotion threshold; terminal fail under retry/repair budget.",
+      "metrics_status": "ok",
+      "params": 1331009,
+      "peak_vram_gb": 30.077748736,
+      "run_id": "r_auto10_00_afno_smoke20_repair4",
+      "status": "FINISHED_LOW_PERFORMANCE",
+      "val_metrics": {
+        "mae_mean": 0.14032201766967772,
+        "mae_median": 0.1401417851448059,
+        "r2_global": 0.3314944664755364,
+        "r2_mean": 0.11604336535511618,
+        "r2_median": 0.07525065874468784
+      },
+      "wall_time_sec": 1190.040122270584
+    }
+  },
+  "runs": {
+    "r_auto10_00_afno_smoke20": {
+      "attempts": [
+        {
+          "batch_size": 8,
+          "classification": "HIGH_VRAM",
+          "cluster": "18864",
+          "params": 11925985,
+          "run_id": "r_auto10_00_afno_smoke20",
+          "status": "FAILED_HIGH_VRAM",
+          "type": "original"
+        },
+        {
+          "cluster": 19077,
+          "peak_vram_gb": 66.6631,
+          "repair_id": "repair_001",
+          "run_id": "r_auto10_00_afno_smoke20_repair1",
+          "status": "FINISHED_HIGH_VRAM_LOW_PERFORMANCE",
+          "type": "repair",
+          "val_r2_median": 0.1129766582
+        },
+        {
+          "cluster": 19090,
+          "params": 11925985,
+          "repair_id": "repair_002",
+          "run_id": "r_auto10_00_afno_smoke20_repair2",
+          "status": "FAILED_OOM",
+          "type": "repair"
+        },
+        {
+          "cluster": 19091,
+          "params": 11925985,
+          "repair_id": "repair_003",
+          "run_id": "r_auto10_00_afno_smoke20_repair3",
+          "status": "FAILED_OOM_WRAPPER_ONLY_INEFFECTIVE",
+          "type": "repair"
+        },
+        {
+          "cluster": 19092,
+          "params": 1331009,
+          "peak_vram_gb": 30.077748736,
+          "repair_id": "repair_004",
+          "run_id": "r_auto10_00_afno_smoke20_repair4",
+          "status": "FINISHED_LOW_PERFORMANCE",
+          "type": "repair",
+          "val_r2_median": 0.07525065874468784
+        }
+      ],
+      "base_run_id": "r_auto10_00_afno_smoke20",
+      "budget": {
+        "max_repairs": 2,
+        "max_retries": 3,
+        "max_total_attempts": 5,
+        "repair_count": 4,
+        "retry_count": 0,
+        "total_attempts": 5
+      },
+      "budget_note": {
+        "actual_repair_count": 4,
+        "actual_total_attempts": 5,
+        "max_repairs": 2,
+        "max_retries": 3,
+        "max_total_attempts": 5,
+        "no_more_repair_needed": true,
+        "policy": "attempt limits gate new retry/repair attempts before submission; they do not convert an already completed smoke PASS into a performance failure"
+      },
+      "classification": {
+        "classification": "PASS",
+        "confidence": "high",
+        "evidence": [
+          "repair4 FINISHED with metrics.status=ok",
+          "train.log completed Epoch 20/20",
+          "model_best.pt and model_final.pt exist",
+          "FAILED sentinel absent",
+          "smoke20 is a code/runtime validation stage; validation R2 is not used for smoke-stage selection"
+        ],
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT"
+      },
+      "cluster_id": "18864",
+      "current_run_id": "r_auto10_00_afno_smoke20_repair4",
+      "failure_reason": "Original run plus repair1-repair4 reached max_total_attempts=5 and repair_count=4 exceeds max_repairs=2; repair4 completed smoke20 on L40S batch=8 with peak_vram_gb=30.08, but val_r2_median=0.0753 is far below v5 baseline reference 0.7085.",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": 4,
+        "failed": false,
+        "finished": true,
+        "gpu": "NVIDIA L40S",
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 1331009,
+        "peak_vram_gb": 30.077748736,
+        "shape_ok": true,
+        "tier": "h100_a100_l40s_12gb",
+        "val_r2_median": 0.07525065874468784
+      },
+      "last_repair_result": {
+        "batch_size": 8,
+        "cluster": 19092,
+        "condor_exit_code": 0,
+        "condor_job_status": 4,
+        "config_overrides": {
+          "arch_kwargs": {
+            "depth": 3,
+            "max_modes": 8,
+            "width": 32
+          }
+        },
+        "epochs_trained": 20,
+        "failed": false,
+        "finished": true,
+        "gpu": "NVIDIA L40S",
+        "interpretation": "L40S OOM resolved, but performance is below promotion threshold; terminal fail under retry/repair budget.",
+        "metrics_status": "ok",
+        "params": 1331009,
+        "peak_vram_gb": 30.077748736,
+        "run_id": "r_auto10_00_afno_smoke20_repair4",
+        "status": "FINISHED_LOW_PERFORMANCE",
+        "val_metrics": {
+          "mae_mean": 0.14032201766967772,
+          "mae_median": 0.1401417851448059,
+          "r2_global": 0.3314944664755364,
+          "r2_mean": 0.11604336535511618,
+          "r2_median": 0.07525065874468784
+        },
+        "wall_time_sec": 1190.040122270584
+      },
+      "last_transition_at": "2026-04-26T15:55:23+00:00",
+      "latest_repair_cluster_id": "19077",
+      "latest_repair_run_id": "r_auto10_00_afno_smoke20_repair3",
+      "memory_fixed": true,
+      "next_action": "STOP",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "benchmark200_allowed": true,
+        "classification": "PASS",
+        "promotion_allowed": true,
+        "reason": "Smoke20 validates code/runtime only. AFNO repair4 completed the required artifacts on L40S batch=8, so the smoke result is recorded as PASS despite low smoke-stage R2; benchmark200 is the proper performance selection stage.",
+        "source_run_id": "r_auto10_00_afno_smoke20_repair4",
+        "terminal": true
+      },
+      "previous_terminal_fail_status": "AUTO_FAIL_MAX_TOTAL_ATTEMPTS",
+      "promotion_allowed": true,
+      "repair_attempts": [
+        {
+          "change_summary": "AFNO repair2: reduce max_modes from 32 to 16 after repair1 peak_vram_gb=66.6631 on H100",
+          "cluster": 19090,
+          "model_file": "generated_models/v5_controller_auto10_001/afno.py",
+          "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+          "repair_id": "repair_002",
+          "run_id": "r_auto10_00_afno_smoke20_repair2",
+          "status": "SUBMITTED"
+        },
+        {
+          "change_summary": "AFNO repair3: width=32, depth=3, max_modes=8 after repair2 OOM on L40S",
+          "cluster": 19091,
+          "model_file": "generated_models/v5_controller_auto10_001/afno.py",
+          "params_frontend": 1331009,
+          "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+          "repair_id": "repair_003",
+          "run_id": "r_auto10_00_afno_smoke20_repair3",
+          "status": "SUBMITTED"
+        }
+      ],
+      "repair_cluster": 19092,
+      "repair_count": 4,
+      "repair_results": {
+        "r_auto10_00_afno_smoke20_repair2": {
+          "cluster": 19090,
+          "epochs_trained": 0,
+          "error_message": "OOM at batch=8",
+          "evidence": "repair2 max_modes=16 still OOMed on L40S before epoch 1",
+          "gpu": "NVIDIA L40S",
+          "params": 11925985,
+          "status": "failed"
+        },
+        "r_auto10_00_afno_smoke20_repair3": {
+          "cluster": 19091,
+          "reason": "OOM on L40S; previous repair only changed generated wrapper, but train.py uses arch_name/arch_kwargs, so parameter count remained 11925985",
+          "status": "FAILED"
+        },
+        "r_auto10_00_afno_smoke20_repair4": {
+          "batch_size": 8,
+          "cluster": 19092,
+          "condor_exit_code": 0,
+          "condor_job_status": 4,
+          "config_overrides": {
+            "arch_kwargs": {
+              "depth": 3,
+              "max_modes": 8,
+              "width": 32
+            }
+          },
+          "epochs_trained": 20,
+          "failed": false,
+          "finished": true,
+          "gpu": "NVIDIA L40S",
+          "interpretation": "L40S OOM resolved and smoke20 code/runtime validation passed. Low R2 is recorded for later benchmark analysis, not used for smoke-stage rejection.",
+          "metrics_status": "ok",
+          "params": 1331009,
+          "peak_vram_gb": 30.077748736,
+          "run_id": "r_auto10_00_afno_smoke20_repair4",
+          "status": "FINISHED",
+          "val_metrics": {
+            "mae_mean": 0.14032201766967772,
+            "mae_median": 0.1401417851448059,
+            "r2_global": 0.3314944664755364,
+            "r2_mean": 0.11604336535511618,
+            "r2_median": 0.07525065874468784
+          },
+          "wall_time_sec": 1190.040122270584
+        }
+      },
+      "retry_count": 0,
+      "secondary_status": "LOW_PERFORMANCE_AFTER_REPAIR",
+      "smoke_stage_policy": "code_validation_only_no_performance_selection",
+      "state_key": "PASS:RECORD_RESULT",
+      "status": "PASS",
+      "terminal": true,
+      "terminal_result": {
+        "baseline_reference": {
+          "source": "auto_v3/campaigns/grid18_200ep/baseline",
+          "val_r2_median": 0.7085034105693335
+        },
+        "budget": {
+          "max_repairs": 2,
+          "max_retries": 3,
+          "max_total_attempts": 5,
+          "repair_count": 4,
+          "retry_count": 0,
+          "total_attempts": 5
+        },
+        "decision_time": "2026-04-26T11:55:23-04:00",
+        "final_run": {
+          "batch_size": 8,
+          "cluster": 19092,
+          "config_overrides": {
+            "arch_kwargs": {
+              "depth": 3,
+              "max_modes": 8,
+              "width": 32
+            }
+          },
+          "epochs_trained": 20,
+          "failed": false,
+          "finished": true,
+          "gpu": "NVIDIA L40S",
+          "metrics_status": "ok",
+          "params": 1331009,
+          "peak_vram_gb": 30.077748736,
+          "run_id": "r_auto10_00_afno_smoke20_repair4",
+          "val_metrics": {
+            "mae_mean": 0.14032201766967772,
+            "mae_median": 0.1401417851448059,
+            "r2_global": 0.3314944664755364,
+            "r2_mean": 0.11604336535511618,
+            "r2_median": 0.07525065874468784
+          },
+          "wall_time_sec": 1190.040122270584
+        },
+        "memory_fixed": true,
+        "promotion_allowed": false,
+        "reason": "Original run plus repair1-repair4 reached max_total_attempts=5 and repair_count=4 exceeds max_repairs=2; repair4 completed smoke20 on L40S batch=8 with peak_vram_gb=30.08, but val_r2_median=0.0753 is far below v5 baseline reference 0.7085.",
+        "secondary_statuses": [
+          "AUTO_FAIL_MAX_REPAIRS",
+          "LOW_PERFORMANCE_AFTER_REPAIR"
+        ],
+        "status": "AUTO_FAIL_MAX_TOTAL_ATTEMPTS",
+        "terminal": true
+      },
+      "terminal_status": "AUTO_FAIL_MAX_TOTAL_ATTEMPTS",
+      "total_attempts": 5,
+      "updated_at": "2026-04-26T15:55:23+00:00"
+    },
+    "r_auto10_01_attention_mamba_smoke20": {
+      "base_run_id": "r_auto10_01_attention_mamba_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18865",
+      "current_run_id": "r_auto10_01_attention_mamba_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 35969713,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T05:30:34.887991+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_02_cnn_deeponet_smoke20": {
+      "base_run_id": "r_auto10_02_cnn_deeponet_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18867",
+      "current_run_id": "r_auto10_02_cnn_deeponet_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 1680577,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T05:30:34.887991+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_03_convnext_v2_unet_smoke20": {
+      "base_run_id": "r_auto10_03_convnext_v2_unet_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18868",
+      "current_run_id": "r_auto10_03_convnext_v2_unet_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 7463841,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T05:30:34.887991+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_04_dilated_fno_smoke20": {
+      "base_run_id": "r_auto10_04_dilated_fno_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18869",
+      "current_run_id": "r_auto10_04_dilated_fno_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 60726001,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T05:30:34.887991+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_05_dilated_hrformer_smoke20": {
+      "base_run_id": "r_auto10_05_dilated_hrformer_smoke20",
+      "classification": {
+        "classification": "PASS",
+        "confidence": "high",
+        "evidence": [
+          "retry1 FINISHED with metrics.status=ok",
+          "model_best.pt and model_final.pt exist",
+          "FAILED sentinel absent",
+          "smoke20 is code/runtime validation; metrics are recorded but not used for smoke-stage selection"
+        ],
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT"
+      },
+      "cluster_id": "18870",
+      "current_run_id": "r_auto10_05_dilated_hrformer_smoke20_retry1",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": true,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": "failed",
+        "params": 42474673,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T11:51:55.947711+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "benchmark200_allowed": true,
+        "classification": "PASS",
+        "promotion_allowed": true,
+        "reason": "Retry1 completed smoke20 code/runtime validation. Smoke-stage metrics are diagnostic only; benchmark200 is the performance selection stage.",
+        "source_run_id": "r_auto10_05_dilated_hrformer_smoke20_retry1",
+        "terminal": true
+      },
+      "promotion_allowed": true,
+      "retry_results": {
+        "r_auto10_05_dilated_hrformer_smoke20_retry1": {
+          "cluster": 19064,
+          "epochs_trained": 20,
+          "failed": false,
+          "finished": true,
+          "gpu": "NVIDIA L40S",
+          "interpretation": "Retry fixed the high-VRAM smoke failure; smoke20 code/runtime validation passed.",
+          "metrics_status": "ok",
+          "model_best": true,
+          "model_final": true,
+          "peak_vram_gb": 22.75238144,
+          "run_id": "r_auto10_05_dilated_hrformer_smoke20_retry1",
+          "status": "FINISHED",
+          "val_metrics": {
+            "r2_global": 0.5257423241343371,
+            "r2_median": 0.3459158744663018
+          },
+          "wall_time_sec": 849.403404712677
+        }
+      },
+      "smoke_stage_policy": "code_validation_only_no_performance_selection",
+      "state_key": "PASS:RECORD_RESULT",
+      "status": "PASS",
+      "terminal": true,
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_06_ffno_smoke20": {
+      "base_run_id": "r_auto10_06_ffno_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18871",
+      "current_run_id": "r_auto10_06_ffno_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 206337,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T05:30:34.887991+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_07_fno_encoder_decoder_smoke20": {
+      "base_run_id": "r_auto10_07_fno_encoder_decoder_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18872",
+      "current_run_id": "r_auto10_07_fno_encoder_decoder_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 8,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 62924353,
+        "tier": "h100_a100_l40s_12gb"
+      },
+      "last_transition_at": "2026-04-26T05:46:21.544679+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_08_hrdcn_smoke20": {
+      "base_run_id": "r_auto10_08_hrdcn_smoke20",
+      "classification": {
+        "classification": "PASS",
+        "confidence": "high",
+        "evidence": [
+          "retry1 FINISHED with metrics.status=ok",
+          "model_best.pt and model_final.pt exist",
+          "FAILED sentinel absent",
+          "smoke20 is code/runtime validation; metrics are recorded but not used for smoke-stage selection"
+        ],
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT"
+      },
+      "cluster_id": "18873",
+      "current_run_id": "r_auto10_08_hrdcn_smoke20_retry1",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": true,
+        "finished": false,
+        "heartbeat_epoch": null,
+        "latest_train_epoch": null,
+        "metrics_status": "failed",
+        "params": 9258281,
+        "shape_ok": true,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T11:51:55.947711+00:00",
+      "notify_count": 2,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "benchmark200_allowed": true,
+        "classification": "PASS",
+        "promotion_allowed": true,
+        "reason": "Retry1 completed smoke20 code/runtime validation. Smoke-stage metrics are diagnostic only; benchmark200 is the performance selection stage.",
+        "source_run_id": "r_auto10_08_hrdcn_smoke20_retry1",
+        "terminal": true
+      },
+      "promotion_allowed": true,
+      "retry_results": {
+        "r_auto10_08_hrdcn_smoke20_retry1": {
+          "cluster": 19065,
+          "epochs_trained": 20,
+          "failed": false,
+          "finished": true,
+          "gpu": "NVIDIA L40S",
+          "interpretation": "Retry fixed the high-VRAM smoke failure; smoke20 code/runtime validation passed.",
+          "metrics_status": "ok",
+          "model_best": true,
+          "model_final": true,
+          "peak_vram_gb": 37.7390976,
+          "run_id": "r_auto10_08_hrdcn_smoke20_retry1",
+          "status": "FINISHED",
+          "val_metrics": {
+            "r2_global": 0.5916692796839745,
+            "r2_median": 0.4894304787339866
+          },
+          "wall_time_sec": 1403.6133887767792
+        }
+      },
+      "smoke_stage_policy": "code_validation_only_no_performance_selection",
+      "state_key": "PASS:RECORD_RESULT",
+      "status": "PASS",
+      "terminal": true,
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    },
+    "r_auto10_09_hrnet_smoke20": {
+      "base_run_id": "r_auto10_09_hrnet_smoke20",
+      "classification": {
+        "checkpoint_epoch": null,
+        "checkpoint_path": null,
+        "classification": "PASS",
+        "condor_event": null,
+        "confidence": "high",
+        "evidence": [
+          "FINISHED exists",
+          "metrics status ok"
+        ],
+        "heartbeat_age_sec": null,
+        "heartbeat_epoch": null,
+        "last_epoch": null,
+        "missing_evidence": [],
+        "next_action": "RECORD_RESULT",
+        "recommended_batch_size": null,
+        "recommended_tier": null,
+        "resume_from_checkpoint": null,
+        "walltime_sec": null
+      },
+      "cluster_id": "18874",
+      "current_run_id": "r_auto10_09_hrnet_smoke20",
+      "last_evidence_summary": {
+        "batch_size": 16,
+        "checkpoint_exists": false,
+        "condor_job_status": null,
+        "failed": false,
+        "finished": true,
+        "heartbeat_epoch": 20,
+        "latest_train_epoch": 20,
+        "metrics_status": "ok",
+        "params": 20138689,
+        "tier": "a40_rtx6k_16gb"
+      },
+      "last_transition_at": "2026-04-26T05:30:34.887991+00:00",
+      "notify_count": 1,
+      "plan": {
+        "action": "RECORD_RESULT",
+        "classification": "PASS"
+      },
+      "state_key": "PASS:RECORD_RESULT",
+      "updated_at": "2026-04-26T11:51:55.947711+00:00"
+    }
+  },
+  "stage": "smoke20",
+  "updated_at": "2026-04-26T11:51:55.947711+00:00",
+  "updated_by_notes": [
+    {
+      "cluster_id": "19077",
+      "epochs_trained": 20,
+      "event": "afno_repair1_finished",
+      "exit_code": 0,
+      "run_id": "r_auto10_00_afno_smoke20_repair1",
+      "updated_at_utc": "2026-04-26T14:00:00.710857Z",
+      "val_r2_median": 0.11297665821886738
+    }
+  ]
+}

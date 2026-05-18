@@ -1,0 +1,1067 @@
+You are the Auto V6 proposal quality gate and decision-audit gate.
+Review the synthesized proposal pack for schema validity, duplicates, hard-rule violations, locked data/eval contract violations, and auditable decision rationale.
+Phase A policy: do not decide scientific truth and do not ban deviations from review recommendations. However, missing decision rationale is repairable process debt: require repair, not hard rejection, when proposals lack hypothesis, paired comparison, decision rule, expected failure interpretation, or explicit explanation for deviating from recent review recommendations.
+Also flag if the pack has collapsed into an overly narrow local HP, capacity, or high-n_c sweep around one architecture without explicit justification; preserve architecture-level diversity when minimally repairing.
+Scout weighting audit: primary scouts ['claude', 'codex', 'gemini'] are the main decision/proposal sources; diversity scouts ['deepseek', 'grok', 'mimo'] are auxiliary mechanism/critique context, not same-weight TrainConfig competitors. Check whether the synthesized pack reasonably used or explicitly explained diversity auxiliary_ideas. At most 2-3 final proposals may carry diversity influence. When diversity ideas are used, ensure _proposal_rationale.source_scouts includes the diversity scout(s), diversity_influence=true, and diversity_ideas_used/reason_if_diversity_kept explains the absorbed mechanism; when none are used, return a concise diversity_unused_reason. Final returned proposals must be contract-clean; raw diversity ideas should not be rejected merely for repairable schema/loss/epoch/batch/input issues, but suggested_contract_repairs must be applied before final output. Use risk language only for truly infeasible/resource-blocked/unparseable proposals.
+Soft target mix: about 6 exploit and 6 explorer proposals. Exploit does not explore; explorer must introduce new model/mechanism value, not merely old arch_name plus larger n_c/depth. Do not use this target to violate hard train/data constraints.
+Decision-audit checks: flag and repair explorer proposals that lack novelty_rationale or new_model_mechanism/transferred_mechanism; flag proposals that lack paired_comparison, decision_rule, expected_success, or expected_failure_interpretation; flag proposals that use weak-setting explorer recipes without explaining why the current stronger recipe is not used and how success would later migrate. Weak-setting explorers are allowed but normally should occupy at most 1-2 full slots; if exceeded, require a pack-level weak_setting_budget_explanation.
+Gemini role audit: Gemini scout should primarily contribute web/literature-driven explorer mechanisms. Flag if more than 2 Gemini-derived final slots are local exploitation without web/source traceability, or more than 3 even with explicit justification; treat this as audit/repair, not rejection. Also flag if high-scoring web ideas/source_id/web_idea_id/transferred_mechanism evidence is ignored without explanation. This is a repair/audit issue, not a scientific hard ban.
+Batch-size lock: ordinary Auto V6 candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.
+Do not take over global search strategy. Preserve the synthesis model's scientific intent unless a proposal is invalid, duplicated, contract-breaking, or unauditable.
+You may minimally repair fields to satisfy the TrainConfig/search-space contract. Hard repair any data-setting violation to seed=1 and a valid existing input_features contract, defaulting to height. Do not invent new data paths, splits, metrics, or unsupported input features.
+Return only JSON: {"ok": true/false, "issues": [strings], "diversity_unused_reason": "required if no diversity influence, else null", "weak_setting_budget_explanation": "... if applicable", "review_accountability_summary": "...", "proposals": [reviewed configs...]}.
+
+TARGET_COUNT: 12
+
+PLANNER_CONTEXT_CONTRACT:
+{
+  "hard_rules": {
+    "planner_role": "Scout proposes experiments only; runner/controller handle execution and retry/repair.",
+    "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
+    "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
+    "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
+    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
+    "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
+    "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
+    "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
+    "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
+    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
+    "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
+    "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
+    "exact_output": "Return only JSON in the form {\"proposals\": [hypothesis-bundle proposals or concrete experiment configs]}. No markdown, no prose outside JSON."
+  },
+  "train_config_contract": {
+    "required_fields": [
+      "experiment_id",
+      "arch_name",
+      "n_c",
+      "depth",
+      "loss_name",
+      "lr",
+      "batch_size",
+      "input_features",
+      "epochs",
+      "seed",
+      "use_ema",
+      "ema_decay",
+      "augmentation"
+    ],
+    "default_input_features": "height",
+    "valid_input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "locked_seed": 1,
+    "current_seed_policy": "Hard rule: seed must be 1. Multi-seed is not allowed in this campaign unless the human researcher explicitly changes the hard rule.",
+    "full_epochs": 200,
+    "smoke_epochs": 20
+  }
+}
+
+SYNTHESIZED_PROPOSALS:
+[
+  {
+    "experiment_id": "r010_exploit_ttadapter_nc24_d6_sdfgrad_lr040_fliprot",
+    "arch_name": "tt_adapter_decoder_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "flip_rot",
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "R10-E01",
+      "hypothesis": "TT adapter decoder is still the best median-R2 exploit family, but lr=0.0004 may reduce the instability seen between the r007 champion and later replays while preserving the useful flip_rot regime.",
+      "primary_purpose": "Score-seeking lower-lr refinement of the known TT adapter frontier recipe.",
+      "paired_comparison": "Compare against r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient and r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient.",
+      "decision_rule": "Promote if val_r2_median >= 0.742 or if mean/global R2 improves over the r009 TT run without a median drop below 0.735.",
+      "expected_success": "A smoother TT run recovers much of the r007 performance and beats the r009 lr0.00045 replay.",
+      "expected_failure_interpretation": "If it stays near r009 or worse, the r007 TT result was likely high-variance and TT should move from frontier exploit to ensemble-only support.",
+      "risk_class": "low_to_medium_seed_variance",
+      "resource_expectation": "normal batch_size=16; prior TT runs used about 6.1M params and completed without OOM.",
+      "source_type": "auto_v6_exploit",
+      "capacity_rationale": "Moderate nc24/d6 capacity, about 6M params in prior runs; capacity-matched to r007/r009 TT comparisons.",
+      "novelty_rationale": "No novelty; controlled exploit refinement of a known strong family.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+        "r007_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient",
+        "r009_full_tt_adapter_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.00045_masked_l1_gradient"
+      ],
+      "source_note": "Uses the allowed height_sdf_normal contract because the required context identifies it as the dominant feature stack; no data/split/eval changes.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_exploit_bgms_nc24_d6_sdfgrad_lr035_noaug",
+    "arch_name": "boundary_gated_multiscale_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.00035,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "R10-E03",
+      "hypothesis": "Boundary-gated multiscale noaug remains the best balanced family, and lr=0.00035 may improve stability over the r009 lr0.000375 run without giving up the r008 lr0.0004 peak.",
+      "primary_purpose": "Narrow exploit bracket around the strongest BGMS noaug regime.",
+      "paired_comparison": "Compare to r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient and r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient.",
+      "decision_rule": "Continue BGMS exploitation only if this reaches val_r2_median >= 0.74 or improves r2_mean/global over r009 while staying above 0.732 median.",
+      "expected_success": "Lower LR improves hard-case and global balance while staying close to the r008 near-frontier result.",
+      "expected_failure_interpretation": "If lower LR underfits, BGMS noaug has likely already been bracketed and should become a robustness baseline rather than a sweep target.",
+      "risk_class": "low_local_refinement",
+      "resource_expectation": "normal but near L40S memory ceiling; prior nc24/d6 BGMS used about 7.8M params and about 41.7GB peak.",
+      "source_type": "auto_v6_exploit",
+      "capacity_rationale": "nc24/d6 is the established BGMS sweet spot; matched to r008/r009 to isolate LR.",
+      "novelty_rationale": "No novelty; known strong direction refinement.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+        "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
+        "r009_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.000375_masked_l1_gradient"
+      ],
+      "source_note": "Uses the same feature/loss stack as the best BGMS noaug runs; no capacity increase.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_exploit_bgms_nc24_d6_l1_lr040_noaug",
+    "arch_name": "boundary_gated_multiscale_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "R10-E04",
+      "hypothesis": "BGMS may improve hard-case robustness with masked_l1 at the r008 noaug lr=0.0004 setting, even if masked_l1_gradient gave the best single median result.",
+      "primary_purpose": "Clean loss ablation on the strongest BGMS noaug configuration.",
+      "paired_comparison": "Compare directly to r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient.",
+      "decision_rule": "Keep masked_l1 only if median R2 is within 0.005 of the r008 gradient-loss result or if KO-SE/UA-KY hard-case R2 improves enough to lift r2_global.",
+      "expected_success": "Less gradient emphasis reduces overfitting to easy boundary gradients and improves hard-case consistency.",
+      "expected_failure_interpretation": "If median and global both fall, masked_l1_gradient remains the correct BGMS loss and further loss ablations should stop.",
+      "risk_class": "low_clean_ablation",
+      "resource_expectation": "normal but close to L40S memory ceiling, same BGMS capacity as the paired gradient-loss control.",
+      "source_type": "auto_v6_exploit",
+      "capacity_rationale": "Capacity matched to the r008 BGMS reference to avoid confounding loss with width/depth.",
+      "novelty_rationale": "No novelty; controlled exploit loss ablation.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
+        "r008_full_boundary_gated_multiscale_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
+        "round_8"
+      ],
+      "source_note": "This tests loss behavior only; architecture, capacity, features, seed, and augmentation stay fixed to the known BGMS noaug setting.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_exploit_physics_state_slice_mixer_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "physics_state_slice_mixer_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "R10-E05",
+      "hypothesis": "Physics-state slice mixing was the best efficient explorer in r009; a slightly lower lr may improve its balanced profile without adding capacity.",
+      "primary_purpose": "Single controlled follow-up for the most promising r009 explorer family.",
+      "paired_comparison": "Compare to r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient and r009 BGMS nc24 noaug as a balanced baseline.",
+      "decision_rule": "Promote this family if val_r2_median >= 0.73 and r2_mean/global match or exceed r009 TT adapter while using fewer params than BGMS.",
+      "expected_success": "The slice mixer remains around 5.4M params and improves from r009 0.728 median toward the low 0.73s.",
+      "expected_failure_interpretation": "If lower LR regresses, the r009 result was near its local optimum and the family should only reappear as a component donor.",
+      "risk_class": "medium_newly_promising_family",
+      "resource_expectation": "normal batch_size=16; prior run was about 5.4M params and completed quickly on H100.",
+      "source_type": "auto_v6_exploit",
+      "capacity_rationale": "Moderate nc24/d6 but parameter-efficient in prior evidence, roughly 5.4M params; capacity-matched to r009 slice mixer.",
+      "novelty_rationale": "No new mechanism this round; follows up a known r009 mechanism.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+        "r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient",
+        "round_9"
+      ],
+      "source_note": "Distinct exploit family to avoid collapsing the round into TT/BGMS local sweeps.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_exploit_dual_spatial_channel_agg_nc24_d6_sdfgrad_lr045_noaug",
+    "arch_name": "dual_spatial_channel_agg_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.00045,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "R10-E06",
+      "hypothesis": "Dual spatial-channel aggregation is a parameter-efficient secondary family whose r009 median may improve at lr=0.00045, matching the better lr used by physics_state_slice_mixer.",
+      "primary_purpose": "Capacity-efficient secondary exploit comparison, not another TT/BGMS sweep.",
+      "paired_comparison": "Compare to r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient and r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient.",
+      "decision_rule": "Keep only if it reaches val_r2_median >= 0.724 or improves KO-SE/UA-KY hard-case behavior over the r009 dual_spatial run without higher resource use.",
+      "expected_success": "The higher lr improves optimization and moves the family closer to physics_state_slice_mixer while staying compact.",
+      "expected_failure_interpretation": "If flat or worse, dual spatial-channel aggregation is a low-0.72 ceiling variant and should cool down.",
+      "risk_class": "medium_secondary_family",
+      "resource_expectation": "normal batch_size=16; prior run was about 5.3M params and fit on L40S.",
+      "source_type": "auto_v6_exploit",
+      "capacity_rationale": "Moderate nc24/d6 with prior 5.3M params; capacity-matched against r009 efficient explorer families.",
+      "novelty_rationale": "No novelty; controlled follow-up of an existing r009 architecture.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+        "r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient",
+        "r009_full_physics_state_slice_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
+      ],
+      "source_note": "Provides a distinct compact exploit family and a capacity-matched comparison to r009 efficient explorers.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_geometry_landmark_tokens_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "geometry_landmark_operator_token_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "R10-X01",
+      "hypothesis": "Height/SDF-derived landmark tokens can provide global geometry context more efficiently than dense attention or generic operator tokens, improving hard-case generalization without heavy capacity.",
+      "primary_purpose": "Test a new geometry-landmark token mechanism from the reviewed web ideas.",
+      "paired_comparison": "Compare to r007_full_cross_scale_operator_token_unet_nc16_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient and r009 BGMS/physics slice mixer at nc24/d6.",
+      "decision_rule": "Promote if val_r2_median >= 0.72 with hard-case KO-SE/UA-KY improvement over generic token/operator baselines, or if mean/global exceeds r009 physics_state_slice_mixer.",
+      "expected_success": "Fixed 32-64 landmark tokens improve mid- and hard-case context while avoiding full-grid attention memory cost.",
+      "expected_failure_interpretation": "If it underperforms, landmark selection is not adding useful geometry beyond local SDF/normal features and should be ablated before reuse.",
+      "risk_class": "medium_selection_collapse",
+      "resource_expectation": "normal batch_size=16; fixed-token attention at bottleneck/decoder should stay near 6-8M params and avoid known SSM/attention OOM patterns.",
+      "source_type": "external_web_reviewed_explorer",
+      "new_model_mechanism": "Soft landmark scorer over height/SDF/normal feature extrema and edge bands, pooled landmark tokens, small token self-attention, and decoder cross-attention injection.",
+      "capacity_rationale": "nc24/d6 is the campaign's moderate useful capacity floor; fixed-token attention is the capacity-matched mechanism test against BGMS and cross-scale token baselines.",
+      "novelty_rationale": "New arch_name and new differentiable landmark-token composition; not a seen arch plus HP change.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+        "r10_ext_03",
+        "r007_full_cross_scale_operator_token_unet_nc16_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
+      ],
+      "source_note": "Based on reviewed idea r10_ext_03, one of the top keep-score explorer ideas in planner_context; uses height_sdf_normal under the campaign's allowed feature justification.",
+      "topic_cluster": "geometry_aware_cfd",
+      "query_tier": "A_direct_cfd_neural_operator",
+      "height_only_translation": "If restricted to height only, landmark scores come from Sobel/Laplacian height extrema and boundary bands; this run also uses allowed SDF/normal channels.",
+      "ablation_removes_mechanism": "Replace landmark tokens with a single global average context vector and remove decoder cross-attention injection.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_cross_shape_decoder_adapter_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "cross_shape_decoder_adapter_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "R10-X02",
+      "hypothesis": "A lightweight cross-shape decoder adapter can add directional long-range structure with much lower memory than standalone attention backbones.",
+      "primary_purpose": "Test META-style cross-axis adapter as a new decoder-fusion mechanism.",
+      "paired_comparison": "Compare to r002_full_crossaxis_attn_unet_nc16_lr0.0005_masked_l1 and r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient.",
+      "decision_rule": "Keep if it reaches val_r2_median >= 0.72 or beats dual_spatial_channel_agg on r2_mean/global at similar parameter count.",
+      "expected_success": "Reduced-channel cross-axis attention plus depthwise local branch improves directional urban-flow context without OOM.",
+      "expected_failure_interpretation": "If it scores like older cross-axis attention, directional adapters add complexity without enough boundary detail benefit.",
+      "risk_class": "medium_attention_value",
+      "resource_expectation": "normal batch_size=16; adapter should be small, local to decoder skip fusion, and below high-attention OOM regimes.",
+      "source_type": "external_web_reviewed_explorer",
+      "new_model_mechanism": "Decoder skip-fusion adapter using reduced-channel horizontal/vertical attention, local depthwise convolution, residual scaling, and cascaded feature reuse across decoder stages.",
+      "capacity_rationale": "nc24/d6 avoids the nc16 explorer ceiling while keeping the new adapter small relative to the backbone; compare to dual_spatial and crossaxis controls.",
+      "novelty_rationale": "New arch_name and new adapter composition with shared norm, cross-shape attention, depthwise local branch, and cascaded decoder reuse.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\knowledge\\arch_family_summary.json",
+        "r10_ext_05",
+        "r009_full_dual_spatial_channel_agg_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient"
+      ],
+      "source_note": "Based on reviewed idea r10_ext_05; selected because it is a parameter-efficient adapter, not a standalone transformer.",
+      "topic_cluster": "dense_prediction_transformer",
+      "query_tier": "B_dense_prediction_vision",
+      "height_only_translation": "Adapter consumes ordinary grid features; under height-only it uses encoder features derived from the height map and coordinate/edge cues only.",
+      "ablation_removes_mechanism": "Remove cross-shape attention while keeping the depthwise local branch, then remove the whole adapter to recover plain skip fusion.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_visual_context_replay_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "visual_context_replay_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "R10-X03",
+      "hypothesis": "Per-scale prototype replay can improve decoder reconstruction by reusing compact global context, filling the gap between local UNet skips and heavy attention.",
+      "primary_purpose": "Test visual-context prototype replay as a new decoder mechanism.",
+      "paired_comparison": "Compare to r009_full_derived_feature_aggregate_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient and r009_full_mlp_multiscale_decoder_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient.",
+      "decision_rule": "Promote if val_r2_median >= 0.724 or if r2_mean/global exceeds both derived_feature_aggregate and mlp_multiscale_decoder references at similar capacity.",
+      "expected_success": "Small prototype banks add useful multi-case context without the resource cost of transformer decoders.",
+      "expected_failure_interpretation": "If it is flat versus ordinary multiscale decoding, prototype replay is redundant with existing skip features.",
+      "risk_class": "medium_decoder_complexity",
+      "resource_expectation": "normal batch_size=16; small prototype banks and MLP mixers should be cheaper than full attention and fit standard queues.",
+      "source_type": "external_web_reviewed_explorer",
+      "new_model_mechanism": "Per-scale pooled prototype banks, light MLP prototype mixer, and gated additive replay into each decoder upsampling stage.",
+      "capacity_rationale": "nc24/d6 targets the proven 5-10M parameter regime; mechanism cost is in small prototype banks, not wider channels.",
+      "novelty_rationale": "New arch_name and new prototype replay decoder; not present in the novelty index.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\knowledge\\recent_knowledge_bundle.json",
+        "r10_ext_06",
+        "r009_full_mlp_multiscale_decoder_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
+      ],
+      "source_note": "Based on reviewed idea r10_ext_06, a top keep-score external idea; selected because it is decoder-local and parameter-efficient.",
+      "topic_cluster": "dense_prediction_transformer",
+      "query_tier": "B_dense_prediction_vision",
+      "height_only_translation": "Prototypes are pooled from feature pyramids computed from the height grid; no external labels or temporal inputs are needed.",
+      "ablation_removes_mechanism": "Remove prototype replay gates and use ordinary skip concatenation with the same encoder/decoder channels.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_pseudo_station_fusion_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "pseudo_station_bottleneck_fusion_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "R10-X04",
+      "hypothesis": "Sparse pseudo-station anchors derived from geometry can summarize hard-case context and re-inject it into the bottleneck more efficiently than dense global attention.",
+      "primary_purpose": "Test pseudo-station anchor/RBF fusion from weather field modeling as a new sparse-context mechanism.",
+      "paired_comparison": "Compare to r009_full_spatial_prior_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient and r005_full_coarse_prior_adain_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient.",
+      "decision_rule": "Promote if val_r2_median >= 0.724 or if KO-SE/UA-KY/FI-MS bucket R2 improves over spatial_prior_adapter without lowering r2_global.",
+      "expected_success": "Sparse anchors capture geometry-conditioned domain context that helps hard cases at small parameter cost.",
+      "expected_failure_interpretation": "If it underperforms, sparse anchor interpolation is not a useful substitute for dense multiscale reconstruction on this dataset.",
+      "risk_class": "medium_anchor_selection",
+      "resource_expectation": "normal batch_size=16; 32 anchor summaries and RBF/attention interpolation are low-param and should avoid OOM.",
+      "source_type": "external_web_reviewed_explorer",
+      "new_model_mechanism": "Soft anchor scorer over height/SDF features, pooled pseudo-station vectors, learned RBF or attention interpolation back to the bottleneck map, and fusion convolution.",
+      "capacity_rationale": "nc24/d6 maintains the useful V6 capacity floor; sparse anchor summaries keep added capacity small versus dense attention.",
+      "novelty_rationale": "New arch_name and new pseudo-station anchor fusion composition, distinct from coarse_prior_adain and boundary_pressure_basis.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\knowledge\\failure_taxonomy_summary.json",
+        "r10_ext_09",
+        "r009_full_spatial_prior_adapter_unet_nc24_d6_height_sdf_normal_none_lr0.00045_masked_l1_gradient"
+      ],
+      "source_note": "Based on reviewed idea r10_ext_09, a top keep-score external idea; framed as sparse context rather than new data.",
+      "topic_cluster": "weather_nowcasting",
+      "query_tier": "C_weather_sciml_field_prediction",
+      "height_only_translation": "Pseudo-stations can be selected from height extrema, corners, roughness bands, and boundary bands; this run also uses allowed SDF/normal features.",
+      "ablation_removes_mechanism": "Replace anchor interpolation with zeros or a single global pooled vector while keeping the same bottleneck fusion conv.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_boundary_alltoall_surface_mixer_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "boundary_alltoall_surface_mixer_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "R10-X05",
+      "hypothesis": "Explicit all-to-all communication among boundary-derived surface tokens can improve global pressure consistency beyond local boundary gating, if kept token-sparse.",
+      "primary_purpose": "Test a differentiated boundary-token mixer with global communication, not another local gate.",
+      "paired_comparison": "Compare to r003_full_boundary_token_mixer_unet_nc16_lr0.0005_masked_l1, r006_full_boundary_strip_graph_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient, and BGMS nc24/d6 references.",
+      "decision_rule": "Keep only if val_r2_median >= 0.72 and hard-case global consistency improves over boundary_strip_graph_mixer; otherwise cool down boundary-token global mixing.",
+      "expected_success": "Sparse boundary tokens add long-range surface communication while preserving local UNet reconstruction.",
+      "expected_failure_interpretation": "If it lands near prior boundary token/graph results, explicit token communication is still less valuable than dense local multiscale gating.",
+      "risk_class": "medium_overlap_with_seen_boundary_tokens",
+      "resource_expectation": "normal batch_size=16; token count is small and communication is off-grid, so memory should be below graph/SSM-heavy designs.",
+      "source_type": "external_web_reviewed_explorer",
+      "new_model_mechanism": "Boundary extractor creates sparse surface tokens, two residual all-to-all token mixer blocks exchange context, and per-scale FiLM gates broadcast token context into UNet skips.",
+      "capacity_rationale": "nc24/d6 avoids the nc16 underfit ceiling while token-sparse global communication keeps parameters near the 5-8M V6 sweet spot.",
+      "novelty_rationale": "New arch_name and new all-to-all surface-token formulation; overlaps conceptually with old boundary token families but changes token extraction, communication, and skip FiLM injection.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\knowledge\\arch_family_summary.json",
+        "r10_ext_01",
+        "r006_full_boundary_strip_graph_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0005_masked_l1_gradient"
+      ],
+      "source_note": "Based on reviewed idea r10_ext_01; included as a lower-priority but distinct CFD-pressure explorer with explicit all-to-all boundary token communication.",
+      "topic_cluster": "cfd_pressure_surrogate",
+      "query_tier": "A_direct_cfd_neural_operator",
+      "height_only_translation": "Boundary tokens can be generated from Sobel/Laplacian height edges alone; SDF/normal channels are used here only because the campaign feature contract supports them.",
+      "ablation_removes_mechanism": "Zero boundary-token mixer outputs or replace global token mixing with local 3x3 edge gates.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_boundary_wtconv_lrf_nc24_d6_sdfgrad_lr040_noaug",
+    "arch_name": "boundary_wtconv_large_receptive_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "R10-X06",
+      "hypothesis": "Boundary-gated WTConv can add large receptive field context while preserving high-frequency edge detail better than prior Fourier/wavelet decoders.",
+      "primary_purpose": "Test a parameter-efficient image-restoration mechanism with explicit boundary-gated subbands.",
+      "paired_comparison": "Compare to r000_full_fourier_unet_wtconv_nc16_lr0.0005_masked_l1 and r008_full_wavelet_residual_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient.",
+      "decision_rule": "Promote only if val_r2_median >= 0.715 and hard-case or high-frequency boundary cases improve over wavelet_residual_decoder; otherwise keep spectral/wavelet families on cooldown.",
+      "expected_success": "Fixed wavelet decomposition plus learned subband gates gives broader context at low parameter cost without the smoothing failure of earlier spectral variants.",
+      "expected_failure_interpretation": "If it is below 0.71, wavelet/large-kernel context is not solving the current hard-case bottleneck and should not be expanded.",
+      "risk_class": "medium_spectral_boundary_ringing",
+      "resource_expectation": "normal batch_size=16; only one bottleneck and one high-resolution decoder WTConv block, no dense attention or SSM.",
+      "source_type": "external_web_reviewed_explorer",
+      "new_model_mechanism": "Fixed Haar/DWT decomposition, per-subband lightweight convolutions, height/SDF-gradient boundary gates, and residual recomposition at bottleneck plus one decoder stage.",
+      "capacity_rationale": "nc24/d6 is used because recent nc16 explorers underfit; the mechanism adds receptive field through fixed wavelet structure rather than wider/deeper channels.",
+      "novelty_rationale": "New arch_name and boundary-gated WTConv formulation; differentiated from fourier_unet_wtconv by SDF/normal-compatible boundary subband gating and limited insertion points.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+        "r10_ext_07",
+        "r008_full_wavelet_residual_decoder_unet_nc24_d6_height_sdf_normal_flip_rot_lr0.0005_masked_l1_gradient"
+      ],
+      "source_note": "Based on reviewed idea r10_ext_07; included as the single image-restoration explorer and explicitly bounded by prior spectral/wavelet failures.",
+      "topic_cluster": "image_restoration",
+      "query_tier": "B_dense_prediction_vision",
+      "height_only_translation": "WTConv filters operate on height-derived features; boundary gates can use height gradients if SDF/normal are absent.",
+      "ablation_removes_mechanism": "Replace WTConv blocks with ordinary depthwise convolutions and disable subband boundary gates.",
+      "source_scouts": [
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "codex"
+  },
+  {
+    "experiment_id": "r010_explorer_geometry_landmark_operator_unet_nc24_d6_sdfgrad_lr040_noaug",
+    "role": "explorer",
+    "arch_name": "geometry_landmark_operator_unet",
+    "n_c": 24,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0004,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": "none",
+    "hypothesis_id": "H_exp_01",
+    "hypothesis": "Differentiable landmark scoring over geometry features improves cross-case robustness compared to plain spatial convolutions by focusing on critical boundary extrema.",
+    "primary_purpose": "Evaluate web idea r10_ext_03 (Geometry-Landmark Operator Tokens) for boundary-aware field prediction.",
+    "paired_comparison": "vs boundary_gated_multiscale_unet at matched nc24 d6",
+    "decision_rule": "If r2_median > 0.735 or significantly improves KO-SE cases, promote to exploit.",
+    "expected_success": "Better alignment on sharp gradients and complex boundaries leading to lower MAE and higher R2.",
+    "expected_failure_interpretation": "Soft selection may collapse or not provide sufficient capacity compared to dense boundary gating.",
+    "risk_class": "medium",
+    "resource_expectation": "normal, <40GB VRAM",
+    "source_type": "external_web_idea",
+    "evidence_refs": [
+      "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+      "r10_ext_03"
+    ],
+    "source_note": "From web scout idea r10_ext_03",
+    "novelty_rationale": "Introduces landmark-based operator tokens instead of standard grid or spatial attention.",
+    "topic_cluster": "geometry_aware_cfd",
+    "query_tier": "A_direct_cfd_neural_operator",
+    "height_only_translation": "Differentiable landmark scoring over height-derived extrema/corners/edge bands; tokens carry pooled features only.",
+    "ablation_removes_mechanism": "Replace landmark tokens with single global average-pooled context or remove decoder cross-attention injection.",
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H_exp_01",
+      "hypothesis": "Differentiable landmark scoring over geometry features improves cross-case robustness compared to plain spatial convolutions by focusing on critical boundary extrema.",
+      "primary_purpose": "Evaluate web idea r10_ext_03 (Geometry-Landmark Operator Tokens) for boundary-aware field prediction.",
+      "paired_comparison": "vs boundary_gated_multiscale_unet at matched nc24 d6",
+      "decision_rule": "If r2_median > 0.735 or significantly improves KO-SE cases, promote to exploit.",
+      "expected_success": "Better alignment on sharp gradients and complex boundaries leading to lower MAE and higher R2.",
+      "expected_failure_interpretation": "Soft selection may collapse or not provide sufficient capacity compared to dense boundary gating.",
+      "risk_class": "medium",
+      "resource_expectation": "normal, <40GB VRAM",
+      "source_type": "external_web_idea",
+      "novelty_rationale": "Introduces landmark-based operator tokens instead of standard grid or spatial attention.",
+      "evidence_refs": [
+        "<HYBRID_SOURCE_ROOT>\\campaigns\\auto_v6\\artifacts\\r010\\planner_context.json",
+        "r10_ext_03"
+      ],
+      "source_note": "From web scout idea r10_ext_03",
+      "topic_cluster": "geometry_aware_cfd",
+      "query_tier": "A_direct_cfd_neural_operator",
+      "height_only_translation": "Differentiable landmark scoring over height-derived extrema/corners/edge bands; tokens carry pooled features only.",
+      "ablation_removes_mechanism": "Replace landmark tokens with single global average-pooled context or remove decoder cross-attention injection.",
+      "source_scouts": [
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    },
+    "resource_guard_triggered": false,
+    "resource_guard_severity": "allow",
+    "resource_guard_blocked": false,
+    "resource_guard_reason": "",
+    "suggested_safe_config": {
+      "batch_size_options": [
+        8
+      ],
+      "batch_size_policy": "automatic_resource_guard_or_oom_repair_floor_batch8_not_leaderboard_candidate",
+      "automatic_batch_size_floor": 8,
+      "manual_resource_probe_below_floor_requires": "manual_resource_probe_approved=True",
+      "n_c_max": 32,
+      "depth_max": 5,
+      "techniques": [
+        "batch_size=8",
+        "n_c<=32",
+        "depth<=5"
+      ],
+      "excluded_without_manual_approval": [
+        "batch_size<8",
+        "AMP",
+        "gradient_checkpointing",
+        "manual_resource_probe"
+      ],
+      "candidate_semantics": "Automatic lower-batch suggestions stop at batch_size=8 for resource-guard/OOM repair. batch_size<8 is allowed only as an explicitly approved manual_resource_probe and is not an ordinary score-seeking Auto V6 candidate or leaderboard candidate."
+    },
+    "resource_probe_required": false,
+    "resource_probe_only": false,
+    "oom_repair_context": false,
+    "manual_resource_probe_approved": false,
+    "leaderboard_eligible": true,
+    "manual_probe_only": false,
+    "ordinary_batch_size_lock": 16,
+    "automatic_batch_size_floor": 8,
+    "estimated_params": null,
+    "_source_weight": "primary",
+    "_source": "gemini"
+  }
+]

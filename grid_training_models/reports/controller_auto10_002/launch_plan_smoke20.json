@@ -1,0 +1,206 @@
+{
+  "campaign": "v5_controller_auto10_002_smoke20",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "stage": "smoke20",
+  "summary": {
+    "runs": 10
+  },
+  "runs": [
+    {
+      "run_id": "r_auto10c_00_mamba_attention_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_mamba_attention_cosine_gradient_a75cbefcb7",
+      "model_file": "generated_models/v5_controller_auto10_002/mamba_attention.py",
+      "module_name": "codegen_mamba_attention",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": 8,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_00_mamba_attention_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/mamba_attention.py",
+        "MODULE_NAME": "codegen_mamba_attention",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_01_nafnet_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_nafnet_nafnet_gradient_low_lr_ema_d0b76c58d6",
+      "model_file": "generated_models/v5_controller_auto10_002/nafnet.py",
+      "module_name": "codegen_nafnet",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": 8,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_01_nafnet_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/nafnet.py",
+        "MODULE_NAME": "codegen_nafnet",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_02_perceiver_io_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_perceiver_io_perceiver_gradient_low_lr_ema_0268aa64f5",
+      "model_file": "generated_models/v5_controller_auto10_002/perceiver_io.py",
+      "module_name": "codegen_perceiver_io",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_02_perceiver_io_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/perceiver_io.py",
+        "MODULE_NAME": "codegen_perceiver_io",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_03_sac_mamba_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_sac_mamba_gradient_default_ae7c77d006",
+      "model_file": "generated_models/v5_controller_auto10_002/sac_mamba.py",
+      "module_name": "codegen_sac_mamba",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": 8,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_03_sac_mamba_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/sac_mamba.py",
+        "MODULE_NAME": "codegen_sac_mamba",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_04_swin_unetr_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_swin_unetr_ema_stable_gradient_0d13265864",
+      "model_file": "generated_models/v5_controller_auto10_002/swin_unetr.py",
+      "module_name": "codegen_swin_unetr",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_04_swin_unetr_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/swin_unetr.py",
+        "MODULE_NAME": "codegen_swin_unetr",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_05_transolver_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_transolver_transolver_gradient_cosine_ema_168a4acb3b",
+      "model_file": "generated_models/v5_controller_auto10_002/transolver.py",
+      "module_name": "codegen_transolver",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_05_transolver_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/transolver.py",
+        "MODULE_NAME": "codegen_transolver",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_06_transolver_lite_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_transolver_lite_transolver_lite_gradient_cosine_ema_72e0bedad4",
+      "model_file": "generated_models/v5_controller_auto10_002/transolver_lite.py",
+      "module_name": "codegen_transolver_lite",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_06_transolver_lite_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/transolver_lite.py",
+        "MODULE_NAME": "codegen_transolver_lite",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_07_unet_v3_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_unet_v3_depth7_gradient_cosine_326ed0de53",
+      "model_file": "generated_models/v5_controller_auto10_002/unet_v3.py",
+      "module_name": "codegen_unet_v3",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_07_unet_v3_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/unet_v3.py",
+        "MODULE_NAME": "codegen_unet_v3",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_08_uno_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_uno_uno_gradient_low_lr_ema_87c4c1a522",
+      "model_file": "generated_models/v5_controller_auto10_002/uno.py",
+      "module_name": "codegen_uno",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_08_uno_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/uno.py",
+        "MODULE_NAME": "codegen_uno",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    },
+    {
+      "run_id": "r_auto10c_09_mamba_attention_smoke20",
+      "source_campaign": "v5_ai_curated_001",
+      "source_run_id": "r_mamba_attention_mamba_attention_gradient_default_4205b0428b",
+      "model_file": "generated_models/v5_controller_auto10_002/mamba_attention.py",
+      "module_name": "codegen_mamba_attention",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": 8,
+      "command": "bash scripts/crc_codegen_smoke_one.sh",
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_002_smoke20",
+        "RUN_ID": "r_auto10c_09_mamba_attention_smoke20",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_002/mamba_attention.py",
+        "MODULE_NAME": "codegen_mamba_attention",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "smoke20"
+      }
+    }
+  ],
+  "safety": {
+    "materialize": false,
+    "submit": false,
+    "live_crc": false,
+    "execute_repair": false
+  }
+}

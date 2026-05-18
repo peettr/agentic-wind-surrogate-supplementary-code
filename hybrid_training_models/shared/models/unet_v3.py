@@ -1,0 +1,116 @@
+"""Parameterized UNet supporting 5, 6, or 7 encoder levels.
+
+Derived from v2's ``unet_lu_7level.py``. ``ConvBlock``, ``_pad_cat``, and the
+``Conv2d(1x1) -> ReLU`` output head are kept byte-identical to v2. Depth is the
+only structural parameter exposed so a single class realizes all three variants.
+
+Channel schedule (doubling per level): ``n_c * 2**k`` for ``k = 0..depth``.
+"""
+from __future__ import annotations
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+from .base import BaseSurrogate
+
+
+class ConvBlock(nn.Module):
+    """Two Conv3x3 + BN + ReLU layers. Byte-identical to v2."""
+
+    def __init__(self, in_ch: int, out_ch: int) -> None:
+        super().__init__()
+        self.block = nn.Sequential(
+            nn.Conv2d(in_ch, out_ch, 3, padding=1, bias=False),
+            nn.BatchNorm2d(out_ch),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(out_ch, out_ch, 3, padding=1, bias=False),
+            nn.BatchNorm2d(out_ch),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.block(x)
+
+
+def _pad_cat(x: torch.Tensor, skip: torch.Tensor) -> torch.Tensor:
+    """Pad ``x`` to ``skip``'s spatial size, then concatenate on channel axis."""
+    dh = skip.size(2) - x.size(2)
+    dw = skip.size(3) - x.size(3)
+    if dh != 0 or dw != 0:
+        x = F.pad(x, [dw // 2, dw - dw // 2, dh // 2, dh - dh // 2])
+    return torch.cat([x, skip], dim=1)
+
+
+class UNet(BaseSurrogate):
+    """Parameterized encoder–decoder UNet.
+
+    Args:
+        depth: number of encoder stages (5, 6 or 7). Each stage halves resolution.
+        n_c:   base channel count; channel widths double per stage (default 16).
+    """
+
+    SUPPORTED_DEPTHS = (5, 6, 7)
+
+    def __init__(self, depth: int = 7, n_c: int = 16) -> None:
+        super().__init__()
+        if depth not in self.SUPPORTED_DEPTHS:
+            raise ValueError(f"depth must be in {self.SUPPORTED_DEPTHS}, got {depth}")
+        self.depth = depth
+        self.n_c = n_c
+        self.pool = nn.MaxPool2d(2, 2)
+
+        enc_channels = [n_c * (2 ** k) for k in range(depth)]
+        bottleneck_ch = enc_channels[-1] * 2
+
+        self.enc_blocks = nn.ModuleList()
+        prev = 1  # single-channel input
+        for ch in enc_channels:
+            self.enc_blocks.append(ConvBlock(prev, ch))
+            prev = ch
+        self.bottleneck = ConvBlock(enc_channels[-1], bottleneck_ch)
+
+        self.up_blocks = nn.ModuleList()
+        self.dec_blocks = nn.ModuleList()
+        prev = bottleneck_ch
+        for ch in reversed(enc_channels):
+            # v2-identical ConvTranspose2d: kernel=3, stride=2, padding=1, output_padding=1.
+            self.up_blocks.append(
+                nn.ConvTranspose2d(prev, ch, 3, stride=2, padding=1, output_padding=1)
+            )
+            # After _pad_cat we concatenate the skip (same channel count) → 2*ch.
+            self.dec_blocks.append(ConvBlock(2 * ch, ch))
+            prev = ch
+
+        # Output head — v2 exact: 1x1 conv followed by ReLU (non-negative wind speed).
+        self.out_conv = nn.Sequential(
+            nn.Conv2d(n_c, 1, kernel_size=1),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        skips: list[torch.Tensor] = []
+        h = x
+        for i, enc in enumerate(self.enc_blocks):
+            h = enc(h if i == 0 else self.pool(h))
+            skips.append(h)
+        h = self.bottleneck(self.pool(skips[-1]))
+
+        for up, dec, skip in zip(self.up_blocks, self.dec_blocks, reversed(skips)):
+            h = dec(_pad_cat(up(h), skip))
+        return self.out_conv(h)
+
+
+if __name__ == "__main__":
+    for d in UNet.SUPPORTED_DEPTHS:
+        m = UNet(depth=d, n_c=16)
+        n_params = sum(p.numel() for p in m.parameters())
+        x = torch.randn(1, 1, 640, 640)
+        with torch.no_grad():
+            y = m(x)
+        print(f"depth={d}: params={n_params:,}  out={tuple(y.shape)}")
+
+
+# Alias for Auto V6 script_path loading by registry arch_name.
+unet_v3 = UNet
+

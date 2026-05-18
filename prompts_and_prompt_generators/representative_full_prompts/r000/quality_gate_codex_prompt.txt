@@ -1,0 +1,589 @@
+You are the Auto V6 proposal quality gate.
+Review the synthesized proposal pack for schema validity, duplicates, hard-rule violations, and locked data/eval contract violations.
+Phase A policy: do not hard-reject hypothesis/rationale weaknesses. Preserve rationale metadata if present and use soft warnings for missing hypothesis/paired comparisons.
+Also flag if the pack has collapsed into an overly narrow local HP, capacity, or high-n_c sweep around one architecture without explicit justification; preserve architecture-level diversity when minimally repairing.
+Scout weighting audit: primary scouts ['claude', 'codex', 'gemini'] are the main decision/proposal sources; diversity scouts ['deepseek', 'grok', 'mimo'] are auxiliary mechanism/critique context, not same-weight TrainConfig competitors. Check whether the synthesized pack reasonably used or explicitly explained diversity auxiliary_ideas. At most 2-3 final proposals may carry diversity influence. When diversity ideas are used, ensure _proposal_rationale.source_scouts includes the diversity scout(s), diversity_influence=true, and diversity_ideas_used/reason_if_diversity_kept explains the absorbed mechanism; when none are used, return a concise diversity_unused_reason. Final returned proposals must be contract-clean; raw diversity ideas should not be rejected merely for repairable schema/loss/epoch/batch/input issues, but suggested_contract_repairs must be applied before final output. Use risk language only for truly infeasible/resource-blocked/unparseable proposals.
+Soft target mix: about 6 exploit and 6 explorer proposals. Exploit does not explore; explorer must introduce new model/mechanism value, not merely old arch_name plus larger n_c/depth. Do not use this target to violate hard train/data constraints.
+Flag explorer proposals that lack novelty_rationale or new_model_mechanism/transferred_mechanism. Batch-size lock: ordinary Auto V6 candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.
+Do not take over global search strategy. Preserve the synthesis model's scientific intent unless a proposal is invalid or duplicated.
+You may minimally repair fields to satisfy the TrainConfig/search-space contract. Hard repair any data-setting violation to seed=1 and a valid existing input_features contract, defaulting to height. Do not invent new data paths, splits, metrics, or unsupported input features.
+Return only JSON: {"ok": true/false, "issues": [strings], "diversity_unused_reason": "required if no diversity influence, else null", "proposals": [reviewed configs...]}.
+
+TARGET_COUNT: 12
+
+PLANNER_CONTEXT_CONTRACT:
+{
+  "hard_rules": {
+    "planner_role": "Scout proposes experiments only; runner/controller handle execution and retry/repair.",
+    "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
+    "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
+    "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
+    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
+    "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
+    "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
+    "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
+    "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
+    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
+    "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
+    "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
+    "exact_output": "Return only JSON in the form {\"proposals\": [hypothesis-bundle proposals or concrete experiment configs]}. No markdown, no prose outside JSON."
+  },
+  "train_config_contract": {
+    "required_fields": [
+      "experiment_id",
+      "arch_name",
+      "n_c",
+      "depth",
+      "loss_name",
+      "lr",
+      "batch_size",
+      "input_features",
+      "epochs",
+      "seed",
+      "use_ema",
+      "ema_decay",
+      "augmentation"
+    ],
+    "default_input_features": "height",
+    "valid_input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "locked_seed": 1,
+    "current_seed_policy": "Hard rule: seed must be 1. Multi-seed is not allowed in this campaign unless the human researcher explicitly changes the hard rule.",
+    "full_epochs": 200,
+    "smoke_epochs": 20
+  }
+}
+
+SYNTHESIZED_PROPOSALS:
+[
+  {
+    "experiment_id": "ev6_r0_e01_unet_sdf_anchor",
+    "arch_name": "unet_sdf_7level",
+    "n_c": 32,
+    "depth": 7,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.001,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": false,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "H-001",
+      "hypothesis": "SDF-augmented deep UNet at the Auto11 best configuration reproduces above-baseline val R2_median in the locked Auto V6 train/eval contract.",
+      "primary_purpose": "score",
+      "paired_comparison": "ev6_r0_e05_unetv2_control (height-only baseline) and ev6_r0_e02_unet_sdf_l1_ema (loss/EMA ablation)",
+      "decision_rule": "Continue family in R1 if val R2_median exceeds 0.708503 baseline by >=0.005.",
+      "expected_success": "val R2_median in [0.71, 0.74].",
+      "expected_failure_interpretation": "Pipeline drift or SDF feature contract not transferring cleanly into Auto V6.",
+      "risk_class": "low",
+      "resource_expectation": "high_vram",
+      "source_type": "Auto11_initial_knowledge_exploit",
+      "capacity_rationale": "n_c=32 depth=7 ~125.8M is required because input_channels=3 SDF stem and 7-level depth are intrinsic to the winning auto11_003_05 family; below 150M cap.",
+      "novelty_rationale": "Not novel; serves as exploit anchor.",
+      "evidence_refs": [
+        "auto_v6\\campaigns\\auto_v6\\knowledge\\model_results.csv",
+        "auto11_003_05_unet_sdf_7level"
+      ],
+      "source_note": "Auto11 best val R2_median 0.7349.",
+      "source_scouts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "diversity_influence": false,
+      "diversity_unused_reason": "Diversity scouts (deepseek, grok, mimo) largely echoed EXT_01..EXT_12 mechanism transfers already covered by primary-scout explorer slots; mimo MoE/curriculum and spectral-loss ideas not absorbed because they alter training/loss contract or risk small-batch instability under seed=1 single-seed policy.",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_e02_unet_sdf_l1_ema",
+    "arch_name": "unet_sdf_7level",
+    "n_c": 32,
+    "depth": 7,
+    "loss_name": "masked_l1",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "H-001",
+      "hypothesis": "L1+EMA at lr=5e-4 reproduces the second strong Auto11 SDF mode and tests stability vs the gradient-loss anchor.",
+      "primary_purpose": "ablation",
+      "paired_comparison": "ev6_r0_e01_unet_sdf_anchor (same arch/depth/n_c, different loss/lr/EMA).",
+      "decision_rule": "Prefer this variant for R1 finalization if val R2_median >= e01 - 0.003 with lower per-case variance.",
+      "expected_success": "val R2_median in [0.71, 0.73] with smoother training curve.",
+      "expected_failure_interpretation": "EMA underdamps at this lr; suggests gradient-loss mode is the only viable SDF setting.",
+      "risk_class": "low",
+      "resource_expectation": "high_vram",
+      "source_type": "Auto11_initial_knowledge_exploit",
+      "capacity_rationale": "Identical capacity to e01 by design; isolates loss/EMA effect.",
+      "novelty_rationale": "Not novel; in-family exploit ablation.",
+      "evidence_refs": [
+        "auto11_018_04_unet_sdf_7level",
+        "auto11_019_04_unet_sdf_7level"
+      ],
+      "source_note": "Auto11 evidence shows L1+EMA at lr=5e-4 yields val R2_median ~0.72.",
+      "source_scouts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_e03_fourier_l1_ema",
+    "arch_name": "fourier_unet",
+    "n_c": 24,
+    "depth": 4,
+    "loss_name": "masked_l1",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "H-002",
+      "hypothesis": "Fourier-UNet at the Auto11-best lr=5e-4 + L1 + EMA setting is the strongest parameter-efficient height-only path.",
+      "primary_purpose": "score",
+      "paired_comparison": "ev6_r0_e05_unetv2_control (similar params, height-only) and ev6_r0_x01_fourier_wtconv (wavelet-augmented variant).",
+      "decision_rule": "Keep family open if val R2_median >= 0.708; cool down if below 0.68.",
+      "expected_success": "val R2_median ~ 0.71-0.72 at ~34M params.",
+      "expected_failure_interpretation": "Auto11 fourier_unet success was wrapper-specific.",
+      "risk_class": "low",
+      "resource_expectation": "normal",
+      "source_type": "Auto11_initial_knowledge_exploit",
+      "capacity_rationale": "n_c=24 depth=4 (~34M) matches Auto11 ranked configuration; no capacity inflation.",
+      "novelty_rationale": "Not novel; second exploit anchor.",
+      "evidence_refs": [
+        "auto11_011_03_fourier_unet"
+      ],
+      "source_note": "Auto11 best fourier_unet val R2_median 0.7213.",
+      "source_scouts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_e04_fourier_grad",
+    "arch_name": "fourier_unet",
+    "n_c": 24,
+    "depth": 4,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": false,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "H-002",
+      "hypothesis": "Fourier-UNet's spectral path may benefit more from gradient supervision than from EMA-smoothed L1.",
+      "primary_purpose": "ablation",
+      "paired_comparison": "ev6_r0_e03_fourier_l1_ema at identical n_c/depth/lr.",
+      "decision_rule": "Prefer gradient variant if val R2_median improves without material MAE_median penalty.",
+      "expected_success": "val R2_median in [0.69, 0.72].",
+      "expected_failure_interpretation": "Fourier-UNet better exploited as a smooth-field model.",
+      "risk_class": "low",
+      "resource_expectation": "normal",
+      "source_type": "Auto11_initial_knowledge_exploit",
+      "capacity_rationale": "Same n_c=24 depth=4 as e03; isolates loss/EMA without capacity change.",
+      "novelty_rationale": "Not novel; paired loss/EMA ablation.",
+      "evidence_refs": [
+        "auto11_009_04_fourier_unet"
+      ],
+      "source_note": "Auto11 successful Fourier gradient low-LR row.",
+      "source_scouts": [
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_e05_unetv2_control",
+    "arch_name": "unet_v2_baseline",
+    "n_c": 16,
+    "depth": 7,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.001,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": false,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "H-005",
+      "hypothesis": "Height-only baseline UNet under Auto V6 contract reproduces near-baseline val R2_median, providing the in-campaign control reference.",
+      "primary_purpose": "reference",
+      "paired_comparison": "ev6_r0_e01_unet_sdf_anchor (height_sdf_normal counterpart) and ev6_r0_e03_fourier_l1_ema (parameter-comparable height-only).",
+      "decision_rule": "Flag pipeline drift if val R2_median falls outside [0.66, 0.72]; otherwise treated as control.",
+      "expected_success": "val R2_median ~ 0.69-0.71.",
+      "expected_failure_interpretation": "Material drift from Auto11 0.7086 indicates pipeline changes affecting all R0 rankings.",
+      "risk_class": "low",
+      "resource_expectation": "normal",
+      "source_type": "Auto11_initial_knowledge_control",
+      "capacity_rationale": "34.6M; standard control capacity from V3/Auto11.",
+      "novelty_rationale": "Reference; no novelty claim.",
+      "evidence_refs": [
+        "auto11_019_05_unet_v2_baseline",
+        "grid18_200ep_baseline"
+      ],
+      "source_note": "Required contemporaneous height-only control for H-005.",
+      "source_scouts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_e06_dilated_unet_efficient",
+    "arch_name": "dilated_unet",
+    "n_c": 16,
+    "depth": 5,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.001,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": false,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "exploit",
+      "hypothesis_id": "H-005",
+      "hypothesis": "Small dilated_unet (depth=5, n_c=16) reproduces Auto11 parameter-efficient near-baseline result and tests whether dilation at small capacity is competitive with unet_v2_baseline at larger params.",
+      "primary_purpose": "ablation",
+      "paired_comparison": "ev6_r0_e05_unetv2_control (UNet without dilation, larger params).",
+      "decision_rule": "Continue dilation family in R1 if val R2_median within 0.01 of e05 at < half the parameters.",
+      "expected_success": "val R2_median ~ 0.68-0.70 at ~14.8M params.",
+      "expected_failure_interpretation": "Dilation gains do not survive at small capacity in locked Auto V6 contract.",
+      "risk_class": "low",
+      "resource_expectation": "normal",
+      "source_type": "Auto11_initial_knowledge_exploit",
+      "capacity_rationale": "Intentionally small (depth=5, n_c=16, ~14.8M); explicitly avoids the 498M n_c=32 depth=7 oversize.",
+      "novelty_rationale": "Not novel; parameter-efficient exploit ablation.",
+      "evidence_refs": [
+        "auto11_007_09_dilated_unet"
+      ],
+      "source_note": "Auto11 dilated_unet val R2_median 0.7039 at ~14.8M.",
+      "source_scouts": [
+        "claude"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_x01_fourier_wtconv",
+    "arch_name": "fourier_unet_wtconv",
+    "n_c": 16,
+    "depth": 4,
+    "loss_name": "masked_l1",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H-NEW-WTCONV",
+      "hypothesis": "Inserting a fixed-Haar wavelet depthwise convolution adapter at one decoder fusion stage of fourier_unet expands effective receptive field without channel/depth widening, yielding >=0.005 val R2_median lift over matched-capacity fourier_unet baseline.",
+      "primary_purpose": "new_mechanism",
+      "paired_comparison": "ev6_r0_e03_fourier_l1_ema (no WTConv); codegen ablation replaces WTConv with depthwise 3x3 conv at matched param count.",
+      "decision_rule": "Promote in R1 if val R2_median >= e03 + 0.005 at <=105% params.",
+      "expected_success": "val R2_median 0.715-0.730 with <5% added params over e03.",
+      "expected_failure_interpretation": "Wavelet locality offers no measurable lift at this scale; mechanism cooled down.",
+      "risk_class": "low",
+      "resource_expectation": "normal",
+      "source_type": "literature_adjacent",
+      "new_model_mechanism": "fourier_unet decoder fusion stage augmented with WTConv2d Haar wavelet residual adapter (per-band depthwise conv + IDWT).",
+      "capacity_rationale": "n_c=16 depth=4 keeps total well under fourier_unet baseline; tests receptive-field expansion via wavelet decomposition rather than width/depth.",
+      "novelty_rationale": "Composes a fixed-basis multi-resolution depthwise mixer into a Fourier-UNet pipeline; not a depth/width sweep of an existing arch.",
+      "evidence_refs": [
+        "EV6_R0_EXT_04"
+      ],
+      "source_note": "External web review EV6_R0_EXT_04 (highest keep_score 4.5).",
+      "topic_cluster": "multi_scale_refinement",
+      "query_tier": "D_mechanism_only",
+      "height_only_translation": "Fixed Haar wavelet transform applied to learned feature maps from height-only encoder; per-band depthwise conv; inverse transform; no extra input channels or solver.",
+      "ablation_removes_mechanism": "Replace WTConv block with depthwise 3x3 conv at matched channels (codegen variant).",
+      "source_scouts": [
+        "claude",
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_x02_unetv3_pointrefine",
+    "arch_name": "unet_v3_pointrefine",
+    "n_c": 16,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H-NEW-POINTREF",
+      "hypothesis": "Adaptive point-refinement head selecting cells by height-gradient + uncertainty improves prediction in high-error edge regions while keeping added params tiny, lifting val R2_median over a matched unet_v3 baseline.",
+      "primary_purpose": "new_mechanism",
+      "paired_comparison": "Same unet_v3 n_c=16 depth=6 without refinement head (codegen ablation variant).",
+      "decision_rule": "Continue if val R2_median >= matched-base unet_v3 + 0.005 with selected fraction <=10% of cells.",
+      "expected_success": "val R2_median in [0.69, 0.72]; per-case MAE worst-quartile improves visibly.",
+      "expected_failure_interpretation": "Hard top-k selection brittle at high resolution; mechanism cooled down.",
+      "risk_class": "medium",
+      "resource_expectation": "normal",
+      "source_type": "literature_adjacent",
+      "new_model_mechanism": "unet_v3 decoder + RefinementPointHead (scoring conv on coarse_pred/decoder_feat/height_grad, top-k sparse MLP refinement, scatter).",
+      "capacity_rationale": "depth=6 (not 7) and n_c=16 keep base under 70M; refinement head sparse (<1M params).",
+      "novelty_rationale": "Adds a sparse content-adaptive head, not a width/depth tweak.",
+      "evidence_refs": [
+        "EV6_R0_EXT_02"
+      ],
+      "source_note": "External web review EV6_R0_EXT_02 (keep_score 4.0).",
+      "topic_cluster": "segmentation_boundary_refinement",
+      "query_tier": "B_dense_prediction_vision",
+      "height_only_translation": "Selection scores from height-gradient + coarse-prediction uncertainty; 2-layer MLP refines a capped fraction of cells; scattered into same 2D output grid; no boundary labels or extra channels.",
+      "ablation_removes_mechanism": "Disable adaptive selection (use coarse decoder output only).",
+      "source_scouts": [
+        "claude",
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_x03_cno_lrbasis",
+    "arch_name": "cno_lrbasis",
+    "n_c": 16,
+    "depth": 4,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H-NEW-LRBASIS",
+      "hypothesis": "A height-conditioned low-rank operator basis (K=8 grid-aligned learned basis maps with predicted coefficients) added to cno gives a parameter-efficient global-mode pathway that improves val R2_median over a basis-off matched-capacity cno baseline.",
+      "primary_purpose": "new_mechanism",
+      "paired_comparison": "Same cno n_c=16 depth=4 with low-rank basis path removed (matched-base ablation, codegen variant).",
+      "decision_rule": "Continue mechanism in R1 if val R2_median >= basis-off ablation + 0.005 with <=10% extra params.",
+      "expected_success": "val R2_median in [0.65, 0.71]; clear lift over cno without basis path.",
+      "expected_failure_interpretation": "K=8 underfits or basis path overlaps with existing decoder modes; mechanism cooled down.",
+      "risk_class": "medium",
+      "resource_expectation": "normal",
+      "source_type": "literature_adjacent",
+      "new_model_mechanism": "cno + LowRankOperatorHead (K=8 basis maps) with additive CNN residual refinement.",
+      "capacity_rationale": "n_c=16 depth=4 keeps cno under 30M; K=8 single mechanism choice (not a sweep); explicitly avoids forbidden CNO n_c>=40 depth>=6 batch_size>=16 regime.",
+      "novelty_rationale": "Introduces a low-rank global-mode mechanism into a neural-operator architecture; distinct from any width/depth tuning.",
+      "evidence_refs": [
+        "EV6_R0_EXT_12"
+      ],
+      "source_note": "External web review EV6_R0_EXT_12 (keep_score 4.0).",
+      "topic_cluster": "direct_cfd_neural_operator",
+      "query_tier": "A_direct_cfd_neural_operator",
+      "height_only_translation": "Branch encoder consumes only height grid; predicts coefficients for K=8 learned grid-aligned basis maps; low-rank pressure estimate fused additively with local CNN residual. No DeepONet trunk over arbitrary point queries.",
+      "ablation_removes_mechanism": "Remove the learned basis path; keep only the CNN residual decoder.",
+      "source_scouts": [
+        "claude",
+        "codex"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_x04_unetv3_geomtok",
+    "arch_name": "unet_v3_geomtok",
+    "n_c": 16,
+    "depth": 6,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H-NEW-GEOMTOK",
+      "hypothesis": "Patch-pooled geometry tokens with shallow cross-attention provide global shape conditioning without SDF inputs, lifting unet_v3 above its matched scalar-conditioning ablation.",
+      "primary_purpose": "new_mechanism",
+      "paired_comparison": "Same unet_v3 n_c=16 depth=6 with global-avg-pooled scalar conditioning instead of geometry-token cross-attention (codegen ablation).",
+      "decision_rule": "Continue if val R2_median >= scalar-conditioning ablation + 0.005 without instability or excessive memory.",
+      "expected_success": "val R2_median in [0.68, 0.72]; clear win over avg-pool ablation.",
+      "expected_failure_interpretation": "Token bottleneck discards too much boundary detail at 640x640.",
+      "risk_class": "medium",
+      "resource_expectation": "normal",
+      "source_type": "literature_adjacent",
+      "new_model_mechanism": "unet_v3 augmented with GeometryTokenMixer: <=32 patch-pooled tokens + 1-2 cross-attention layers from grid features to tokens + residual fuse.",
+      "capacity_rationale": "n_c=16 depth=6 (~31M base) and <=32 tokens avoid quadratic attention; mechanism-focused.",
+      "novelty_rationale": "New cross-attention geometry-conditioning composition; not an old arch with larger capacity.",
+      "evidence_refs": [
+        "EV6_R0_EXT_11"
+      ],
+      "source_note": "External web review EV6_R0_EXT_11 (keep_score 4.0).",
+      "topic_cluster": "geometry_aware_cfd",
+      "query_tier": "A_direct_cfd_neural_operator",
+      "height_only_translation": "Tokens are pooled from height encoder features; no SDF, normals, point cloud, mesh, or extra labels are introduced.",
+      "ablation_removes_mechanism": "Replace cross-attention to geometry tokens with global average-pooled scalar conditioning.",
+      "source_scouts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_x05_fno2d_lora",
+    "arch_name": "fno2d_lora",
+    "n_c": 16,
+    "depth": 4,
+    "loss_name": "masked_l1_gradient",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H-NEW-LORA",
+      "hypothesis": "A rank-8 LoRA-style residual adapter on fno2d's spectral mixing and 1x1 projections gives a tiny low-rank correction path that improves val R2_median over the matched-params no-adapter fno2d baseline at <5% added parameters.",
+      "primary_purpose": "new_mechanism",
+      "paired_comparison": "Same fno2d n_c=16 depth=4 with adapter gates zeroed (full ablation, codegen variant).",
+      "decision_rule": "Promote in R1 if val R2_median >= fno2d baseline + 0.005 at <5% added params.",
+      "expected_success": "val R2_median in [0.50, 0.65] with clear lift over adapter-off ablation.",
+      "expected_failure_interpretation": "Low-rank residuals add capacity but no signal; mechanism deprioritized for spectral architectures.",
+      "risk_class": "low",
+      "resource_expectation": "normal",
+      "source_type": "literature_adjacent",
+      "new_model_mechanism": "fno2d with AdapterConv2d/AdapterSpectralDelta inserted behind targeted projections at rank=8, gated zero-init.",
+      "capacity_rationale": "n_c=16 depth=4 keeps fno2d ~12M; adapter rank fixed (single mechanism choice, not a sweep).",
+      "novelty_rationale": "Introduces parameter-efficient adaptation into a spectral neural-operator architecture; distinct from HP scaling.",
+      "evidence_refs": [
+        "EV6_R0_EXT_06"
+      ],
+      "source_note": "External web review EV6_R0_EXT_06 (keep_score 4.0); also reinforced by deepseek diversity scout (auxiliary).",
+      "topic_cluster": "peft_tta_adapters",
+      "query_tier": "D_mechanism_only",
+      "height_only_translation": "Rank-r residual deltas on selected 1x1 projections and spectral mixing weights inside fno2d; gated zero-init; operates on height-only latents.",
+      "ablation_removes_mechanism": "Set adapter gates to zero (base fno2d unchanged).",
+      "source_scouts": [
+        "codex",
+        "gemini"
+      ],
+      "source_weight": "primary",
+      "contract_clean": true
+    }
+  },
+  {
+    "experiment_id": "ev6_r0_x06_unetv3_gausres",
+    "arch_name": "unet_v3_gausres",
+    "n_c": 16,
+    "depth": 6,
+    "loss_name": "masked_l1",
+    "lr": 0.0005,
+    "batch_size": 16,
+    "input_features": "height",
+    "epochs": 200,
+    "seed": 1,
+    "use_ema": true,
+    "ema_decay": 0.999,
+    "augmentation": false,
+    "_proposal_rationale": {
+      "role": "explorer",
+      "hypothesis_id": "H-NEW-GAUSRES",
+      "hypothesis": "A Gaussian residual splatting head with clamped anisotropic covariance and bounded sub-cell offsets, attached to unet_v3, recovers fine-scale residuals beyond bilinear upsample at matched parameter count, improving MAE_median in particular.",
+      "primary_purpose": "new_mechanism",
+      "paired_comparison": "Same unet_v3 n_c=16 depth=6 with Gaussian head replaced by 1x1 residual conv at matched params (codegen ablation variant).",
+      "decision_rule": "Promote if val R2_median >= matched ablation AND val MAE_median improves by >=0.002 over ablation.",
+      "expected_success": "val R2_median in [0.68, 0.71] with measurable MAE improvement on edge cases.",
+      "expected_failure_interpretation": "Splatting introduces ringing near steep height edges; mechanism deprioritized.",
+      "risk_class": "medium",
+      "resource_expectation": "normal",
+      "source_type": "literature_adjacent",
+      "new_model_mechanism": "unet_v3 + GaussianResidualHead with clamped log-covariance ([0.01,0.5]) and bounded sub-cell offset ([-0.4,0.4]).",
+      "capacity_rationale": "n_c=16 depth=6 keeps base ~31M; Gaussian head consists of small projection convs over a deterministic fixed splat (not a width sweep).",
+      "novelty_rationale": "Introduces a content-adaptive rendering primitive distinct from any depth/n_c scaling.",
+      "evidence_refs": [
+        "EV6_R0_EXT_01"
+      ],
+      "source_note": "External web review EV6_R0_EXT_01 (keep_score 4.0); covariance/offset clamp ranges absorbed from grok diversity scout suggestion.",
+      "topic_cluster": "dense_regression_decoder",
+      "query_tier": "B_dense_prediction_vision",
+      "height_only_translation": "Coarse pressure features and per-cell anisotropic Gaussian residual parameters predicted from height-only latent; differentiable splat back onto same 2D output grid; no SDF/normals/coordinate queries.",
+      "ablation_removes_mechanism": "Replace differentiable Gaussian rendering with bilinear upsample + 1x1 conv at matched params.",
+      "source_scouts": [
+        "claude",
+        "gemini",
+        "grok"
+      ],
+      "source_weight": "primary",
+      "diversity_influence": true,
+      "diversity_ideas_used": [
+        "grok: Gaussian head covariance/offset clamp ranges (cov_clamp [0.01,0.5], offset_clamp [-0.4,0.4]) for ringing prevention"
+      ],
+      "contract_clean": true
+    }
+  }
+]

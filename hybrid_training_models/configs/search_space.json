@@ -1,0 +1,98 @@
+{
+    "search_space": {
+        "architecture": {
+            "type": "categorical",
+            "values": [
+                "unet_v2_baseline",
+                "dilated_unet",
+                "quadmamba",
+                "mamba2d",
+                "umamba",
+                "ag_unet",
+                "sac_unet",
+                "hrdcn",
+                "fourier_unet",
+                "cno"
+            ],
+            "v3_best": "dilated_unet",
+            "v3_notes": "UNet family dominates; FNO family closed"
+        },
+        "n_c": {
+            "type": "integer",
+            "min": 8,
+            "max": 48,
+            "step": 8,
+            "v3_best": 32,
+            "v3_notes": "n_c=32 is sweet spot; 16 too narrow, 48+ too expensive"
+        },
+        "depth": {
+            "type": "integer",
+            "min": 5,
+            "max": 7,
+            "v3_best": 7,
+            "v3_notes": "depth=7 for full 640->5 resolution pyramid"
+        },
+        "loss_name": {
+            "type": "categorical",
+            "values": ["masked_l1", "masked_l1_gradient", "masked_huber"],
+            "v3_best": "masked_l1",
+            "v3_notes": "l1 and l1_gradient are competitive; huber is worse"
+        },
+        "lr": {
+            "type": "float",
+            "min": 3e-4,
+            "max": 2e-3,
+            "v3_best": 5e-4,
+            "v3_notes": "5e-4 and 1e-3 both viable; 2e-3 too high"
+        },
+        "scheduler": {
+            "type": "categorical",
+            "values": [null, "cosine"],
+            "v3_best": null,
+            "v3_notes": "cosine has mixed results; no scheduler is safe"
+        },
+        "weight_decay": {
+            "type": "float",
+            "min": 0.0,
+            "max": 1e-4,
+            "v3_best": 0.0,
+            "v3_notes": "wd has minimal effect in V3"
+        },
+        "use_ema": {
+            "type": "boolean",
+            "v3_best": true,
+            "v3_notes": "EMA 0.999 helps at lr=5e-4, best run_12 R2=0.706"
+        },
+        "augmentation": {
+            "type": "boolean",
+            "v3_best": false,
+            "v3_notes": "Augmentation breaks physical orientation, -0.37 R2"
+        },
+        "input_features": {
+            "type": "categorical",
+            "values": ["height", "height_sdf", "height_sdf_normal"],
+            "v3_best": "height_sdf_normal",
+            "v3_notes": "SDF 3ch gives +0.044 R2 over height-only"
+        },
+        "epochs": {
+            "type": "integer",
+            "values": [200, 500, 1000],
+            "v3_best": 200,
+            "v3_notes": "200ep is cost-effective; 1000ep gives +0.029 R2 at 5x cost"
+        }
+    },
+    "constraints": {
+        "max_params_million": 150,
+        "max_vram_gb": 48,
+        "max_wall_time_min": 120,
+        "forbidden_combinations": [
+            {"augmentation": true},
+            {"arch_name": "fno2d"},
+            {"arch_name": "afno"},
+            {"arch_name": "perceiver"},
+            {"arch_name": "cnn_deeponet"},
+            {"arch_name": "nafnet"},
+            {"arch_name": "transolver_lite"}
+        ]
+    }
+}

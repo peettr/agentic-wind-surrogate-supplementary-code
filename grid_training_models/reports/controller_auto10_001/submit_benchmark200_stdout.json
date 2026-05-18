@@ -1,0 +1,262 @@
+{
+  "campaign": "v5_controller_auto10_001_benchmark200",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "stage": "benchmark200",
+  "summary": {
+    "runs": 10
+  },
+  "runs": [
+    {
+      "run_id": "r_auto10b_00_afno_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_00_afno_smoke20_repair4",
+      "model_file": "generated_models/v5_controller_auto10_001/afno.py",
+      "module_name": "codegen_afno",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_00_afno_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/afno.py",
+        "MODULE_NAME": "codegen_afno",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_01_attention_mamba_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_01_attention_mamba_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/attention_mamba.py",
+      "module_name": "codegen_attention_mamba",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_01_attention_mamba_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/attention_mamba.py",
+        "MODULE_NAME": "codegen_attention_mamba",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_02_cnn_deeponet_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_02_cnn_deeponet_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/cnn_deeponet.py",
+      "module_name": "codegen_cnn_deeponet",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_02_cnn_deeponet_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/cnn_deeponet.py",
+        "MODULE_NAME": "codegen_cnn_deeponet",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_03_convnext_v2_unet_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_03_convnext_v2_unet_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/convnext_v2_unet.py",
+      "module_name": "codegen_convnext_v2_unet",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_03_convnext_v2_unet_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/convnext_v2_unet.py",
+        "MODULE_NAME": "codegen_convnext_v2_unet",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_04_dilated_fno_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_04_dilated_fno_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/dilated_fno.py",
+      "module_name": "codegen_dilated_fno",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_04_dilated_fno_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/dilated_fno.py",
+        "MODULE_NAME": "codegen_dilated_fno",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_05_dilated_hrformer_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_05_dilated_hrformer_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/dilated_hrformer.py",
+      "module_name": "codegen_dilated_hrformer",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_05_dilated_hrformer_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/dilated_hrformer.py",
+        "MODULE_NAME": "codegen_dilated_hrformer",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_06_ffno_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_06_ffno_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/ffno.py",
+      "module_name": "codegen_ffno",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_06_ffno_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/ffno.py",
+        "MODULE_NAME": "codegen_ffno",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_07_fno_encoder_decoder_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/fno_encoder_decoder.py",
+      "module_name": "codegen_fno_encoder_decoder",
+      "submit_tier": "h100_a100_l40s_12gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_07_fno_encoder_decoder_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/fno_encoder_decoder.py",
+        "MODULE_NAME": "codegen_fno_encoder_decoder",
+        "SUBMIT_TIER": "h100_a100_l40s_12gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_08_hrdcn_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_08_hrdcn_smoke20_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/hrdcn.py",
+      "module_name": "codegen_hrdcn",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_08_hrdcn_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/hrdcn.py",
+        "MODULE_NAME": "codegen_hrdcn",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    },
+    {
+      "run_id": "r_auto10b_09_hrnet_benchmark200",
+      "source_campaign": "v5_controller_auto10_001_smoke20",
+      "source_run_id": "r_auto10_09_hrnet_smoke20",
+      "model_file": "generated_models/v5_controller_auto10_001/hrnet.py",
+      "module_name": "codegen_hrnet",
+      "submit_tier": "a40_rtx6k_16gb",
+      "batch_size": null,
+      "command_env": {
+        "CAMPAIGN": "v5_controller_auto10_001_benchmark200",
+        "RUN_ID": "r_auto10b_09_hrnet_benchmark200",
+        "MODEL_FILE": "generated_models/v5_controller_auto10_001/hrnet.py",
+        "MODULE_NAME": "codegen_hrnet",
+        "SUBMIT_TIER": "a40_rtx6k_16gb",
+        "REMOTE": "<GRID_HPC_SOURCE_ROOT>",
+        "STAGE": "benchmark200"
+      },
+      "command": "bash scripts/crc_codegen_smoke_one.sh"
+    }
+  ],
+  "submit_results": [
+    {
+      "run_id": "r_auto10b_00_afno_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "=== Generate tiered Condor submit files ===\nValidated 1 train configs\nOK\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_h100_a100_l40s_12gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a40_rtx6k_16gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a10_16gb.submit\n=== Pack Auto V5 smoke test code ===\n=== Create remote project root, user wrapper, and log dir ===\n=== Upload tar and wrapper ===\nREMOTE_TRAIN_CONFIG_SCHEMA_OK <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n=== Frontend graphwind dynamic import/forward check ===\nFRONTEND_DYNAMIC_OK (1, 1, 128, 128) params 1331009 limit 150000000\n=== Submit Condor smoke test tier: h100_a100_l40s_12gb ===\nSubmitting job(s).\n1 job(s) submitted to cluster 19105.\n=== Query jobs ===\n\n\n-- Schedd: <HPC_FILE_LOGIN> : <10.32.85.47:9618?... @ 04/26/26 13:05:18\n ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE    CMD\n19094.0   lhu1            4/26 11:43   0+01:21:24 R  0   12208.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:20:37 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:20:37 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:13 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:16:57 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n\nTotal for query: 6 jobs; 0 completed, 0 removed, 1 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98858 jobs; 0 completed, 0 removed, 98149 idle, 682 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_01_attention_mamba_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "=== Generate tiered Condor submit files ===\nValidated 1 train configs\nOK\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_h100_a100_l40s_12gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a40_rtx6k_16gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a10_16gb.submit\n=== Pack Auto V5 smoke test code ===\n=== Create remote project root, user wrapper, and log dir ===\n=== Upload tar and wrapper ===\nREMOTE_TRAIN_CONFIG_SCHEMA_OK <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n=== Frontend graphwind dynamic import/forward check ===\nFRONTEND_DYNAMIC_OK (1, 1, 128, 128) params 35969713 limit 150000000\n=== Submit Condor smoke test tier: h100_a100_l40s_12gb ===\nSubmitting job(s).\n1 job(s) submitted to cluster 19106.\n=== Query jobs ===\n\n\n-- Schedd: <HPC_FILE_LOGIN> : <10.32.85.47:9618?... @ 04/26/26 13:05:25\n ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE    CMD\n19094.0   lhu1            4/26 11:43   0+01:21:31 R  0   12208.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:20:44 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:20:44 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:20 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:04 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n\nTotal for query: 7 jobs; 0 completed, 0 removed, 2 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98859 jobs; 0 completed, 0 removed, 98147 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_02_cnn_deeponet_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "=== Generate tiered Condor submit files ===\nValidated 1 train configs\nOK\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_h100_a100_l40s_12gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a40_rtx6k_16gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a10_16gb.submit\n=== Pack Auto V5 smoke test code ===\n=== Create remote project root, user wrapper, and log dir ===\n=== Upload tar and wrapper ===\nREMOTE_TRAIN_CONFIG_SCHEMA_OK <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n=== Frontend graphwind dynamic import/forward check ===\nFRONTEND_DYNAMIC_OK (1, 1, 128, 128) params 1680577 limit 150000000\n=== Submit Condor smoke test tier: a40_rtx6k_16gb ===\nSubmitting job(s).\n1 job(s) submitted to cluster 19107.\n=== Query jobs ===\n\n\n-- Schedd: <HPC_FILE_LOGIN> : <10.32.85.47:9618?... @ 04/26/26 13:05:31\n ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE    CMD\n19094.0   lhu1            4/26 11:43   0+01:21:37 R  0   12208.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:20:50 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:20:50 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:26 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:10 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n\nTotal for query: 8 jobs; 0 completed, 0 removed, 3 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98859 jobs; 0 completed, 0 removed, 98148 idle, 684 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_03_convnext_v2_unet_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "v5_controller_auto10_001_benchmark200/codegen_smoke_a40_rtx6k_16gb.submit\nWrote campaigns/v5_controller_auto10_001_benchmark200/codegen_smoke_a10_16gb.submit\n=== Pack Auto V5 smoke test code ===\n=== Create remote project root, user wrapper, and log dir ===\n=== Upload tar and wrapper ===\nREMOTE_TRAIN_CONFIG_SCHEMA_OK <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n=== Frontend graphwind dynamic import/forward check ===\nFRONTEND_DYNAMIC_OK (1, 1, 128, 128) params 7463841 limit 150000000\n=== Submit Condor smoke test tier: a40_rtx6k_16gb ===\nSubmitting job(s).\n1 job(s) submitted to cluster 19108.\n=== Query jobs ===\n\n\n-- Schedd: <HPC_FILE_LOGIN> : <10.32.85.47:9618?... @ 04/26/26 13:05:37\n ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE    CMD\n19094.0   lhu1            4/26 11:43   0+01:21:43 R  0   12208.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:20:56 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:20:56 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:32 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:16 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n\nTotal for query: 9 jobs; 0 completed, 0 removed, 4 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98860 jobs; 0 completed, 0 removed, 98148 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_04_dilated_fno_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "aigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n=== Frontend graphwind dynamic import/forward check ===\nFRONTEND_DYNAMIC_OK (1, 1, 128, 128) params 60726001 limit 150000000\n=== Submit Condor smoke test tier: h100_a100_l40s_12gb ===\nSubmitting job(s).\n1 job(s) submitted to cluster 19109.\n=== Query jobs ===\n\n\n-- Schedd: <HPC_FILE_LOGIN> : <10.32.85.47:9618?... @ 04/26/26 13:05:44\n ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE    CMD\n19094.0   lhu1            4/26 11:43   0+01:21:50 R  0   12208.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:21:03 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:21:03 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:39 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:23 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n19109.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n\nTotal for query: 10 jobs; 0 completed, 0 removed, 5 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98861 jobs; 0 completed, 0 removed, 98149 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_05_dilated_hrformer_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "dd: <HPC_FILE_LOGIN> : <10.32.85.47:9618?... @ 04/26/26 13:05:50\n ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE    CMD\n19094.0   lhu1            4/26 11:43   0+01:21:56 R  0   12208.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:21:09 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:21:09 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:45 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:29 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n19109.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n19110.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_05_dilated_hrformer_benchmark200/train_config.json\n\nTotal for query: 11 jobs; 0 completed, 0 removed, 6 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98862 jobs; 0 completed, 0 removed, 98150 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_06_ffno_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "ull_sac_unet_nc24_lr0.0007_masked_l1_gradient/train_config.json\n19098.0   lhu1            4/26 11:44   0+01:21:16 R  0    7325.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_unet_v2_baseline_nc32_lr0.001_masked_l1_gradient/train_config.json\n19099.0   lhu1            4/26 11:44   0+01:21:16 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:52 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:36 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n19109.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n19110.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_05_dilated_hrformer_benchmark200/train_config.json\n19111.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_06_ffno_benchmark200/train_config.json\n\nTotal for query: 12 jobs; 0 completed, 0 removed, 7 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98863 jobs; 0 completed, 0 removed, 98151 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "          4/26 11:44   0+01:21:23 R  0    3907.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_hrdcn_nc16_lr0.0005_masked_l1_gradient/train_config.json\n19101.0   lhu1            4/26 11:45   0+01:20:59 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:43 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n19109.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n19110.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_05_dilated_hrformer_benchmark200/train_config.json\n19111.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_06_ffno_benchmark200/train_config.json\n19112.0   lhu1            4/26 13:06   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_07_fno_encoder_decoder_benchmark200/train_config.json\n\nTotal for query: 13 jobs; 0 completed, 0 removed, 8 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98864 jobs; 0 completed, 0 removed, 98152 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_08_hrdcn_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "hu1/graph-deeponet-wind/auto_v4/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_attention_gate_unet_nc24_lr0.001_masked_l1_gradient/train_config.json\n19103.0   lhu1            4/26 11:45   0+01:17:50 R  0    9766.0 env python <SEQUENTIAL_HPC_SOURCE_ROOT>/shared/train.py --config <SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n19109.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n19110.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_05_dilated_hrformer_benchmark200/train_config.json\n19111.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_06_ffno_benchmark200/train_config.json\n19112.0   lhu1            4/26 13:06   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_07_fno_encoder_decoder_benchmark200/train_config.json\n19113.0   lhu1            4/26 13:06   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_08_hrdcn_benchmark200/train_config.json\n\nTotal for query: 14 jobs; 0 completed, 0 removed, 9 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98865 jobs; 0 completed, 0 removed, 98153 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    },
+    {
+      "run_id": "r_auto10b_09_hrnet_benchmark200",
+      "returncode": 0,
+      "stdout_tail": "/kareem/lhu1/graph-deeponet-wind/auto_v4/campaigns/phase9/runs/r005_full_cno_nc32_lr0.001_masked_l1_gradient/train_config.json\n19105.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_00_afno_benchmark200/train_config.json\n19106.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_01_attention_mamba_benchmark200/train_config.json\n19107.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_02_cnn_deeponet_benchmark200/train_config.json\n19108.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_03_convnext_v2_unet_benchmark200/train_config.json\n19109.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_04_dilated_fno_benchmark200/train_config.json\n19110.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_05_dilated_hrformer_benchmark200/train_config.json\n19111.0   lhu1            4/26 13:05   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_06_ffno_benchmark200/train_config.json\n19112.0   lhu1            4/26 13:06   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_07_fno_encoder_decoder_benchmark200/train_config.json\n19113.0   lhu1            4/26 13:06   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_08_hrdcn_benchmark200/train_config.json\n19114.0   lhu1            4/26 13:06   0+00:00:00 I  0       1.5 bash /users/lhu1/v5_controller_auto10_001_benchmark200/condor_wrapper.sh <GRID_HPC_SOURCE_ROOT>/shared/train.py --config <GRID_HPC_SOURCE_ROOT>/campaigns/v5_controller_auto10_001_benchmark200/runs/r_auto10b_09_hrnet_benchmark200/train_config.json\n\nTotal for query: 15 jobs; 0 completed, 0 removed, 10 idle, 5 running, 0 held, 0 suspended \nTotal for all users: 98866 jobs; 0 completed, 0 removed, 98154 idle, 685 running, 27 held, 0 suspended\n\n",
+      "stderr_tail": "<LOCAL_HOME_PATH> UserWarning: Field \"model_path\" has conflict with protected namespace \"model_\".\n\nYou may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n  warnings.warn(\n"
+    }
+  ]
+}

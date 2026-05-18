@@ -1,0 +1,24 @@
+{
+  "experiment_id": "r002_full_swin_unetr_nc24_lr0.0005_masked_l1",
+  "strategy": "v4_full",
+  "arch_name": "swin_unetr",
+  "arch_kwargs": {
+    "n_c": 24,
+    "depth": 7
+  },
+  "loss_name": "masked_l1",
+  "loss_kwargs": {},
+  "seed": 1,
+  "epochs": 200,
+  "lr": 0.0005,
+  "batch_size": 8,
+  "checkpoint_interval": 50,
+  "input_features": "height",
+  "eval_splits": [
+    "val"
+  ],
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r002_full_swin_unetr_nc24_lr0.0005_masked_l1",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 10
+}

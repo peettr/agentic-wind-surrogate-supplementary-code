@@ -1,0 +1,528 @@
+# Model Specs — architecture descriptions ONLY (no implementation code)
+
+# Each spec defines:
+#   name: model identifier
+#   category: baseline / tier_a / tier_b / tier_c / tier_d
+#   params_target: approximate parameter count in millions
+#   input_channels: 1 (height) or 3 (height_sdf_normal)
+#   architecture: text description of the model structure
+#   key_components: list of building blocks the model uses
+#   forward_signature: (input_shape) -> (output_shape)
+#   known_issues: any known problems or failure modes from V3
+#   depth_options: valid depth values
+#   n_c_options: valid n_c values
+#   source_reference: path to reference implementation (for codegen to read if needed)
+
+# ============================================================
+# BASELINE
+# ============================================================
+
+unet_v2_baseline:
+  category: baseline
+  params_target: 34.6
+  input_channels: 1
+  architecture: >
+    7-level UNet. Encoder: 7 ConvBlock stages, each with 2x Conv2d(3x3)+GroupNorm+GELU,
+    followed by MaxPool2d(2) for downsampling. Decoder: 7 upsample stages with
+    bilinear upsample + Conv2d(1x1) + skip concat from corresponding encoder level.
+    Final: Conv2d(1x1) to 1 channel + ReLU. Bottleneck: 2 ConvBlocks at lowest resolution (5x5).
+  key_components: [ConvBlock, skip_concat, bilinear_upsample, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [5, 6, 7]
+  n_c_options: [8, 16, 32, 48]
+  source_reference: shared/models/unet_v2_baseline.py
+
+unet_sdf_7level:
+  category: baseline
+  params_target: 34.6
+  input_channels: 3
+  architecture: >
+    Same as unet_v2_baseline but with input_channels=3 (height, SDF, normal_angle).
+    First Conv2d accepts 3 channels instead of 1. Rest identical.
+  key_components: [ConvBlock, skip_concat, bilinear_upsample, GroupNorm, GELU]
+  forward_signature: "(B,3,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [7]
+  n_c_options: [16, 32]
+  source_reference: shared/models/unet_sdf_7level.py
+
+unet_afno:
+  category: baseline
+  params_target: 11.9
+  input_channels: 1
+  architecture: >
+    UNet with AFNO spectral bottleneck at the deepest level. Standard UNet encoder/decoder
+    but at the bottleneck (lowest resolution), replace ConvBlocks with AFNO blocks:
+    2D FFT -> block-diagonal complex MLP -> inverse FFT. Uses max_modes=64 to limit
+    frequency count. Remaining levels use standard ConvBlocks.
+  key_components: [ConvBlock, AFNO_block, FFT2D, block_diagonal_MLP]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "AFNO at 640x640 has high activation memory. "
+  depth_options: [5, 6, 7]
+  n_c_options: [16, 24, 32]
+  source_reference: shared/models/unet_afno.py
+
+# ============================================================
+# TIER A — UNet Variants
+# ============================================================
+
+attention_gate_unet:
+  category: tier_a
+  params_target: 503.0
+  input_channels: 1
+  architecture: >
+    UNet with Schlemper attention gates on every skip connection. Each skip from encoder
+    is gated by a learned attention map computed from the coarser decoder feature.
+    Attention gate: W_g * g + W_x * x -> ReLU -> 1x1 conv -> sigmoid -> element-wise multiply.
+    Base architecture is 7-level UNet with n_c=32.
+  key_components: [ConvBlock, AttentionGate, skip_concat, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Very large (503M params at n_c=32). Only depth=7, n_c=32 supported."
+  depth_options: [7]
+  n_c_options: [32]
+
+dilated_unet:
+  category: tier_a
+  params_target: 498.0
+  input_channels: 1
+  architecture: >
+    UNet with DilatedConvBlock replacing standard ConvBlock. Each DilatedConvBlock
+    uses two Conv2d layers with dilation=2 (effective 5x5 receptive field without
+    increasing parameters). Same 7-level structure as baseline. n_c=32 with dilation=2
+    gives 498M params due to wider channels.
+  key_components: [DilatedConvBlock(dilation=2), skip_concat, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "498M params. Needs >= 45GB VRAM GPU."
+  depth_options: [7]
+  n_c_options: [32, 48]
+
+sac_unet:
+  category: tier_a
+  params_target: 134.0
+  input_channels: 1
+  architecture: >
+    UNet with Spatial Adaptive Convolution. Each SAC layer: standard Conv2d output
+    is modulated by per-pixel scale and shift predicted from a context branch.
+    Context branch: Conv2d -> GroupNorm -> ReLU -> Conv2d(1x1) -> 2*ch (scale+shift).
+    Modulation: out * tanh(scale) + shift. Base is 7-level UNet.
+  key_components: [SpatialAdaptiveConv, ConvBlock, skip_concat, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "SpatialAdaptiveConv is a simplified scale/shift modulation, not true per-pixel kernel."
+  depth_options: [7]
+  n_c_options: [16, 32]
+
+cbam_unet:
+  category: tier_a
+  params_target: 501.0
+  input_channels: 1
+  architecture: >
+    UNet with CBAM (Convolutional Block Attention Module) on skip connections.
+    CBAM = ChannelAttention (global avg+max pool -> FC -> sigmoid) followed by
+    SpatialAttention (channel-wise avg+max -> 7x7 conv -> sigmoid).
+    Base is 7-level UNet with n_c=32.
+  key_components: [ConvBlock, CBAM, skip_concat, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Very large (501M params). Only depth=7, n_c=32."
+  depth_options: [7]
+  n_c_options: [32]
+
+dcn_unet:
+  category: tier_a
+  params_target: 135.0
+  input_channels: 1
+  architecture: >
+    UNet with Deformable Convolution (approximated). Uses grid_sample to implement
+    a dense per-pixel spatial warp, approximating offset-based deformable convolution.
+    Each DCN layer: Conv2d -> GroupNorm -> GELU -> DenseWarp -> Conv2d -> GroupNorm -> GELU.
+    Base is 7-level UNet.
+  key_components: [DeformableConv, DenseWarp, ConvBlock, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Approximated DCN (grid_sample, not true offset-based). 135M params."
+  depth_options: [7]
+  n_c_options: [16, 32]
+
+nafnet:
+  category: tier_a
+  params_target: 5.0
+  input_channels: 1
+  architecture: >
+    NAFNet (Nonlinear Activation Free Network). Uses SimpleGate (split + multiply)
+    instead of GELU/ReLU. Each block: Conv2d -> SimpleGate -> Conv2d with skip.
+    Very lightweight. 7-level UNet structure but with n_c=8 or 16.
+  key_components: [SimpleGate, ConvBlock, skip_concat, GroupNorm]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Only 5M params. May be too small for 640x640 prediction."
+  depth_options: [7]
+  n_c_options: [8, 16]
+
+kan_unet:
+  category: tier_a
+  params_target: 22.0
+  input_channels: 1
+  architecture: >
+    UNet with Kolmogorov-Arnold Network (KAN) blocks. KAN layers use learnable
+    B-spline activation functions instead of fixed activations. Each KAN block:
+    KANLinear (B-spline basis) -> GroupNorm -> split+gate.
+  key_components: [KANBlock, KANLinear, B_spline_activation, GroupNorm]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "22M params. B-spline activations are slow."
+  depth_options: [7]
+  n_c_options: [16, 32]
+
+hrnet:
+  category: tier_a
+  params_target: 20.0
+  input_channels: 1
+  architecture: >
+    High-Resolution Network. Maintains multiple resolution streams throughout,
+    with repeated cross-resolution fusion. 4 parallel streams at decreasing
+    resolutions, with repeated exchange blocks. Final: all streams upsampled
+    to highest resolution and concatenated. Stride-4 stem reduces 640 to 160.
+  key_components: [HRStream, CrossResolutionFusion, ExchangeBlock, ConvBlock]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Stride-4 stem limits internal resolution to 160x160. Only depth=4."
+  depth_options: [4]
+  n_c_options: [16, 32]
+
+# ============================================================
+# TIER B — New Architectures
+# ============================================================
+
+umamba:
+  category: tier_b
+  params_target: 288.0
+  input_channels: 1
+  architecture: >
+    UNet with bidirectional selective SSM in bottleneck. SimpleSSMBlock implements
+    a 4-direction (row-LR, row-RL, col-TB, col-BT) selective EMA scan. Each scan:
+    h_t = bar_A * h_{t-1} + bar_B * x_t, where bar_A = exp(-dt * softplus(A)),
+    bar_B = dt * B(x_t). Four directional outputs summed. Gated by sigmoid projection.
+  key_components: [SimpleSSMBlock, bidirectional_scan, ConvBlock, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "288M params. Python loop scan is slow. Only n_c=32."
+  depth_options: [7]
+  n_c_options: [32]
+
+mamba2d:
+  category: tier_b
+  params_target: 423.0
+  input_channels: 1
+  architecture: >
+    4-direction serial EMA scan similar to UMamba but with separate projections
+    per direction. Each direction: selective scan with input-dependent B and dt.
+    Four outputs concatenated and projected. Used at bottleneck level.
+  key_components: [Mamba2DBlock, selective_scan, ConvBlock, GroupNorm]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "423M params. Python loop scan very slow. Only n_c=32."
+  depth_options: [7]
+  n_c_options: [32]
+
+quadmamba:
+  category: tier_b
+  params_target: 338.0
+  input_channels: 1
+  architecture: >
+    UNet with four-quadrant EMA scan at bottleneck. Feature map split into 4 quadrants,
+    each processed by a shared selective EMA scan with learned projection weights.
+    Outputs recombined. More parameter-efficient than full mamba2d.
+  key_components: [QuadMambaBlock, selective_scan, ConvBlock, GroupNorm]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "338M params. Only n_c=32."
+  depth_options: [7]
+  n_c_options: [32]
+
+hrformer:
+  category: tier_b
+  params_target: 13.0
+  input_channels: 1
+  architecture: >
+    Window self-attention HRNet. Multi-resolution streams with windowed
+    multi-head self-attention (window_size=8) instead of convolutions at each stream.
+    Cross-resolution fusion between streams. Stride-2 stem reduces 640 to 320.
+  key_components: [WindowSelfAttention, HRStream, CrossResolutionFusion]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Stride-2 stem reduces resolution. Only depth=4."
+  depth_options: [4]
+  n_c_options: [16, 32]
+
+swin_unetr:
+  category: tier_b
+  params_target: 12.7
+  input_channels: 1
+  architecture: >
+    Swin Transformer encoder + lightweight conv decoder. Patch embed: stride-4
+    Conv2d (640->160). 4 Swin blocks with shifted window attention at each resolution.
+    Decoder: 4 upsample stages with skip connections from encoder features.
+  key_components: [SwinBlock, PatchEmbed, shifted_window_attention, ConvDecoder]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Stride-4 patch embed reduces resolution to 160x160. Only depth=4."
+  depth_options: [4]
+  n_c_options: [16, 32]
+
+perceiver:
+  category: tier_b
+  params_target: 7.0
+  input_channels: 1
+  architecture: >
+    Latent cross-attention architecture. Input: 8-fold stride-3 Conv2d (640->80)
+    + flatten to 6400 tokens, then project to 32 latents. 6 cross-attention layers
+    alternate between attending to input and self-attention among latents.
+    Output: latents projected back to spatial (8x8), then 7x ConvTranspose2d upsample to 640.
+  key_components: [CrossAttention, SelfAttention, ConvDownsample, ConvUpsample, latents]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Resolution collapse to 32x32 latents loses spatial detail. "
+  depth_options: [6]
+  n_c_options: [16, 32]
+
+cnn_deeponet:
+  category: tier_b
+  params_target: 2.0
+  input_channels: 1
+  architecture: >
+    CNN-DeepONet. Branch: CNN encoder with global avg pool -> vector.
+    Trunk: MLP mapping 640x640 spatial positions to 64-dim features.
+    Output: element-wise product of branch and trunk, summed over latent dim.
+    Very small (2M params).
+  key_components: [CNN_branch, MLP_trunk, global_avg_pool]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "Global pool in branch destroys spatial info. (constant output)."
+  depth_options: [6]
+  n_c_options: [16, 32]
+
+# ============================================================
+# TIER C — Neural Operators
+# ============================================================
+
+fno2d:
+  category: tier_c
+  params_target: 12.1
+  input_channels: 1
+  architecture: >
+    2D Fourier Neural Operator. 4 FNO blocks: each does Conv2d(1x1) -> FFT2D ->
+    Truncated complex MLP in frequency domain (modes=8) -> inverse FFT -> residual add.
+    Spectral MLP: linear(W1) -> GELU -> linear(W2) applied only to first 'modes' frequencies.
+    Final Conv2d(1x1) to output.
+  key_components: [FNOBlock, FFT2D, spectral_MLP, truncation]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "at 200ep. Spectral mixing not competitive with spatial conv at 640x640."
+  depth_options: [4]
+  n_c_options: [16, 24, 32]
+
+afno:
+  category: tier_c
+  params_target: 11.9
+  input_channels: 1
+  architecture: >
+    Adaptive FNO. Similar to FNO2D but uses block-diagonal complex MLP in FFT domain
+    instead of simple linear. Input: Conv2d lift -> FFT2D -> split into 16x16 blocks ->
+    each block: complex MLP (w1 -> GELU -> w2) -> reassemble -> inverse FFT.
+    Uses max_modes=64 to limit frequency count.
+  key_components: [AFNOBlock, FFT2D, block_diagonal_MLP, complex_activation]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "even after w2 bug fix. High activation memory at 640x640."
+  depth_options: [4]
+  n_c_options: [16, 24, 32]
+
+cno:
+  category: tier_c
+  params_target: 14.2
+  input_channels: 1
+  architecture: >
+    Convolutional Neural Operator. CNOBlocks: Conv2d -> GELU -> Conv2d with skip.
+    Channel lifting: Conv2d(1->hidden) at input, Conv2d(hidden->1) at output.
+    4-5 CNOBlocks with increasing channel width.
+  key_components: [CNOBlock, ConvBlock, channel_lifting, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "(best among Tier C)."
+  depth_options: [4, 5]
+  n_c_options: [16, 32]
+
+# ============================================================
+# TIER D — Hybrids
+# ============================================================
+
+dilated_fno:
+  category: tier_d
+  params_target: 15.0
+  input_channels: 1
+  architecture: >
+    Multi-rate dilated conv + spectral skip. Parallel Conv2d branches with
+    dilation rates 1, 2, 4, concatenated and projected. Spectral skip:
+    FFT2D on input, truncated, inverse FFT, added to conv output.
+    4-level encoder-decoder shell.
+  key_components: [DilatedConvBlock(multi_rate), SpectralSkip, ConvDecoder]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "at 320x320 (stride-2 stem). Only depth=4."
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+multiscale_conv:
+  category: tier_d
+  params_target: 8.4
+  input_channels: 1
+  architecture: >
+    4-rate dilated conv (dilation 1, 2, 4, 8) with SE channel attention.
+    Each rate: Conv2d(dilation=d) -> outputs concatenated -> SE attention -> project.
+    4-level encoder-decoder shell.
+  key_components: [DilatedConvBlock(4_rates), SEAttention, ConvDecoder]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "at 320x320. Only depth=4."
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+fourier_unet:
+  category: tier_d
+  params_target: 8.6
+  input_channels: 1
+  architecture: >
+    UNet with FFT-domain upsampling in decoder. Standard encoder, but decoder
+    upsampling done via FFT2D zero-padding (correctly splitting positive/negative
+    frequencies) + inverse FFT. 4-level shell.
+  key_components: [ConvEncoder, FFTUpsample, ConvDecoder]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "at 320x320. Frequency aliasing was fixed in V3."
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+hrdcn:
+  category: tier_d
+  params_target: 15.0
+  input_channels: 1
+  architecture: >
+    HRNet + DCNv2. Multi-resolution streams (like HRNet) but with true deformable
+    convolution (DCNv2 with learnable offsets) replacing standard Conv2d in each stream.
+    4-level shell with stride-2 stem.
+  key_components: [DCNv2, HRStream, CrossResolutionFusion]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "at 320x320. Requires DCNv2 CUDA extension."
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+residual_spectral:
+  category: tier_d
+  params_target: 6.4
+  input_channels: 1
+  architecture: >
+    Residual spectral convolution. FFT2D -> learnable frequency-domain
+    convolution -> inverse FFT -> residual add. 4-level shell.
+  key_components: [SpectralConv, FFT2D, residual_connection]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "at 320x320. Small (6.4M params)."
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+# ============================================================
+# MISSING MODELS (added from candidate_library)
+# ============================================================
+
+dilated_hrformer:
+  category: tier_d
+  params_target: 18.9
+  input_channels: 1
+  architecture: >
+    HRFormer-style multi-resolution branches with dilated convolutions.
+    Encoder: parallel branches at 4 resolutions with cross-branch fusion.
+    Bottleneck: dilated conv blocks with increasing dilation rate.
+    Decoder: upsampling with skip connections from encoder branches.
+  key_components: [DilatedConv, HRFormer_branch, cross_branch_fusion, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+fno_encoder_decoder:
+  category: tier_d
+  params_target: 14.9
+  input_channels: 1
+  architecture: >
+    FNO blocks in a UNet-style encoder-decoder shell. Encoder: 4 ConvBlock stages
+    with MaxPool downsampling. Bottleneck: 2 FNO blocks (2D FFT -> complex MLP -> inverse FFT).
+    Decoder: bilinear upsample + skip concat. Final: Conv2d(1x1) + ReLU.
+  key_components: [ConvBlock, FNO_block, FFT2D, complex_MLP, skip_concat, bilinear_upsample]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+mamba_attention:
+  category: tier_d
+  params_target: 16.0
+  input_channels: 1
+  architecture: >
+    Hybrid Mamba + Attention architecture. Encoder: ConvBlock stages with
+    Mamba selective scan blocks at bottleneck. Attention layers on skip connections.
+    Decoder: upsample + skip concat with attention-gated fusion.
+  key_components: [ConvBlock, MambaBlock, AttentionGate, skip_concat, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+sac_mamba:
+  category: tier_d
+  params_target: 16.6
+  input_channels: 1
+  architecture: >
+    Spatial Adaptive Conv (SAC) + Mamba bottleneck hybrid. Standard UNet encoder/decoder
+    with SAC blocks at mid-levels and Mamba selective scan at the bottleneck.
+    SAC: scale+shift affine modulation of conv kernels.
+  key_components: [ConvBlock, SAC_block, MambaBlock, skip_concat, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [4]
+  n_c_options: [16, 24]
+
+transolver:
+  category: tier_b
+  params_target: 121.0
+  input_channels: 1
+  architecture: >
+    Transformer with solver-style attention. Input: patch embed to sequence.
+    Encoder: multiple Transformer blocks with solver-attention (structured
+    matrix factorization for efficient attention). Decoder: unpatch to spatial.
+  key_components: [PatchEmbed, SolverAttention, TransformerBlock, LayerNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "V3 runs all failed (timeout/killed). High memory. 121M params."
+  depth_options: [6]
+  n_c_options: [16, 32]
+
+transolver_lite:
+  category: tier_c
+  params_target: 2.5
+  input_channels: 1
+  architecture: >
+    Simplified Transolver. Small patch embed, 2-4 solver-attention blocks,
+    lightweight decoder. Very small parameter count (~2.5M).
+  key_components: [PatchEmbed, SolverAttention, TransformerBlock, LayerNorm]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: "V3 result: R2=-3.28 (failed). Very small, may lack capacity."
+  depth_options: [4, 6]
+  n_c_options: [16, 32]
+
+unet_v3:
+  category: baseline
+  params_target: 34.6
+  input_channels: 1
+  architecture: >
+    V3 variant of baseline UNet. Same 7-level structure as unet_v2_baseline
+    but with GroupNorm+GELU throughout and configurable depth/width.
+  key_components: [ConvBlock, skip_concat, bilinear_upsample, GroupNorm, GELU]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [5, 6, 7]
+  n_c_options: [16, 32]
+
+uno:
+  category: tier_c
+  params_target: 20.0
+  input_channels: 1
+  architecture: >
+    U-shaped Neural Operator (UNO). Extends FNO with U-shaped architecture
+    for multi-scale frequency processing. Encoder: FNO blocks at decreasing
+    resolutions. Decoder: FNO blocks with skip connections in frequency domain.
+  key_components: [FNO_block, FFT2D, complex_MLP, skip_concat, bilinear_upsample]
+  forward_signature: "(B,1,640,640) -> (B,1,640,640)"
+  known_issues: None
+  depth_options: [4]
+  n_c_options: [16, 32]

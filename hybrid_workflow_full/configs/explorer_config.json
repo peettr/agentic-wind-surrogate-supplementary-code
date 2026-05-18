@@ -1,0 +1,35 @@
+{
+    "explorer": {
+        "mode": "sdf_transfer",
+        "round_strategy": ["sdf_transfer", "architecture_explore", "hyperparam_finetune"],
+        "max_experiments_per_round": 16,
+        "max_concurrent_jobs": 8,
+        "convergence_threshold": 0.005,
+        "patience": 3,
+        "baseline_data_dir": "baselines",
+        "results_dir": "results",
+        "scripts_dir": "scripts"
+    },
+    "condor": {
+        "requirements": "(regexp(\"qa-h100-\", Machine) || regexp(\"qa-a100-\", Machine) || regexp(\"qa-l40s-\", Machine))",
+        "request_gpus": 1,
+        "request_memory": "16 GB",
+        "wrapper_script": "templates/condor_wrapper.sh",
+        "submit_template": "templates/condor_submit.template"
+    },
+    "training": {
+        "default_epochs": 200,
+        "default_batch_size": 16,
+        "default_n_c": 32,
+        "default_depth": 7,
+        "data_dir": "<PROJECT_HPC_ROOT>/data",
+        "split_manifest_path": "<PROJECT_HPC_ROOT>/data/split_manifest.json"
+    },
+    "ai_suggestion": {
+        "enabled": false,
+        "provider": "claude",
+        "model": "claude-opus-4-7",
+        "temperature": 0.7,
+        "max_tokens": 4096
+    }
+}

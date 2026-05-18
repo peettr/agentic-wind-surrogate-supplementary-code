@@ -1,0 +1,53 @@
+# Condor submit template for Auto V5 CRC training/smoke jobs.
+#
+# Variables substituted via string.Template.safe_substitute:
+#   JOB_NAME, WRAPPER_PATH, SCRIPT_PATH, CONFIG_PATH, RESULTS_DIR,
+#   LOG_DIR, STRATEGY, SEED, PYTHON, REQUEST_MEMORY_GB, REQUIREMENTS
+#
+# Resource policy
+# ---------------
+# Auto V5 should not rely on a single request_memory value for all GPU classes.
+# Generate tier-specific submit files instead:
+#   - H100/A100/L40S: 12 GB smoke tier, or 8 GB only when deliberately trying
+#     to keep more high-end slots eligible and accepting higher memory-kill risk.
+#   - A40/RTX6000: 16 GB smoke tier.
+#   - A10 fallback: 16 GB only after confirming path readability or using a
+#     self-contained readable bundle. A prior 8 GB A10 smoke was cgroup-killed.
+#
+# Filesystem policy
+# -----------------
+# Condor stdout/stderr/log and wrapper scripts should live under /users/lhu1/...
+# because writing them under newly created <HPC_PATH> V5 paths caused
+# shadow-side Permission denied errors. Training code/configs may still live
+# under the shared project root if the selected GPU nodes can read that path.
+# For jobs that read <HPC_PATH> project files, condo nodes
+# qa-h100-*, qa-a100-*, qa-l40s-* are the safest. Public A10/A40/RTX6000 nodes
+# may need a self-contained readable bundle.
+
+universe                = vanilla
+executable              = /bin/bash
+arguments               = $WRAPPER_PATH $PYTHON $SCRIPT_PATH --config $CONFIG_PATH
+
+getenv                  = True
+environment             = "AUTO_V3_STRATEGY=$STRATEGY PYTHONUNBUFFERED=1 AUTO_V3_SEED=$SEED"
+
+request_gpus            = 1
+request_memory          = $REQUEST_MEMORY_GB GB
+request_disk            = 8 GB
+
+requirements            = $REQUIREMENTS
+
+output                  = $LOG_DIR/condor.out
+error                   = $LOG_DIR/condor.err
+log                     = $LOG_DIR/condor.log
+
+initialdir              = $LOG_DIR
+
+# Shared-filesystem mode: training writes metrics/sentinels/models directly to
+# $RESULTS_DIR. Condor output/error/log are kept separately under $LOG_DIR.
+should_transfer_files   = NO
+
+on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
+
++JobBatchName           = "$JOB_NAME"
+queue 1

@@ -1,0 +1,37 @@
+{
+  "campaign": "v5_controller_auto10_001_benchmark200",
+  "remote_root": "<GRID_HPC_SOURCE_ROOT>",
+  "stage": "benchmark200",
+  "runs": [
+    {
+      "source_campaign": "v5_controller_auto10_001_benchmark200",
+      "source_run_id": "r_auto10b_00_afno_benchmark200",
+      "run_id": "r_auto10b_00_afno_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/afno.py",
+      "module_name": "codegen_afno",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_001_benchmark200",
+      "source_run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200",
+      "run_id": "r_auto10b_07_fno_encoder_decoder_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/fno_encoder_decoder.py",
+      "module_name": "codegen_fno_encoder_decoder",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    },
+    {
+      "source_campaign": "v5_controller_auto10_001_benchmark200",
+      "source_run_id": "r_auto10b_08_hrdcn_benchmark200",
+      "run_id": "r_auto10b_08_hrdcn_benchmark200_retry1",
+      "model_file": "generated_models/v5_controller_auto10_001/hrdcn.py",
+      "module_name": "codegen_hrdcn",
+      "submit_tier": "h100_only_12gb",
+      "batch_size": 8,
+      "reason": "HIGH_VRAM"
+    }
+  ]
+}

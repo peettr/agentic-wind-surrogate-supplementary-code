@@ -1,0 +1,385 @@
+You are the Auto V6 proposal quality gate and decision-audit gate.
+Review the synthesized proposal pack for schema validity, duplicates, hard-rule violations, locked data/eval contract violations, and auditable decision rationale.
+Phase A policy: do not decide scientific truth and do not ban deviations from review recommendations. However, missing decision rationale is repairable process debt: require repair, not hard rejection, when proposals lack hypothesis, paired comparison, decision rule, expected failure interpretation, or explicit explanation for deviating from recent review recommendations. Do not reject or replace a proposal solely because it ignores a soft advisory/cooldown/search_policy_note; only repair the rationale unless there is schema/resource/locked-contract/user-controller violation.
+Also flag if the pack has collapsed into an overly narrow local HP, capacity, or high-n_c sweep around one architecture without explicit justification; preserve architecture-level diversity when minimally repairing.
+Scout weighting audit: primary scouts ['claude', 'codex', 'gemini'] are the main decision/proposal sources; diversity scouts ['deepseek', 'grok', 'mimo'] are auxiliary mechanism/critique context, not same-weight TrainConfig competitors. Check whether the synthesized pack reasonably used or explicitly explained diversity auxiliary_ideas. At most 2-3 final proposals may carry diversity influence. When diversity ideas are used, ensure _proposal_rationale.source_scouts includes the diversity scout(s), diversity_influence=true, and diversity_ideas_used/reason_if_diversity_kept explains the absorbed mechanism; when none are used, return a concise diversity_unused_reason. Final returned proposals must be contract-clean; raw diversity ideas should not be rejected merely for repairable schema/loss/epoch/batch/input issues, but suggested_contract_repairs must be applied before final output. Use risk language only for truly infeasible/resource-blocked/unparseable proposals.
+Soft target mix: adaptive explorer guidance, choose 4-6 explorer proposals with default 5. Exploit does not explore; explorer must introduce new model/mechanism value, not merely old arch_name plus larger n_c/depth. Do not use this target to violate hard train/data constraints.
+Decision-audit checks: flag and repair explorer proposals that lack novelty_rationale or new_model_mechanism/transferred_mechanism; flag proposals that lack paired_comparison, decision_rule, expected_success, or expected_failure_interpretation; flag proposals that use weak-setting explorer recipes without explaining why the current stronger recipe is not used and how success would later migrate. Weak-setting explorers are allowed but normally should occupy at most 1-2 full slots; if exceeded, require a pack-level weak_setting_budget_explanation.
+Audit metadata request: for each returned proposal, include or preserve _proposal_rationale fields evidence_relation, evidence_response, belief_update_rule, batch_role, and evidence_refs when available. independent_explorer is a valid batch_role when a proposal is intentionally not a paired frontier/control slot. These audit metadata fields are for traceability only and must not become hard scientific rules, bans, or score thresholds.
+Gemini role audit: Gemini scout should primarily contribute web/literature-driven explorer mechanisms. Flag if more than 2 Gemini-derived final slots are local exploitation without web/source traceability, or more than 3 even with explicit justification; treat this as audit/repair, not rejection. Also flag if high-scoring web ideas/source_id/web_idea_id/transferred_mechanism evidence is ignored without explanation. This is a repair/audit issue, not a scientific hard ban.
+Loss registry audit: valid_loss_names=['masked_l1', 'masked_l1_gradient', 'masked_huber']. Check every proposal.loss_name against these exact shared.losses LIBRARY keys. Illegal aliases/descriptions such as gradient_aware, spectral_gradient_aware, masked_l1_grad, gradient, or spectral_gradient are hard schema failures. Repair them to a legal value when the scientific intent is clear (gradient-aware intent => masked_l1_gradient); otherwise replace the proposal with a contract-clean alternative. Do not return any proposal with an illegal loss_name and do not silently alias outside this explicit review.
+Batch-size lock: ordinary Auto V6 candidates must use batch_size=16; do not use batch_size as a free performance-tuning hyperparameter. High-capacity rationale is not a resource waiver: reject or rewrite ordinary smoke/full proposals that trip the resource feasibility guard, including batch_size!=16 without resource_probe/OOM-repair context, estimated_params>1.5B with batch_size>8, estimated_params>1B with batch_size>=16, and CNO n_c>=40 depth>=6 batch_size>=16. Explorer and exploit are both subject to this guard. Resource-probe candidates must be explicit (resource_probe=true), not counted as ordinary full/leaderboard candidates unless rerun/normalized per policy; suggest batch_size=8, n_c<=32, depth<=5. Do not suggest batch_size 1/2/4, AMP, checkpointing, or manual_resource_probe unless the human researcher explicitly approves manual_resource_probe_approved=True.
+Do not take over global search strategy. Preserve the synthesis model's scientific intent unless a proposal is invalid, duplicated, contract-breaking, or unauditable.
+You may minimally repair fields to satisfy the TrainConfig/search-space contract. Hard repair any data-setting violation to seed=1 and a valid existing input_features contract, defaulting to height. Do not invent new data paths, splits, metrics, or unsupported input features.
+Return only JSON: {"ok": true/false, "issues": [strings], "diversity_unused_reason": "required if no diversity influence, else null", "weak_setting_budget_explanation": "... if applicable", "review_accountability_summary": "...", "proposals": [reviewed configs with _proposal_rationale audit metadata including evidence_relation/evidence_response/belief_update_rule/batch_role/evidence_refs when available]}.
+
+TARGET_COUNT: 12
+
+PLANNER_CONTEXT_CONTRACT:
+{
+  "hard_rules": {
+    "planner_role": "Scout proposes experiments only; runner/controller handle execution and retry/repair.",
+    "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
+    "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
+    "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
+    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
+    "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
+    "planner_split": "Use two tracks only with an adaptive explorer target of 4-6 per 12-experiment round, defaulting to 5. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value. This target is planning guidance, not a hard scientific rule.",
+    "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
+    "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
+    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
+    "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
+    "review_soft_policy": "Reviewer outputs, including round_review, cross_round_audit, cooldowns, soft_advisories, contradicted_patterns, and search_policy_notes, are soft evidence unless they identify a schema-invalid config, resource-infeasible config, locked train/data/eval contract violation, or explicit user/controller rule. Following a review requires evidence; departing from a review requires only concise rationale plus a valid paired comparison/decision rule. Do not hard-ban EMA, model family, input feature contract, or loss solely because a reviewer recommended against it.",
+    "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
+    "exact_output": "Return only JSON in the form {\"proposals\": [hypothesis-bundle proposals or concrete experiment configs]}. No markdown, no prose outside JSON."
+  },
+  "train_config_contract": {
+    "required_fields": [
+      "experiment_id",
+      "arch_name",
+      "n_c",
+      "depth",
+      "loss_name",
+      "lr",
+      "batch_size",
+      "input_features",
+      "epochs",
+      "seed",
+      "use_ema",
+      "ema_decay",
+      "augmentation"
+    ],
+    "default_input_features": "height",
+    "valid_input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "locked_seed": 1,
+    "current_seed_policy": "Hard rule: seed must be 1. Multi-seed is not allowed in this campaign unless the human researcher explicitly changes the hard rule.",
+    "full_epochs": 200,
+    "smoke_epochs": 20
+  },
+  "valid_loss_names": [
+    "masked_l1",
+    "masked_l1_gradient",
+    "masked_huber"
+  ]
+}
+
+SYNTHESIZED_PROPOSALS:
+[
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "anisotropic_boundary_hybrid",
+    "role": "exploit",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "exploit",
+      "rationale": "Single canonical replicate of the joint frontier point (0.7573/0.7563) to confirm seed-variance band; no further anchor clones this round.",
+      "topic_cluster": "frontier_anchor_consolidation",
+      "source_id": "r017+r023_frontier",
+      "role": "exploit",
+      "pack_level_accountability": {
+        "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+        "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+      },
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "hypernet_coord_lowrank_residual_unet",
+    "role": "exploit",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "exploit",
+      "rationale": "Lift near-frontier hypernet family onto the dominant recipe envelope to test whether it closes the gap to anisotropic_boundary_hybrid.",
+      "topic_cluster": "near_frontier_family_lift",
+      "source_id": "r019_near_frontier",
+      "role": "exploit",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "hardware_hint": "h100",
+    "arch_name": "terrain_conditioned_local_attention_unet",
+    "role": "exploit",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "exploit",
+      "rationale": "Replicate the terrain-conditioned attention family at the dominant recipe; routed to H100 per family memory profile.",
+      "topic_cluster": "near_frontier_family_lift",
+      "source_id": "r021_near_frontier",
+      "role": "exploit",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "anisotropic_kernel_operator_unet",
+    "role": "exploit",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "exploit",
+      "rationale": "Lift the anisotropic_kernel_operator family — structurally adjacent to the anchor — onto the saturated recipe envelope for a clean head-to-head.",
+      "topic_cluster": "frontier_adjacent_family_lift",
+      "source_id": "claude_scout_H24-EX05",
+      "role": "exploit",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "tt_adapter_decoder_unet",
+    "role": "exploit",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "exploit",
+      "rationale": "Bring the tensor-train adapter decoder onto the dominant recipe to probe whether parameter-efficient decoders can match dense anisotropic kernels at the frontier.",
+      "topic_cluster": "frontier_adjacent_family_lift",
+      "source_id": "claude_scout_H24-EX06",
+      "role": "exploit",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric_no_flip",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "anisotropic_boundary_hybrid",
+    "role": "exploit",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "exploit",
+      "rationale": "Single weak-setting/aug ablation: remove horizontal flips from light_geometric to test whether the persistent KO-SE / UA-KY tail cases are flip-sensitivity artefacts. Counts as the 1 allowed aug-only ablation.",
+      "topic_cluster": "weak_setting_budget_ablation",
+      "source_id": "weak_setting_budget",
+      "role": "exploit",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "texture_boundary_dual_fusion_unet",
+    "role": "explorer",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "explorer",
+      "rationale": "Explicit two-branch texture/boundary fusion; targets ridge-edge hard cases (CH-Bas-U1, FI-MS-V1) that pure isotropic kernels under-resolve.",
+      "topic_cluster": "dual_branch_texture_boundary",
+      "source_id": "web_idea_texture_boundary_dual_fusion",
+      "web_idea_id": "web_idx_03",
+      "role": "explorer",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "internal_backprojection_ladder_unet",
+    "role": "explorer",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "explorer",
+      "rationale": "Iterative back-projection refinement inside the decoder ladder; a structurally different way to inject high-frequency detail without a separate boundary head.",
+      "topic_cluster": "iterative_internal_refinement",
+      "source_id": "web_idea_backprojection_ladder",
+      "web_idea_id": "web_idx_07",
+      "role": "explorer",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "multiscale_linear_attention_skip_mixer_unet",
+    "role": "explorer",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "explorer",
+      "rationale": "Linear-attention multiscale mixing applied on skip paths only (not the bottleneck); cheap global context without the memory profile that has OOM'd full-attention variants.",
+      "topic_cluster": "skip_path_linear_attention",
+      "source_id": "web_idea_linear_attention_skip",
+      "web_idea_id": "web_idx_11",
+      "role": "explorer",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "frequency_adaptive_spectral_bottleneck_unet",
+    "role": "explorer",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "explorer",
+      "rationale": "Revisit the spectral-bottleneck thread from r022/r023 with a frequency-adaptive gate and the now-contract-clean loss; retains spectral exploration without recreating the prior contract violation.",
+      "topic_cluster": "spectral_bottleneck_revisit",
+      "source_id": "r022_r023_spectral_explorer_revision",
+      "role": "explorer",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "height_derived_boundary_alltoall_mixer_unet",
+    "role": "explorer",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "explorer",
+      "rationale": "Compute boundary tokens directly from the height_sdf_normal channels and apply all-to-all mixing among them; complements the dual-fusion approach with a token-level rather than branch-level boundary mechanism.",
+      "topic_cluster": "input_derived_boundary_token_mixing",
+      "source_id": "web_idea_boundary_alltoall_mixer",
+      "web_idea_id": "web_idx_14",
+      "role": "explorer",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  },
+  {
+    "seed": 1,
+    "batch_size": 16,
+    "input_features": "height_sdf_normal",
+    "num_channels": 20,
+    "depth": 6,
+    "augmentation": "light_geometric",
+    "lr": 0.0004,
+    "loss_name": "masked_l1_gradient",
+    "ema": true,
+    "epochs": 120,
+    "arch_name": "sdf_gradient_field_conditioned_film_unet",
+    "role": "explorer",
+    "n_c": 20,
+    "use_ema": true,
+    "_proposal_rationale": {
+      "track": "explorer",
+      "rationale": "FiLM-condition every decoder block on the analytic gradient field of the SDF input; lightweight alternative to hypernetwork conditioning, with a fundamentally different inductive bias.",
+      "topic_cluster": "input_derived_conditioning",
+      "source_id": "web_idea_sdf_gradient_film",
+      "web_idea_id": "web_idx_18",
+      "role": "explorer",
+      "weak_setting_budget_explanation": "One slot (r024_ex06) spent on an aug-only ablation: light_geometric_no_flip on the frontier anchor recipe, to isolate whether the persistent KO-SE / UA-KY-V14 tail-case errors are sensitive to horizontal flips. No capacity-down or LR-down weak-setting experiments included — the cap of 1 aug-only ablation is respected, and the remaining 11 slots are all at the dominant recipe envelope or productive explorers.",
+      "review_accountability_summary": "r017/r023 frontier (anisotropic_boundary_hybrid @ nc20 d6 light_geometric lr=0.0004 masked_l1_gradient EMA) gets exactly one direct replicate (ex01) plus one aug ablation (ex06); no further endless-finetune of this anchor. r019 hypernet_coord_lowrank_residual_unet near-frontier promoted to exploit-class replicate (ex02). r021 terrain_conditioned_local_attention_unet promoted with H100 routing (ex03). r022/r023 spectral-bottleneck explorer thread is retained but rebuilt with a contract-clean loss (ex10). Five scout proposals that used invalid loss_name values ('tail_weighted_masked_l1_gradient', 'masked_l1_gradient_tail_weighted') were rejected at the contract check; their tail-weighting intent is not carried forward as a duplicate of the anchor because under the legal loss registry those configs would collapse onto ex01 — instead the freed slots went to two fresh exploit-family lifts (ex04 anisotropic_kernel_operator, ex05 tt_adapter_decoder) and one extra explorer (ex12). Family count: 11 distinct arch_names across 12 proposals (anisotropic_boundary_hybrid appears twice, all others once); ≥6-distinct-family rule satisfied with margin. Track split: 6 exploit / 6 explorer. Codex scout timed out; deepseek/grok/mimo were used for diversity/critique only per weighting policy."
+    }
+  }
+]

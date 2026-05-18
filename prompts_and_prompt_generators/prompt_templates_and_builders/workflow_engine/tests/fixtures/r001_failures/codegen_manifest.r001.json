@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-05-07T23:34:55+00:00",
+  "mode": "fix",
+  "proposals_count": 12,
+  "generated_count": 4,
+  "validated_count": 4,
+  "generated_archs": [
+    "unet_sdf_7level",
+    "nafnet",
+    "multiscale_conv",
+    "cbam_unet"
+  ],
+  "validated_archs": [
+    "unet_sdf_7level",
+    "nafnet",
+    "multiscale_conv",
+    "cbam_unet"
+  ],
+  "generated_run_ids": [
+    "r001_smoke_unet_sdf_7level_nc32_lr0.0005_masked_l1_grad",
+    "r001_smoke_nafnet_nc32_lr0.0005_masked_l1",
+    "r001_smoke_multiscale_conv_nc32_lr0.0005_masked_l1",
+    "r001_smoke_cbam_unet_nc32_lr0.0005_masked_l1"
+  ],
+  "validated_run_ids": [
+    "r001_smoke_unet_sdf_7level_nc32_lr0.0005_masked_l1_grad",
+    "r001_smoke_nafnet_nc32_lr0.0005_masked_l1",
+    "r001_smoke_multiscale_conv_nc32_lr0.0005_masked_l1",
+    "r001_smoke_cbam_unet_nc32_lr0.0005_masked_l1"
+  ],
+  "skipped_registry_archs": [],
+  "failed": [],
+  "failed_run_ids": [],
+  "failed_details": [],
+  "validated": true
+}

@@ -1,0 +1,582 @@
+{
+  "models": [
+    {
+      "name": "unet_v2_baseline",
+      "category": "baseline",
+      "params_million": 34.6,
+      "depth_options": [
+        5,
+        6,
+        7
+      ],
+      "n_c_options": [
+        8,
+        16,
+        32,
+        48
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "7-level UNet, V3 reference. 6 ConvBlock encoder + decoder + skip concat."
+    },
+    {
+      "name": "unet_v3",
+      "category": "baseline",
+      "params_million": 34.6,
+      "depth_options": [
+        5,
+        6,
+        7
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "V3 variant of baseline UNet."
+    },
+    {
+      "name": "unet_sdf_7level",
+      "category": "baseline",
+      "params_million": 34.6,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 3,
+      "enabled": true,
+      "notes": "UNet with 3-channel input (height, SDF, normal angle)."
+    },
+    {
+      "name": "unet_afno",
+      "category": "baseline",
+      "params_million": 11.9,
+      "depth_options": [
+        5,
+        6,
+        7
+      ],
+      "n_c_options": [
+        16,
+        24,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "UNet with AFNO spectral bottleneck at deepest level."
+    },
+    {
+      "name": "attention_gate_unet",
+      "category": "tier_a",
+      "params_million": 503.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Schlemper attention gates on every skip connection."
+    },
+    {
+      "name": "cbam_unet",
+      "category": "tier_a",
+      "params_million": 501.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "CBAM (channel + spatial) attention on skips."
+    },
+    {
+      "name": "dilated_unet",
+      "category": "tier_a",
+      "params_million": 498.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        32,
+        48
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "DilatedConvBlock with dilation=2. Effective 5x5 receptive field at same params."
+    },
+    {
+      "name": "dcn_unet",
+      "category": "tier_a",
+      "params_million": 135.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Deformable convolution (approximated via dense warp via grid_sample)."
+    },
+    {
+      "name": "sac_unet",
+      "category": "tier_a",
+      "params_million": 134.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Spatial adaptive conv: standard conv + per-pixel scale/shift modulation."
+    },
+    {
+      "name": "nafnet",
+      "category": "tier_a",
+      "params_million": 5.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        8,
+        16
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "SimpleGate blocks, no activation. Very small (5M params)."
+    },
+    {
+      "name": "kan_unet",
+      "category": "tier_a",
+      "params_million": 22.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Kolmogorov-Arnold Network blocks in UNet shell."
+    },
+    {
+      "name": "hrnet",
+      "category": "tier_a",
+      "params_million": 20.0,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Multi-resolution parallel streams. Stride-4 stem limits internal res to 160x160."
+    },
+    {
+      "name": "transolver",
+      "category": "tier_b",
+      "params_million": 121.0,
+      "depth_options": [
+        6
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Transformer with solver-style attention. V3 runs all failed (timeout/killed)."
+    },
+    {
+      "name": "umamba",
+      "category": "tier_b",
+      "params_million": 288.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "UNet + bidirectional selective SSM in bottleneck. 4-direction EMA scan."
+    },
+    {
+      "name": "mamba2d",
+      "category": "tier_b",
+      "params_million": 423.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "4-direction serial EMA scan (Python loop). Slow wall time."
+    },
+    {
+      "name": "quadmamba",
+      "category": "tier_b",
+      "params_million": 338.0,
+      "depth_options": [
+        7
+      ],
+      "n_c_options": [
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Four-quadrant EMA scan with shared projection weights."
+    },
+    {
+      "name": "hrformer",
+      "category": "tier_b",
+      "params_million": 13.0,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Window self-attention HRNet. Stride-2 stem."
+    },
+    {
+      "name": "swin_unetr",
+      "category": "tier_b",
+      "params_million": 12.7,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Swin Transformer encoder + conv decoder. Stride-4 patch embed."
+    },
+    {
+      "name": "perceiver",
+      "category": "tier_b",
+      "params_million": 7.0,
+      "depth_options": [
+        6
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Latent cross-attention. 8-fold stride conv + 32x32 latent array."
+    },
+    {
+      "name": "cnn_deeponet",
+      "category": "tier_b",
+      "params_million": 2.0,
+      "depth_options": [
+        6
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "CNN branch (global avg pool) + MLP trunk. Very small."
+    },
+    {
+      "name": "fno2d",
+      "category": "tier_c",
+      "params_million": 12.1,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "2D Fourier Neural Operator. Truncated-mode spectral mixing."
+    },
+    {
+      "name": "afno",
+      "category": "tier_c",
+      "params_million": 11.9,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Adaptive FNO. Block-diagonal complex MLP in FFT domain."
+    },
+    {
+      "name": "cno",
+      "category": "tier_c",
+      "params_million": 14.2,
+      "depth_options": [
+        4,
+        5
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Convolutional Neural Operator. CNOBlocks with channel lifting."
+    },
+    {
+      "name": "uno",
+      "category": "tier_c",
+      "params_million": 20.0,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "U-shaped Neural Operator."
+    },
+    {
+      "name": "transolver_lite",
+      "category": "tier_c",
+      "params_million": 2.5,
+      "depth_options": [
+        4,
+        6
+      ],
+      "n_c_options": [
+        16,
+        32
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Simplified Transolver. Very small."
+    },
+    {
+      "name": "dilated_fno",
+      "category": "tier_d",
+      "params_million": 15.0,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Multi-rate dilated conv (1,2,4 parallel) + spectral skip."
+    },
+    {
+      "name": "sac_mamba",
+      "category": "tier_d",
+      "params_million": 16.6,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "SAC + Mamba bottleneck hybrid."
+    },
+    {
+      "name": "hrdcn",
+      "category": "tier_d",
+      "params_million": 15.0,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "HRNet + DCNv2 (deformable conv)."
+    },
+    {
+      "name": "fourier_unet",
+      "category": "tier_d",
+      "params_million": 8.6,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "UNet with FFT-domain upsampling in decoder."
+    },
+    {
+      "name": "dilated_hrformer",
+      "category": "tier_d",
+      "params_million": 18.9,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Dilated conv + HRFormer window attention."
+    },
+    {
+      "name": "fno_encoder_decoder",
+      "category": "tier_d",
+      "params_million": 14.9,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "FNO block in encoder-decoder shell."
+    },
+    {
+      "name": "mamba_attention",
+      "category": "tier_d",
+      "params_million": 16.0,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Attention + Mamba hybrid variant."
+    },
+    {
+      "name": "multiscale_conv",
+      "category": "tier_d",
+      "params_million": 8.4,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "4-rate dilated conv (1,2,4,8) + SE channel attention."
+    },
+    {
+      "name": "residual_spectral",
+      "category": "tier_d",
+      "params_million": 6.4,
+      "depth_options": [
+        4
+      ],
+      "n_c_options": [
+        16,
+        24
+      ],
+      "input_channels": 1,
+      "enabled": true,
+      "notes": "Residual spectral convolution."
+    }
+  ],
+  "hp_space": {
+    "loss_name": [
+      "masked_l1",
+      "masked_l1_gradient",
+      "masked_huber"
+    ],
+    "lr": [
+      0.0003,
+      0.0005,
+      0.0007,
+      0.001,
+      0.002
+    ],
+    "weight_decay": [
+      0.0,
+      1e-05,
+      0.0001
+    ],
+    "scheduler": [
+      null,
+      "cosine"
+    ],
+    "gradient_clip": [
+      null,
+      0.5
+    ],
+    "use_ema": [
+      false,
+      true
+    ],
+    "augmentation": [
+      false,
+      true
+    ],
+    "input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "batch_size": [
+      8,
+      16
+    ],
+    "epochs": [
+      20,
+      200,
+      1000
+    ],
+    "depth": [
+      5,
+      6,
+      7
+    ],
+    "n_c": [
+      8,
+      16,
+      32,
+      48
+    ]
+  }
+}

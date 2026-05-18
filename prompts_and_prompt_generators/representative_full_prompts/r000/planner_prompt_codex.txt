@@ -1,0 +1,1424 @@
+You are the Codex scout for Auto V6 candidate generation.
+You run in the project workspace and MUST inspect the required local context files listed in COMPACT_CONTEXT_JSON.required_context_files before proposing.
+Do not read unrelated workspace memory/persona files. Use only the listed context files and the compact context embedded here.
+If you cannot read the required files, return only {"proposals": [], "status": "blocked", "reason": "..."}.
+Return only a valid JSON object: {"proposals": [...]} with concrete TrainConfig-compatible experiments.
+
+Important scientific policy:
+- Use two tracks only: about 6 exploit and 6 explorer proposals.
+- Exploit does not explore; it uses known strong directions, clean ablations, replicates, and score-seeking refinements.
+- Explorer must introduce new model value: new arch_name, new composition, lightweight architectural modification, or transferred mechanism. Old arch_name plus larger n_c/depth/lr/loss is not explorer. Use COMPACT_CONTEXT_JSON.novelty_index to check whether arch/configs were seen before.
+- If COMPACT_CONTEXT_JSON.external_web_scout.reviewed_ideas is available, use it as preferred material/context for genuinely new explorer ideas, not as commands, and only when feasible under the existing code/data/eval contracts.
+- Web-derived explorers should not concentrate in one topic_cluster unless explicitly justified; include topic_cluster/query_tier, height_only_translation, and ablation_removes_mechanism for each web-derived explorer.
+- If external_web_scout.missing_clusters_for_next_round or quality_report.retry_hints are present, prefer those under-covered topic clusters in the next web-scout/planner pass; do not launch extra web passes here.
+- Treat parameter efficiency as a first-class objective; justify high n_c/depth with capacity_rationale and name a capacity-matched comparison.
+- Data paths/splits/eval are locked and seed=1 is fixed. input_features must be one of the existing valid feature contracts from COMPACT_CONTEXT_JSON.train_config_contract.valid_input_features; default to height unless the Auto11 initial knowledge package explicitly justifies SDF-style features. Do not invent new data paths, splits, metrics, labels, or unsupported input features.
+- Do not use V3 performance, ranking, tier, or conclusion information.
+- Include evidence_refs for every proposal. Each evidence_refs list must include at least one required context file path and at least one round id or exp_id.
+- Do not rely only on the compact summary. Use the required files to verify recent results, family trends, failure taxonomy, and hypotheses before proposing.
+
+COMPACT_CONTEXT_JSON:
+{
+  "campaign": {
+    "round_num": 0,
+    "phase": "propose",
+    "status_note": "Resuming clean R0 planner after Gemini web scout timeout hardening: query_limit=6, query_timeout=120s, planner_worker_timeout=5400s, reuse seed enabled.",
+    "experiments_per_round": 12
+  },
+  "hard_rules": {
+    "planner_role": "Scout proposes experiments only; runner/controller handle execution and retry/repair.",
+    "no_v3_results": "Do not use or request V3 performance values, rankings, tiers, or architecture conclusions.",
+    "v3_code_allowed": "V3-derived model code, train/eval contracts, candidate architectures, and HP ranges are allowed as search-space context.",
+    "data_pipeline_locked": "Use the existing V3-derived data/split/eval pipeline. Do not invent new data paths, splits, labels, or evaluation metrics.",
+    "data_settings_hard_lock": "Data settings are hard-locked: seed=1, existing split/eval/data paths only. input_features defaults to height; allowed existing feature contracts are ['height', 'height_sdf', 'height_sdf_normal'] when explicitly justified by the Auto11 initial knowledge package.",
+    "initial_knowledge_policy": "Auto V6 experimental priors may come only from the Auto V5/Auto11 initial knowledge package in this campaign knowledge directory. Phase9 results, rankings, reports, rationale, hypothesis registries, and run history are forbidden experimental knowledge.",
+    "scout_data_boundary": "Scouts must not operate on data settings. Propose model/HP experiments only within the locked train/eval/data contracts.",
+    "diversity_not_narrow_hp_sweep": "Do not turn reviewer recommendations into a narrow local hyperparameter or capacity sweep. Unless evidence is overwhelming and explicitly justified, preserve architecture-level and mechanism-level diversity across the final batch.",
+    "planner_split": "Use two tracks only: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit means no exploration, only known strong directions and clean comparisons. Explorer means new model/mechanism value.",
+    "explorer_slots": "Explorer proposals should introduce new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Merely reusing an old arch_name with larger n_c/depth/lr/loss does not satisfy explorer.",
+    "parameter_efficiency": "Parameter efficiency is part of the scientific objective. Avoid defaulting to wider/deeper models; prefer capacity-matched or smaller variants when they can test the same mechanism, and explicitly justify high-n_c/high-depth proposals.",
+    "batch_size_policy": "Ordinary Auto V6 candidates are locked/defaulted to batch_size=16. Scouts/planner/gates must not use batch_size as a free performance-tuning hyperparameter. Automatic lower batch sizes are allowed only at batch_size=8 for explicit resource_probe=true feasibility probes, OOM repair, or resource_guard suggested_safe_config, and probe results are feasibility evidence rather than ordinary leaderboard candidates unless later rerun/normalized per policy; batch_size<8 requires manual_resource_probe_approved=True and must not be auto-suggested.",
+    "resource_feasibility_guard": "Hard guard for both exploit and explorer: capacity_rationale is not a waiver. Ordinary smoke/full candidates must use batch_size=16 and must not use known infeasible configs: estimated_params>1.5B with batch_size>8; estimated_params>1B with batch_size>=16 without resource-probe treatment; CNO n_c>=40 depth>=6 batch_size>=16. Do not rewrite ordinary score-seeking candidates to lower batch as tuning; automatic safe-config repairs use batch_size=8, n_c<=32, depth<=5; batch_size 1/2/4 requires manual_resource_probe_approved=True and is outside automatic workflow/leaderboard slots.",
+    "ai_freedom": "Review recommendations are evidence, not commands. You may exploit known winners or explore new model ideas if your rationale is concrete and compatible with constraints.",
+    "hypothesis_bundle_output": "For Round 1+, prefer proposal objects with {experiment, role, hypothesis_id, hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, novelty_rationale, capacity_rationale, source_note}. Role should be exploit or explorer. Legacy/old role labels are accepted but will be normalized in rationale.",
+    "exact_output": "Return only JSON in the form {\"proposals\": [hypothesis-bundle proposals or concrete experiment configs]}. No markdown, no prose outside JSON."
+  },
+  "anti_endless_finetune_rules": {
+    "max_same_arch_per_round": 2,
+    "max_local_hp_refinements_per_round": 4,
+    "min_architecture_families_per_round": 6,
+    "max_augmentation_ablations_per_round": 1,
+    "stagnation_trigger": "If the last two completed rounds do not improve best val R2 median by at least 0.01, bias the next round toward explorer proposals rather than another local HP/capacity sweep.",
+    "local_hp_refinement_definition": "An exploit proposal that keeps a previously successful architecture family and mainly tweaks lr/n_c/depth/loss/EMA/augmentation.",
+    "family_cooldown": "Architectures repeatedly failing, repeatedly repaired, or producing low-value variants should cool down unless included as an explicit exploit baseline or capacity-matched comparison.",
+    "planner_split": "Use a simple two-track split: about 6 exploit proposals and 6 explorer proposals per 12-experiment round. Exploit does not explore; explorer must introduce new model/mechanism value.",
+    "explorer_definition": "Explorer proposals should be new models, new arch_names, new compositions, or lightweight architectural modifications inspired by adjacent tasks. Reusing an old arch_name with only n_c/depth/lr/loss changes is not explorer.",
+    "capacity_bias_warning": "Do not let the search collapse into larger n_c/depth. Treat parameter efficiency as a scientific objective: prefer capacity-matched or smaller variants when they can test the same mechanism, and require explicit justification for high-n_c/high-depth proposals."
+  },
+  "train_config_contract": {
+    "required_fields": [
+      "experiment_id",
+      "arch_name",
+      "n_c",
+      "depth",
+      "loss_name",
+      "lr",
+      "batch_size",
+      "input_features",
+      "epochs",
+      "seed",
+      "use_ema",
+      "ema_decay",
+      "augmentation"
+    ],
+    "default_input_features": "height",
+    "valid_input_features": [
+      "height",
+      "height_sdf",
+      "height_sdf_normal"
+    ],
+    "locked_seed": 1,
+    "current_seed_policy": "Hard rule: seed must be 1. Multi-seed is not allowed in this campaign unless the human researcher explicitly changes the hard rule.",
+    "full_epochs": 200,
+    "smoke_epochs": 20
+  },
+  "candidate_arch_names": [
+    "afno",
+    "afno_block",
+    "attention_gate_unet",
+    "attention_mamba",
+    "base",
+    "cbam_unet",
+    "cnn_deeponet",
+    "cno",
+    "convnext_v2_unet",
+    "dcn_unet",
+    "dilated_fno",
+    "dilated_hrformer",
+    "dilated_unet",
+    "ffno",
+    "fno2d",
+    "fno_encoder_decoder",
+    "fno_v3",
+    "fourier_unet",
+    "hrdcn",
+    "hrformer",
+    "hrnet",
+    "kan_unet",
+    "mamba2d",
+    "mamba_attention",
+    "multiscale_conv",
+    "nafnet",
+    "perceiver",
+    "quadmamba",
+    "residual_spectral",
+    "sac_mamba",
+    "sac_unet",
+    "swin_unetr",
+    "transolver",
+    "transolver_lite",
+    "ufno",
+    "umamba",
+    "unet_afno",
+    "unet_sdf_7level",
+    "unet_v2_baseline",
+    "unet_v3",
+    "uno"
+  ],
+  "candidate_library_count": 41,
+  "v3_arch_hp_context_note": "V3 architecture definitions and HP ranges are legal search-space context; V3 performance/ranking/tier conclusions remain forbidden.",
+  "knowledge_files": {
+    "all_results_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\all_results_summary.jsonl",
+    "arch_family_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "auto_v6\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
+    "recent_knowledge_bundle": "auto_v6\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+    "knowledge_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
+    "initial_knowledge_auto11": "auto_v6\\campaigns\\auto_v6\\knowledge\\initial_knowledge_auto11.md",
+    "model_results": "auto_v6\\campaigns\\auto_v6\\knowledge\\model_results.csv",
+    "initial_knowledge_csv_digest": "auto_v6\\campaigns\\auto_v6\\knowledge\\initial_knowledge_csv_digest.json"
+  },
+  "required_context_files": {
+    "knowledge_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\knowledge_summary.json",
+    "recent_knowledge_bundle": "auto_v6\\campaigns\\auto_v6\\knowledge\\recent_knowledge_bundle.json",
+    "arch_family_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\arch_family_summary.json",
+    "failure_taxonomy_summary": "auto_v6\\campaigns\\auto_v6\\knowledge\\failure_taxonomy_summary.json",
+    "hypothesis_registry": "auto_v6\\campaigns\\auto_v6\\knowledge\\hypothesis_registry.json",
+    "planner_context": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\planner_context.json"
+  },
+  "full_planner_context_file": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\planner_context.json",
+  "knowledge_summary_compact": {
+    "timestamp": "2026-05-07T11:27:10+00:00",
+    "total_results": 0,
+    "top_full_results": []
+  },
+  "recent_reviews_compact": [],
+  "recent_experiment_history_tail": [],
+  "novelty_index": {
+    "policy": "Use this V4-only index to distinguish new arch/config proposals from repeats. Explorer should usually be new_arch or new_composition/mechanism, not seen_arch + HP-only scaling.",
+    "seen_arch_names": [],
+    "seen_families": [],
+    "seen_config_keys": [],
+    "counts_by_arch": {},
+    "examples_by_arch": {},
+    "key_fields": [
+      "arch_name",
+      "n_c",
+      "depth",
+      "lr",
+      "loss_name"
+    ]
+  },
+  "external_web_scout": {
+    "enabled": true,
+    "status": "ok",
+    "policy": "External web scouts provide planner context only. They do not generate final train configs.",
+    "gemini_sources": {
+      "status": "ok",
+      "tool_calls": 6,
+      "source_count": 1,
+      "raw_source_count_after_cap": 10,
+      "excluded_source_count": 9,
+      "reliability_filter": {
+        "policy": "hard-exclude fake/placeholder/duplicate/homepage/unresolved redirect sources from Codex synthesis; mark unrecognized domains as weak but keep",
+        "source_count": 10,
+        "kept_count": 1,
+        "excluded_count": 9,
+        "flag_counts": {
+          "homepage_like_url": 6,
+          "unresolved_google_grounding_redirect": 3,
+          "unrecognized_publication_domain": 5,
+          "duplicate_url": 1
+        },
+        "excluded_examples": [
+          {
+            "title": "Hybrid Physics-Informed Latent Operator Architecture",
+            "url": "https://www.mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "Geometric Flexibility: Graph and Point-Cloud Operators",
+            "url": "https://arxiv.org",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "nsb-GAN: Wavelet Decoder Architecture for Super-Resolution",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn2QriIMeUT3z4PkVcmxPQnQvN1vfZN6B6PweirFkgoh09gHm_clwPsTNJYSzXpoBe4co8t-PlpFXDOPt4-LvLc7d0VwPyXN6v_FqXa9kOYqM_WTKJ0dcXGvlq1mlAuNE96S3owHWJrH6YbSa4PrdnzouBUQ==",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "RA-UNet: Mitigating Premature Dissipation in Radar Nowcasting",
+            "url": "https://mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "MambaVision",
+            "url": "https://nvidia.com",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Boundary-Embedded Neural Operator",
+            "url": "https://iclr.cc/",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Geometry-Informed Neural Operator (GINO)",
+            "url": "https://arxiv.org/",
+            "flags": [
+              "duplicate_url",
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "BATNet-Lite: Boundary-Aware Token Mixing",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmf6IrwT80z5QsyXE5FfJa-tfhehaq_JL9WtQAgxpsXy-tkevpT-6M2LcttVNyBibmCvxO48c_wtoYR8sd4uoDj_oK6TQKQMomkL3WRqT3l5XmqbS9H5VLT1CHDqqhCYTp93am",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          }
+        ],
+        "kept_weak_examples": []
+      },
+      "per_query_timeout_s": 120,
+      "query_runs": [
+        {
+          "query_id": 1,
+          "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "direct_cfd_neural_operator",
+          "status": "ok",
+          "runtime_s": 51.657,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 2
+        },
+        {
+          "query_id": 2,
+          "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "dense_regression_decoder",
+          "status": "ok",
+          "runtime_s": 68.043,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 1,
+          "excluded_count": 1
+        },
+        {
+          "query_id": 3,
+          "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "topic_cluster": "weather_nowcasting",
+          "status": "ok",
+          "runtime_s": 63.927,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 1
+        },
+        {
+          "query_id": 4,
+          "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+          "query_tier": "D_mechanism_only",
+          "topic_cluster": "mamba_ssm",
+          "status": "ok",
+          "runtime_s": 82.892,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 1
+        },
+        {
+          "query_id": 5,
+          "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "geometry_aware_cfd",
+          "status": "ok",
+          "runtime_s": 61.873,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 2
+        },
+        {
+          "query_id": 6,
+          "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "segmentation_boundary_refinement",
+          "status": "ok",
+          "runtime_s": 81.029,
+          "timed_out": false,
+          "source_count": 2,
+          "tool_calls": 1,
+          "timeout_s": 120,
+          "kept_count": 0,
+          "excluded_count": 2
+        }
+      ],
+      "query_mode": "routine",
+      "query_rotation": 0,
+      "selected_query_count": 6,
+      "selected_reason": "routine_weighted_rotation",
+      "selected_queries": [
+        {
+          "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "direct_cfd_neural_operator",
+          "source_task": "direct_cfd_neural_operator",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "dense_regression_decoder",
+          "source_task": "dense_regression_decoder",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "topic_cluster": "weather_nowcasting",
+          "source_task": "weather_nowcasting",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+          "query_tier": "D_mechanism_only",
+          "topic_cluster": "mamba_ssm",
+          "source_task": "mamba_ssm",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "topic_cluster": "geometry_aware_cfd",
+          "source_task": "geometry_aware_cfd",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        },
+        {
+          "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+          "query_tier": "B_dense_prediction_vision",
+          "topic_cluster": "segmentation_boundary_refinement",
+          "source_task": "segmentation_boundary_refinement",
+          "selected_reason": "routine_weighted_rotation",
+          "query_weight": 1.0,
+          "weight_reasons": [],
+          "cache_candidate": false
+        }
+      ],
+      "adaptive_policy": {
+        "query_weights": {
+          "direct_cfd_neural_operator": 1.0,
+          "geometry_aware_cfd": 1.0,
+          "cfd_geometry_sdf": 1.0,
+          "operator_decoder_efficiency": 1.0,
+          "cfd_pressure_surrogate": 1.0,
+          "dense_regression_decoder": 1.0,
+          "segmentation_boundary_refinement": 1.0,
+          "image_restoration": 1.0,
+          "super_resolution": 1.0,
+          "dense_prediction_transformer": 1.0,
+          "multi_scale_refinement": 1.0,
+          "weather_nowcasting": 1.0,
+          "weather_foundation_field": 1.0,
+          "scientific_surrogate": 1.0,
+          "spatiotemporal_field_modeling": 1.0,
+          "climate_downscaling": 1.0,
+          "mamba_ssm": 1.0,
+          "moe_conditional_computation": 1.0,
+          "inr_hypernetwork": 1.0,
+          "peft_tta_adapters": 1.0
+        },
+        "weight_reasons": {},
+        "cooldown_disabled": false,
+        "cooldown_clusters": [],
+        "cooldown_skipped_queries": [],
+        "adversarial_queries": [],
+        "adversarial_query_count": 0,
+        "adversarial_query_reason": "none",
+        "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+      },
+      "query_weights": {
+        "direct_cfd_neural_operator": 1.0,
+        "geometry_aware_cfd": 1.0,
+        "cfd_geometry_sdf": 1.0,
+        "operator_decoder_efficiency": 1.0,
+        "cfd_pressure_surrogate": 1.0,
+        "dense_regression_decoder": 1.0,
+        "segmentation_boundary_refinement": 1.0,
+        "image_restoration": 1.0,
+        "super_resolution": 1.0,
+        "dense_prediction_transformer": 1.0,
+        "multi_scale_refinement": 1.0,
+        "weather_nowcasting": 1.0,
+        "weather_foundation_field": 1.0,
+        "scientific_surrogate": 1.0,
+        "spatiotemporal_field_modeling": 1.0,
+        "climate_downscaling": 1.0,
+        "mamba_ssm": 1.0,
+        "moe_conditional_computation": 1.0,
+        "inr_hypernetwork": 1.0,
+        "peft_tta_adapters": 1.0
+      },
+      "weight_reasons": {},
+      "reuse_hints": {
+        "enabled": true,
+        "scanned_artifacts": [
+          "auto_v6\\campaigns\\auto_v6\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
+        ],
+        "cache_candidate_count": 0,
+        "cluster_cache_candidate_count": 0,
+        "by_query": {},
+        "by_topic_cluster": {}
+      },
+      "reuse_sources_enabled": true,
+      "selected_tiers": [
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision",
+        "C_weather_sciml_field_prediction",
+        "D_mechanism_only",
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision"
+      ],
+      "selected_topic_clusters": [
+        "direct_cfd_neural_operator",
+        "dense_regression_decoder",
+        "weather_nowcasting",
+        "mamba_ssm",
+        "geometry_aware_cfd",
+        "segmentation_boundary_refinement"
+      ],
+      "tier_counts": {
+        "B_dense_prediction_vision": 1
+      },
+      "topic_cluster_counts": {
+        "dense_regression_decoder": 1
+      },
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\external_sources_gemini.json"
+    },
+    "codex_web_ideas": {
+      "status": "ok",
+      "idea_count": 12,
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\external_ideas_codex_web.json"
+    },
+    "claude_local_review": {
+      "status": "ok",
+      "reviewed_count": 12,
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\external_ideas_review.json",
+      "topic_cluster_counts": {
+        "dense_regression_decoder": 1,
+        "segmentation_boundary_refinement": 2,
+        "multi_scale_refinement": 1,
+        "mamba_ssm": 1,
+        "peft_tta_adapters": 1,
+        "weather_nowcasting": 2,
+        "operator_decoder_efficiency": 1,
+        "scientific_surrogate": 1,
+        "geometry_aware_cfd": 1,
+        "direct_cfd_neural_operator": 1
+      },
+      "coverage_warning": "Acceptable round-0 coverage across 10 topic clusters with no single cluster dominating, but two near-overlap pairs exist (EXT_08/EXT_10 both gated local+global spectral; EXT_09 partially overlaps both). Planner should pick at most one of {EXT_08, EXT_10} and clearly differentiate EXT_09 by its basis-weighted-stencil claim. Mechanism diversity is good (residual head, adaptive refinement, deformable conv, wavelet, SSM, low-rank adapter, feature warp, spectral+local, local operator, gated mix, geometry tokens, low-rank basis), but cluster diversity is skewed toward decoder-side mechanisms — no representatives from cfd_pressure_surrogate, image_restoration, super_resolution, dense_prediction_transformer, weather_foundation_field, spatiotemporal_field_modeling, climate_downscaling, moe_conditional_computation, or inr_hypernetwork in this batch.",
+      "missing_clusters_for_next_round": [
+        "cfd_pressure_surrogate",
+        "image_restoration",
+        "super_resolution",
+        "dense_prediction_transformer",
+        "moe_conditional_computation",
+        "inr_hypernetwork",
+        "weather_foundation_field",
+        "cfd_geometry_sdf",
+        "direct_cfd_neural_operator",
+        "geometry_aware_cfd",
+        "operator_decoder_efficiency",
+        "segmentation_boundary_refinement",
+        "multi_scale_refinement",
+        "weather_nowcasting",
+        "scientific_surrogate",
+        "spatiotemporal_field_modeling",
+        "climate_downscaling",
+        "mamba_ssm",
+        "peft_tta_adapters"
+      ],
+      "summary": "All 12 external ideas pass the locked Auto V6 contract (height-only, single-frame, 2D grid I/O, existing train/eval/data paths, no new labels/meshes/solvers/metrics, seed=1, batch_size=16). None were rejected. Highest-confidence mechanisms: EV6_R0_EXT_04 wavelet adapter (4.5), followed by a tight cluster of EXT_01/02/03/05/06/07/08/11/12 at 4.0. Borderline: EXT_09 and EXT_10 (3.5) due to mechanism overlap with EXT_04/EXT_08 and ablation-isolation risk. Planner should treat each idea as a single-mechanism explorer slot, avoid bundling two mechanisms in one experiment, prefer capacity-matched paired comparisons (mechanism-on vs mechanism-off, not larger n_c/depth), and pick at most one of {EXT_08, EXT_10}. Round-1 web scout should target missing clusters listed above to broaden source-task diversity beyond decoder-side mechanisms."
+    },
+    "quality_report": {
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\web_scout_quality_report.json",
+      "status": "ok",
+      "query_mode": "routine",
+      "query_rotation": 0,
+      "selected_query_count": 6,
+      "selected_reason": "routine_weighted_rotation",
+      "adaptive_policy": {
+        "query_weights": {
+          "direct_cfd_neural_operator": 1.0,
+          "geometry_aware_cfd": 1.0,
+          "cfd_geometry_sdf": 1.0,
+          "operator_decoder_efficiency": 1.0,
+          "cfd_pressure_surrogate": 1.0,
+          "dense_regression_decoder": 1.0,
+          "segmentation_boundary_refinement": 1.0,
+          "image_restoration": 1.0,
+          "super_resolution": 1.0,
+          "dense_prediction_transformer": 1.0,
+          "multi_scale_refinement": 1.0,
+          "weather_nowcasting": 1.0,
+          "weather_foundation_field": 1.0,
+          "scientific_surrogate": 1.0,
+          "spatiotemporal_field_modeling": 1.0,
+          "climate_downscaling": 1.0,
+          "mamba_ssm": 1.0,
+          "moe_conditional_computation": 1.0,
+          "inr_hypernetwork": 1.0,
+          "peft_tta_adapters": 1.0
+        },
+        "weight_reasons": {},
+        "cooldown_disabled": false,
+        "cooldown_clusters": [],
+        "cooldown_skipped_queries": [],
+        "adversarial_queries": [],
+        "adversarial_query_count": 0,
+        "adversarial_query_reason": "none",
+        "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+      },
+      "adversarial_query_count": 0,
+      "cooldown_clusters": [],
+      "reuse_sources_enabled": true,
+      "selected_tiers": [
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision",
+        "C_weather_sciml_field_prediction",
+        "D_mechanism_only",
+        "A_direct_cfd_neural_operator",
+        "B_dense_prediction_vision"
+      ],
+      "selected_topic_clusters": [
+        "direct_cfd_neural_operator",
+        "dense_regression_decoder",
+        "weather_nowcasting",
+        "mamba_ssm",
+        "geometry_aware_cfd",
+        "segmentation_boundary_refinement"
+      ],
+      "url_valid_count": 10,
+      "url_weak_count": 16,
+      "reliability_filter": {
+        "policy": "hard-exclude fake/placeholder/duplicate/homepage/unresolved redirect sources from Codex synthesis; mark unrecognized domains as weak but keep",
+        "source_count": 10,
+        "kept_count": 1,
+        "excluded_count": 9,
+        "flag_counts": {
+          "homepage_like_url": 6,
+          "unresolved_google_grounding_redirect": 3,
+          "unrecognized_publication_domain": 5,
+          "duplicate_url": 1
+        },
+        "excluded_examples": [
+          {
+            "title": "Hybrid Physics-Informed Latent Operator Architecture",
+            "url": "https://www.mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "Geometric Flexibility: Graph and Point-Cloud Operators",
+            "url": "https://arxiv.org",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "nsb-GAN: Wavelet Decoder Architecture for Super-Resolution",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn2QriIMeUT3z4PkVcmxPQnQvN1vfZN6B6PweirFkgoh09gHm_clwPsTNJYSzXpoBe4co8t-PlpFXDOPt4-LvLc7d0VwPyXN6v_FqXa9kOYqM_WTKJ0dcXGvlq1mlAuNE96S3owHWJrH6YbSa4PrdnzouBUQ==",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "RA-UNet: Mitigating Premature Dissipation in Radar Nowcasting",
+            "url": "https://mdpi.com",
+            "flags": [
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "MambaVision",
+            "url": "https://nvidia.com",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Boundary-Embedded Neural Operator",
+            "url": "https://iclr.cc/",
+            "flags": [
+              "homepage_like_url",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "Geometry-Informed Neural Operator (GINO)",
+            "url": "https://arxiv.org/",
+            "flags": [
+              "duplicate_url",
+              "homepage_like_url"
+            ]
+          },
+          {
+            "title": "SegFlow: FMS² Framework for Thin Structure Segmentation",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1gnLaJx2IrovODaMcEWztHxNnMs5R0yhun0sELfR8FgOcVjKB_5dp9mHNA6AnVhag-8BMxChKeNxu4CeWewpKDDljIz-ByWVjHBu3U_DGC9uGiG2A-nfJfLwqcbcK",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          },
+          {
+            "title": "BATNet-Lite: Boundary-Aware Token Mixing",
+            "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmf6IrwT80z5QsyXE5FfJa-tfhehaq_JL9WtQAgxpsXy-tkevpT-6M2LcttVNyBibmCvxO48c_wtoYR8sd4uoDj_oK6TQKQMomkL3WRqT3l5XmqbS9H5VLT1CHDqqhCYTp93am",
+            "flags": [
+              "unresolved_google_grounding_redirect",
+              "unrecognized_publication_domain"
+            ]
+          }
+        ],
+        "kept_weak_examples": []
+      },
+      "missing_clusters_for_next_round": [
+        "cfd_pressure_surrogate",
+        "image_restoration",
+        "super_resolution",
+        "dense_prediction_transformer",
+        "moe_conditional_computation",
+        "inr_hypernetwork",
+        "weather_foundation_field",
+        "cfd_geometry_sdf",
+        "direct_cfd_neural_operator",
+        "geometry_aware_cfd",
+        "operator_decoder_efficiency",
+        "segmentation_boundary_refinement",
+        "multi_scale_refinement",
+        "weather_nowcasting",
+        "scientific_surrogate",
+        "spatiotemporal_field_modeling",
+        "climate_downscaling",
+        "mamba_ssm",
+        "peft_tta_adapters"
+      ],
+      "retry_hints": [
+        {
+          "topic_cluster": "cfd_pressure_surrogate",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "airfoil building wind pressure field prediction neural operator 2025"
+        },
+        {
+          "topic_cluster": "image_restoration",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "image restoration lightweight state space model U-Net dense prediction 2025"
+        },
+        {
+          "topic_cluster": "super_resolution",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "efficient image super resolution feature modulation decoder architecture 2025"
+        },
+        {
+          "topic_cluster": "dense_prediction_transformer",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025"
+        },
+        {
+          "topic_cluster": "moe_conditional_computation",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "mixture of experts lightweight dense prediction adapter routing architecture 2025"
+        },
+        {
+          "topic_cluster": "inr_hypernetwork",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "implicit neural representation hypernetwork image to field prediction architecture"
+        },
+        {
+          "topic_cluster": "weather_foundation_field",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "weather forecasting neural operator field prediction high resolution 2025"
+        },
+        {
+          "topic_cluster": "cfd_geometry_sdf",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "geometry informed neural operator SDF aerodynamic flow field surrogate"
+        },
+        {
+          "topic_cluster": "direct_cfd_neural_operator",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "2025 neural operator CFD surrogate flow field prediction architecture"
+        },
+        {
+          "topic_cluster": "geometry_aware_cfd",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "boundary embedded neural operator complex geometry PDE 2024 2025"
+        },
+        {
+          "topic_cluster": "operator_decoder_efficiency",
+          "query_tier": "A_direct_cfd_neural_operator",
+          "suggested_query": "parameter efficient neural operator low rank adapter surrogate model"
+        },
+        {
+          "topic_cluster": "segmentation_boundary_refinement",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025"
+        },
+        {
+          "topic_cluster": "multi_scale_refinement",
+          "query_tier": "B_dense_prediction_vision",
+          "suggested_query": "multi scale context refinement dense regression heatmap prediction architecture 2024"
+        },
+        {
+          "topic_cluster": "weather_nowcasting",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "precipitation nowcasting dense field prediction neural network architecture 2025"
+        },
+        {
+          "topic_cluster": "scientific_surrogate",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "scientific machine learning surrogate spatial field prediction parameter efficient architecture"
+        },
+        {
+          "topic_cluster": "spatiotemporal_field_modeling",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "spatiotemporal field prediction Mamba state space scientific machine learning 2025"
+        },
+        {
+          "topic_cluster": "climate_downscaling",
+          "query_tier": "C_weather_sciml_field_prediction",
+          "suggested_query": "climate downscaling super resolution dense field prediction neural network 2025"
+        },
+        {
+          "topic_cluster": "mamba_ssm",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "Mamba state space model vision dense prediction lightweight architecture 2025"
+        },
+        {
+          "topic_cluster": "peft_tta_adapters",
+          "query_tier": "D_mechanism_only",
+          "suggested_query": "parameter efficient adapters test time adaptation dense prediction boundary aware vision"
+        }
+      ]
+    },
+    "yield_artifact": {
+      "artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\web_query_yield.json",
+      "jsonl_artifact": "auto_v6\\campaigns\\auto_v6\\artifacts\\r000\\web_query_yield.jsonl",
+      "record_count": 6
+    },
+    "missing_clusters_for_next_round": [
+      "cfd_pressure_surrogate",
+      "image_restoration",
+      "super_resolution",
+      "dense_prediction_transformer",
+      "moe_conditional_computation",
+      "inr_hypernetwork",
+      "weather_foundation_field",
+      "cfd_geometry_sdf",
+      "direct_cfd_neural_operator",
+      "geometry_aware_cfd",
+      "operator_decoder_efficiency",
+      "segmentation_boundary_refinement",
+      "multi_scale_refinement",
+      "weather_nowcasting",
+      "scientific_surrogate",
+      "spatiotemporal_field_modeling",
+      "climate_downscaling",
+      "mamba_ssm",
+      "peft_tta_adapters"
+    ],
+    "retry_hints": [
+      {
+        "topic_cluster": "cfd_pressure_surrogate",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "airfoil building wind pressure field prediction neural operator 2025"
+      },
+      {
+        "topic_cluster": "image_restoration",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "image restoration lightweight state space model U-Net dense prediction 2025"
+      },
+      {
+        "topic_cluster": "super_resolution",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "efficient image super resolution feature modulation decoder architecture 2025"
+      },
+      {
+        "topic_cluster": "dense_prediction_transformer",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "dense prediction transformer lightweight decoder adapter segmentation restoration 2025"
+      },
+      {
+        "topic_cluster": "moe_conditional_computation",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "mixture of experts lightweight dense prediction adapter routing architecture 2025"
+      },
+      {
+        "topic_cluster": "inr_hypernetwork",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "implicit neural representation hypernetwork image to field prediction architecture"
+      },
+      {
+        "topic_cluster": "weather_foundation_field",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "weather forecasting neural operator field prediction high resolution 2025"
+      },
+      {
+        "topic_cluster": "cfd_geometry_sdf",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "geometry informed neural operator SDF aerodynamic flow field surrogate"
+      },
+      {
+        "topic_cluster": "direct_cfd_neural_operator",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "2025 neural operator CFD surrogate flow field prediction architecture"
+      },
+      {
+        "topic_cluster": "geometry_aware_cfd",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "boundary embedded neural operator complex geometry PDE 2024 2025"
+      },
+      {
+        "topic_cluster": "operator_decoder_efficiency",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "suggested_query": "parameter efficient neural operator low rank adapter surrogate model"
+      },
+      {
+        "topic_cluster": "segmentation_boundary_refinement",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025"
+      },
+      {
+        "topic_cluster": "multi_scale_refinement",
+        "query_tier": "B_dense_prediction_vision",
+        "suggested_query": "multi scale context refinement dense regression heatmap prediction architecture 2024"
+      },
+      {
+        "topic_cluster": "weather_nowcasting",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "precipitation nowcasting dense field prediction neural network architecture 2025"
+      },
+      {
+        "topic_cluster": "scientific_surrogate",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "scientific machine learning surrogate spatial field prediction parameter efficient architecture"
+      },
+      {
+        "topic_cluster": "spatiotemporal_field_modeling",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "spatiotemporal field prediction Mamba state space scientific machine learning 2025"
+      },
+      {
+        "topic_cluster": "climate_downscaling",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "suggested_query": "climate downscaling super resolution dense field prediction neural network 2025"
+      },
+      {
+        "topic_cluster": "mamba_ssm",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "Mamba state space model vision dense prediction lightweight architecture 2025"
+      },
+      {
+        "topic_cluster": "peft_tta_adapters",
+        "query_tier": "D_mechanism_only",
+        "suggested_query": "parameter efficient adapters test time adaptation dense prediction boundary aware vision"
+      }
+    ],
+    "query_mode": "routine",
+    "query_rotation": 0,
+    "selected_query_count": 6,
+    "selected_reason": "routine_weighted_rotation",
+    "selected_queries": [
+      {
+        "query": "2025 neural operator CFD surrogate flow field prediction architecture",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "topic_cluster": "direct_cfd_neural_operator",
+        "source_task": "direct_cfd_neural_operator",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "dense field prediction super resolution wavelet decoder architecture 2025",
+        "query_tier": "B_dense_prediction_vision",
+        "topic_cluster": "dense_regression_decoder",
+        "source_task": "dense_regression_decoder",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "precipitation nowcasting dense field prediction neural network architecture 2025",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "weather_nowcasting",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "Mamba state space model vision dense prediction lightweight architecture 2025",
+        "query_tier": "D_mechanism_only",
+        "topic_cluster": "mamba_ssm",
+        "source_task": "mamba_ssm",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "boundary embedded neural operator complex geometry PDE 2024 2025",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "topic_cluster": "geometry_aware_cfd",
+        "source_task": "geometry_aware_cfd",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      },
+      {
+        "query": "boundary aware semantic segmentation decoder thin structure refinement 2024 2025",
+        "query_tier": "B_dense_prediction_vision",
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "segmentation_boundary_refinement",
+        "selected_reason": "routine_weighted_rotation",
+        "query_weight": 1.0,
+        "weight_reasons": [],
+        "cache_candidate": false
+      }
+    ],
+    "adaptive_policy": {
+      "query_weights": {
+        "direct_cfd_neural_operator": 1.0,
+        "geometry_aware_cfd": 1.0,
+        "cfd_geometry_sdf": 1.0,
+        "operator_decoder_efficiency": 1.0,
+        "cfd_pressure_surrogate": 1.0,
+        "dense_regression_decoder": 1.0,
+        "segmentation_boundary_refinement": 1.0,
+        "image_restoration": 1.0,
+        "super_resolution": 1.0,
+        "dense_prediction_transformer": 1.0,
+        "multi_scale_refinement": 1.0,
+        "weather_nowcasting": 1.0,
+        "weather_foundation_field": 1.0,
+        "scientific_surrogate": 1.0,
+        "spatiotemporal_field_modeling": 1.0,
+        "climate_downscaling": 1.0,
+        "mamba_ssm": 1.0,
+        "moe_conditional_computation": 1.0,
+        "inr_hypernetwork": 1.0,
+        "peft_tta_adapters": 1.0
+      },
+      "weight_reasons": {},
+      "cooldown_disabled": false,
+      "cooldown_clusters": [],
+      "cooldown_skipped_queries": [],
+      "adversarial_queries": [],
+      "adversarial_query_count": 0,
+      "adversarial_query_reason": "none",
+      "routine_ordering": "tier_rotation_then_weight_desc_within_tier"
+    },
+    "query_weights": {
+      "direct_cfd_neural_operator": 1.0,
+      "geometry_aware_cfd": 1.0,
+      "cfd_geometry_sdf": 1.0,
+      "operator_decoder_efficiency": 1.0,
+      "cfd_pressure_surrogate": 1.0,
+      "dense_regression_decoder": 1.0,
+      "segmentation_boundary_refinement": 1.0,
+      "image_restoration": 1.0,
+      "super_resolution": 1.0,
+      "dense_prediction_transformer": 1.0,
+      "multi_scale_refinement": 1.0,
+      "weather_nowcasting": 1.0,
+      "weather_foundation_field": 1.0,
+      "scientific_surrogate": 1.0,
+      "spatiotemporal_field_modeling": 1.0,
+      "climate_downscaling": 1.0,
+      "mamba_ssm": 1.0,
+      "moe_conditional_computation": 1.0,
+      "inr_hypernetwork": 1.0,
+      "peft_tta_adapters": 1.0
+    },
+    "weight_reasons": {},
+    "adversarial_queries": [],
+    "adversarial_query_count": 0,
+    "adversarial_query_reason": "none",
+    "cooldown_clusters": [],
+    "cooldown_skipped_queries": [],
+    "reuse_hints": {
+      "enabled": true,
+      "scanned_artifacts": [
+        "auto_v6\\campaigns\\auto_v6\\artifacts\\gemini_reuse_seed_20260507_071218\\external_sources_gemini.json"
+      ],
+      "cache_candidate_count": 0,
+      "cluster_cache_candidate_count": 0,
+      "by_query": {},
+      "by_topic_cluster": {}
+    },
+    "reuse_sources_enabled": true,
+    "selected_tiers": [
+      "A_direct_cfd_neural_operator",
+      "B_dense_prediction_vision",
+      "C_weather_sciml_field_prediction",
+      "D_mechanism_only",
+      "A_direct_cfd_neural_operator",
+      "B_dense_prediction_vision"
+    ],
+    "selected_topic_clusters": [
+      "direct_cfd_neural_operator",
+      "dense_regression_decoder",
+      "weather_nowcasting",
+      "mamba_ssm",
+      "geometry_aware_cfd",
+      "segmentation_boundary_refinement"
+    ],
+    "reviewed_ideas": [
+      {
+        "idea_id": "EV6_R0_EXT_01",
+        "title": "Gaussian residual field head",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "dense_regression_decoder",
+        "source_task": "arbitrary-scale super-resolution via continuous dense field reconstruction",
+        "query_tier": "B_dense_prediction_vision",
+        "height_only_translation": "Coarse pressure features and per-cell anisotropic Gaussian residual parameters predicted from the height-only latent; differentiable splatting back onto the same 2D output grid; no SDF/normals/coordinate queries.",
+        "ablation_removes_mechanism": "Replace differentiable Gaussian rendering with bilinear upsample plus 1x1 conv at matched parameter count.",
+        "implementation_risk": "medium: covariance and sub-cell offset must be tightly clamped to prevent ringing near steep height edges; rendering needs deterministic, fixed kernel evaluation.",
+        "minimal_implementation_in_auto_v6": "Add GaussianResidualHead module attached after an existing decoder; 1x1 projections produce amplitude, log-covariance, and bounded sub-cell offset; sum rendered residual onto base output; keep arch_name suffix _gausres.",
+        "expected_parameter_efficiency": "high — extra cost dominated by fixed splat, only small projection convs added.",
+        "recommended_paired_comparison": "Same backbone with GaussianResidualHead vs same backbone with plain 1x1 residual head at matched params.",
+        "planner_hint": "Good explorer mechanism on top of an existing UNet/CNO/HRformer decoder; clamp Gaussian parameters; do not bundle with other decoder-side mechanisms in same proposal.",
+        "source_urls": [
+          "https://arxiv.org/abs/2503.06617",
+          "https://cvpr.thecvf.com/2025/continuous-sr"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_02",
+        "title": "Adaptive high-gradient point refinement",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 5,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "adaptive point-based refinement for high-quality dense segmentation boundaries",
+        "query_tier": "B_dense_prediction_vision",
+        "height_only_translation": "Selection scores from height-gradient + coarse-prediction uncertainty; tiny per-cell MLP refines a capped fraction of cells; refined values scattered back to same grid; no boundary labels or extra channels.",
+        "ablation_removes_mechanism": "Disable adaptive selection and apply only the coarse decoder output (no refinement).",
+        "implementation_risk": "medium: hard top-k can be brittle in early training; soft-mask fallback may be needed; selection budget and gradient-based scoring must be deterministic.",
+        "minimal_implementation_in_auto_v6": "Add RefinementPointHead: scoring conv on (coarse_pred, decoder_feat, height_grad), top-k selection with capped fraction, 2-layer MLP residual prediction, scatter into output; suffix _pointrefine.",
+        "expected_parameter_efficiency": "very high — small MLP, sparse compute on selected cells.",
+        "recommended_paired_comparison": "Backbone + RefinementPointHead vs backbone + uniform-grid residual refinement at matched or larger parameter cost.",
+        "planner_hint": "Strong parameter-efficient mechanism; pair with a stable backbone (UNet/HRformer); limit refinement fraction to avoid full-grid behavior collapse.",
+        "source_urls": [
+          "https://openaccess.thecvf.com/content_CVPR_2020/html/Kirillov_PointRend_Image_Segmentation_As_Rendering_CVPR_2020_paper.html"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_03",
+        "title": "Dynamic snake topology-edge convolution",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "segmentation_boundary_refinement",
+        "source_task": "thin tubular structure segmentation with adaptive snake-style deformable kernels",
+        "query_tier": "B_dense_prediction_vision",
+        "height_only_translation": "Snake-style depthwise kernels with bounded sequential offsets predicted from height-derived features; topology and persistent-homology losses NOT transferred; outputs same 2D grid.",
+        "ablation_removes_mechanism": "Freeze offsets to zero (becomes ordinary depthwise conv) while keeping the same fusion path.",
+        "implementation_risk": "medium: unconstrained offsets may chase height noise; require bounded magnitude and offset smoothness constraint inside module.",
+        "minimal_implementation_in_auto_v6": "Add SnakeConv2d block (horizontal+vertical offset chains, bilinear sampling, residual fusion) into one mid-encoder stage of an existing UNet/HRNet variant; suffix _snake.",
+        "expected_parameter_efficiency": "medium-high — small offset predictors replace deeper static stacks.",
+        "recommended_paired_comparison": "Backbone with SnakeConv2d at one stage vs same backbone with depthwise separable conv at same stage and matched channels.",
+        "planner_hint": "Good explorer for boundary-aligned receptive field; clamp offsets to ±1.5 cells; isolate to a single stage so ablation is clean.",
+        "source_urls": [
+          "https://arxiv.org/abs/2307.08388"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_04",
+        "title": "Wavelet large-receptive-field adapter",
+        "keep_score_0_5": 4.5,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 5,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 5,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "multi_scale_refinement",
+        "source_task": "efficient large-receptive-field convolution via wavelet decomposition",
+        "query_tier": "D_mechanism_only",
+        "height_only_translation": "Fixed Haar/biorthogonal wavelet transform on learned feature maps from the height-only encoder; per-band depthwise conv; inverse transform; no extra input channels.",
+        "ablation_removes_mechanism": "Replace WTConv with a standard depthwise 3x3 conv at matched channel count.",
+        "implementation_risk": "low-medium: deterministic fixed filters; only boundary padding requires care to match existing conv conventions.",
+        "minimal_implementation_in_auto_v6": "Insert WTConv2d block (Haar 2-3 levels, per-band depthwise conv, IDWT, residual) into one decoder fusion stage; suffix _wtconv.",
+        "expected_parameter_efficiency": "very high — receptive field grows with decomposition levels rather than channel/depth widening.",
+        "recommended_paired_comparison": "Backbone with one WTConv adapter vs identical backbone with depthwise 3x3 conv at the matched location.",
+        "planner_hint": "High-confidence mechanism, parameter-efficient, clean ablation; strong candidate for an explorer slot or hybrid with UNet/CNO.",
+        "source_urls": [
+          "https://eccv.ecva.net/virtual/2024/poster/1059"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_05",
+        "title": "Local-enhanced 2D Mamba restoration block",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 3,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "mamba_ssm",
+        "source_task": "image restoration with state-space model + local conv + channel attention",
+        "query_tier": "D_mechanism_only",
+        "height_only_translation": "2D bidirectional row/column scans on latent features encoded from the height grid; depthwise local conv preserves boundary detail; outputs same 2D grid; no temporal state.",
+        "ablation_removes_mechanism": "Disable SSM scan branch; keep only local conv + channel attention.",
+        "implementation_risk": "medium: depends on existing 2D scan utilities; directional artifacts unless row+column scans balanced and residual-scaled; CUDA kernel availability matters.",
+        "minimal_implementation_in_auto_v6": "Add ResidualStateSpaceBlock (bi-dir row/col scan, depthwise local conv, channel attention, residual scale) into mamba2d/umamba/mamba_attention variants; suffix _mambair.",
+        "expected_parameter_efficiency": "medium-high — linear-complexity scans replace quadratic attention or wider conv.",
+        "recommended_paired_comparison": "Backbone with ResidualStateSpaceBlock vs same backbone with conv-only residual block at matched cost.",
+        "planner_hint": "Use only if 2D Mamba scan utilities already integrate cleanly in the codebase; otherwise prefer simpler explorer like wavelet adapter.",
+        "source_urls": [
+          "https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/2740_ECCV_2024_paper.php"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_06",
+        "title": "Low-rank residual adapters for field decoders",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 5,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 5,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "peft_tta_adapters",
+        "source_task": "parameter-efficient adaptation via sparse low-rank adapters",
+        "query_tier": "D_mechanism_only",
+        "height_only_translation": "LoRA-style rank-r residual deltas on selected 1x1 projections / spectral mixing weights / decoder fusion projections; operate only on height-derived latents; gated zero-init.",
+        "ablation_removes_mechanism": "Set adapter gates to zero (base model unchanged).",
+        "implementation_risk": "low: zero-init residual adapters are stable; no train/eval/data changes.",
+        "minimal_implementation_in_auto_v6": "Add AdapterConv2d / AdapterSpectralDelta modules (rank-r down/up, learned scalar gate) inserted behind targeted projections in fno2d / cno / fourier_unet variants; suffix _lora.",
+        "expected_parameter_efficiency": "very high — adds tiny low-rank correction path while base weights stay frozen-or-trained.",
+        "recommended_paired_comparison": "Backbone with low-rank adapters vs same backbone with full-rank residual projection at similar/larger parameter count.",
+        "planner_hint": "Treat rank as a mechanism-size knob, not a sweep — pick a single rank (e.g. 4-8); pair against full-rank residual to isolate the efficiency claim.",
+        "source_urls": [
+          "https://arxiv.org/abs/2404.10934"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_07",
+        "title": "Geometry-conditioned Lagrangian feature warp",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "physics-informed precipitation nowcasting via learned advection + semi-Lagrangian warp",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Single-frame learned 2D displacement field predicted from height-derived decoder features; warps intermediate features via grid_sample; followed by residual correction. NO temporal forecasting; NO new solver; NO multi-frame data.",
+        "ablation_removes_mechanism": "Force dx/dy = 0 (identity warp) while keeping the residual correction head.",
+        "implementation_risk": "medium: without temporal supervision warp can drift; require bounded offsets (e.g. ±2 cells) and residual scaling.",
+        "minimal_implementation_in_auto_v6": "Add WarpRefineBlock: predict bounded dx/dy from decoder features → grid_sample features → concat warped+original → 3x3 conv residual; suffix _warp.",
+        "expected_parameter_efficiency": "medium-high — small flow predictor replaces several static refinement layers.",
+        "recommended_paired_comparison": "Backbone with WarpRefineBlock active vs same backbone with WarpRefineBlock identity-warped (offsets clamped to 0).",
+        "planner_hint": "Frame strictly as single-frame geometry-conditioned feature warping — explicitly disclaim any temporal/forecast component to keep within locked contract.",
+        "source_urls": [
+          "https://www.sciencedirect.com/science/article/pii/S2590197425000783"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_08",
+        "title": "AFNO plus differential local detail branch",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 5,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "weather_nowcasting",
+        "source_task": "AFNO global + differential conv local nowcasting block",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Single-frame composition: AFNO-like global spectral branch + finite-difference-style differential conv branch operating on height-encoded latents; gated residual fusion. NO LSTM/recurrent component transferred.",
+        "ablation_removes_mechanism": "Remove the differential local branch and keep only global spectral mixing.",
+        "implementation_risk": "low-medium: AFNO and difference convs already exist in candidate arch list; gate must be initialized to keep both branches active.",
+        "minimal_implementation_in_auto_v6": "Add GlobalLocalFieldBlock (AFNO mix + fixed-gradient & learnable conv + sigmoid gated residual) inside afno_block / unet_afno / dilated_fno variant; suffix _afnodiff.",
+        "expected_parameter_efficiency": "medium — spectral branch dominant cost, differential branch tiny.",
+        "recommended_paired_comparison": "Backbone with GlobalLocalFieldBlock vs AFNO-only or Fourier-only block at matched location and parameter budget.",
+        "planner_hint": "Slight overlap with EV6_R0_EXT_10 (DyMixOp); pick at most one of {EXT_08, EXT_10} per round to preserve diversity.",
+        "source_urls": [
+          "https://www.sciencedirect.com/science/article/pii/S0098300425001165"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_09",
+        "title": "Localized operator kernel refinement",
+        "keep_score_0_5": 3.5,
+        "subscores": {
+          "novelty": 3,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 4,
+          "paired_comparison_clarity": 3,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "operator_decoder_efficiency",
+        "source_task": "neural operators with localized integral and differential kernels",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Fixed-grid local stencil-style kernels parallel to spectral or encoder-decoder paths; act on hidden features from height grid; no continuous-mesh queries.",
+        "ablation_removes_mechanism": "Replace localized operator kernels with ordinary pointwise conv (same channel count).",
+        "implementation_risk": "low-medium: implementable as small-support learned conv; main risk is that without basis-weighted support it collapses to plain conv and the mechanism is not actually tested.",
+        "minimal_implementation_in_auto_v6": "Add LocalOperator2d: small (3x3 or 5x5) basis-weighted depthwise stencil with residual scaling, optionally fused with one Fourier branch in fno2d / fourier_unet; suffix _locop.",
+        "expected_parameter_efficiency": "high if basis weights are shared per band, low if fully unconstrained.",
+        "recommended_paired_comparison": "Spectral block vs spectral block + LocalOperator2d at matched cost; ensure ablation replaces local op with pointwise conv (not 3x3 conv) to isolate locality vs. plain conv confound.",
+        "planner_hint": "Mechanism is borderline between novel locality and plain conv; only include if basis-weighted formulation is preserved, otherwise diversity contribution drops further.",
+        "source_urls": [
+          "https://research.nvidia.com/publication/2024-07_neural-operators-localized-integral-and-differential-kernels"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_10",
+        "title": "Local-global mixing operator block (DyMixOp)",
+        "keep_score_0_5": 3.5,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 3
+        },
+        "topic_cluster": "scientific_surrogate",
+        "source_task": "PDE neural operator with local-global mixing for nonlinear dynamics",
+        "query_tier": "C_weather_sciml_field_prediction",
+        "height_only_translation": "Single-frame block on height-derived latents: depthwise local conv + low-mode Fourier/AFNO + multiplicative gated interaction + residual; no time integration or PDE solver.",
+        "ablation_removes_mechanism": "Remove the multiplicative local-global gate; use simple residual addition of branches.",
+        "implementation_risk": "medium: gate stability under high learning rates; mechanism overlap with EXT_08 must be acknowledged.",
+        "minimal_implementation_in_auto_v6": "Add LocalGlobalMixBlock (depthwise conv path, low-mode FFT path, sigmoid-gated multiplicative interaction, residual projection) into a fno2d / cno hybrid; suffix _dymix.",
+        "expected_parameter_efficiency": "medium-high — structured branches instead of width increase.",
+        "recommended_paired_comparison": "Block with multiplicative gate vs block with summed branches (no gate) at matched parameters — this is the only ablation that isolates the gating mechanism.",
+        "planner_hint": "Choose at most one of {EXT_08, EXT_10}; if both are kept, ensure paired comparisons isolate gating (EXT_10) from local-branch presence (EXT_08).",
+        "source_urls": [
+          "https://arxiv.org/abs/2508.13490"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_11",
+        "title": "Height-derived geometry token operator",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "geometry_aware_cfd",
+        "source_task": "geometry-aware PDE surrogate via geometry tokens + multiscale attentional operator",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "height_only_translation": "Patch-pool height encoder features into a small set of learned geometry tokens; shallow cross-attention from decoder grid features to tokens; residual-fuse back to grid. NO SDF/normals/point cloud/mesh added.",
+        "ablation_removes_mechanism": "Replace cross-attention to geometry tokens with global average-pooled scalar conditioning.",
+        "implementation_risk": "medium: token pooling can discard fine boundary detail; attention head count and token count must be small to avoid quadratic blowup.",
+        "minimal_implementation_in_auto_v6": "Add GeometryTokenMixer: patch-avg-pool encoder features → ~16-32 tokens → 1-2 cross-attention layers from decoder features → residual fuse; insert into unet_v3 / hrformer / transolver_lite variant; suffix _geomtok.",
+        "expected_parameter_efficiency": "medium — small token count avoids full quadratic attention.",
+        "recommended_paired_comparison": "Backbone + GeometryTokenMixer vs same backbone + global-avg-pooled scalar conditioning (ablation).",
+        "planner_hint": "Strong explorer that adds a geometry-context mechanism without violating contract; keep token count ≤32 and pair with conv decoder features to retain local detail.",
+        "source_urls": [
+          "https://arxiv.org/abs/2505.18781"
+        ]
+      },
+      {
+        "idea_id": "EV6_R0_EXT_12",
+        "title": "Height-conditioned low-rank operator basis",
+        "keep_score_0_5": 4.0,
+        "subscores": {
+          "novelty": 4,
+          "feasibility": 4,
+          "height_only_compatibility": 5,
+          "parameter_efficiency": 4,
+          "implementation_risk": 3,
+          "paired_comparison_clarity": 4,
+          "diversity_contribution": 4
+        },
+        "topic_cluster": "direct_cfd_neural_operator",
+        "source_task": "geometry-dependent flow surrogate via branch-trunk fusion",
+        "query_tier": "A_direct_cfd_neural_operator",
+        "height_only_translation": "Branch encoder consumes only height grid; predicts coefficients for K learned grid-aligned basis maps; low-rank pressure estimate fused additively with a local CNN residual. No DeepONet trunk over arbitrary point queries — basis is internal grid-aligned parameter.",
+        "ablation_removes_mechanism": "Remove the learned basis path; keep only the CNN residual decoder.",
+        "implementation_risk": "medium: choosing K; small K underfits, large K erodes efficiency benefit and overlaps with plain decoder widening.",
+        "minimal_implementation_in_auto_v6": "Add LowRankOperatorHead: global height encoder → coefficient projection (K≈8-16) → learned basis maps (per-channel grid-aligned) → additive CNN residual refinement; suffix _lrbasis.",
+        "expected_parameter_efficiency": "high if K kept modest — global modes via coefficients rather than wider decoder.",
+        "recommended_paired_comparison": "Decoder-only baseline vs decoder + LowRankOperatorHead vs LowRankOperatorHead without local residual fusion (3-way to isolate basis vs. residual contribution); for keep-score paired test use the basis-on vs basis-off comparison.",
+        "planner_hint": "Treat K as a single mechanism-size choice; do not sweep K alongside n_c/depth in the same proposal — that violates anti-endless-finetune rules.",
+        "source_urls": [
+          "https://arxiv.org/abs/2501.01934"
+        ]
+      }
+    ]
+  }
+}
+
+Propose exactly 12 experiments.
+Each proposal should use role=exploit or role=explorer and include hypothesis_id/hypothesis, primary_purpose, paired_comparison, decision_rule, expected_success, expected_failure_interpretation, risk_class, resource_expectation, source_type, evidence_refs, source_note, plus novelty_rationale/new_model_mechanism for explorer, topic_cluster/query_tier/height_only_translation/ablation_removes_mechanism for web-derived explorer, and capacity_rationale for high-capacity configs.
