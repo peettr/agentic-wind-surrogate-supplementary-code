@@ -4,7 +4,7 @@
 
 - `shared_baseline/model.py`: reproduced Lu et al. (2025) U-Net baseline implementation.
 - `shared_baseline/config.json`: representative baseline training configuration.
-- `shared_baseline/full_reproduction_pipeline/`: full baseline reproduction workflow, including original data formatting, split construction, training, restoration, and evaluation code.
+- `shared_baseline/`: compact common baseline reference files, including model implementation, configuration, evaluation protocol, and summary metrics.
 
 ## Hybrid
 
