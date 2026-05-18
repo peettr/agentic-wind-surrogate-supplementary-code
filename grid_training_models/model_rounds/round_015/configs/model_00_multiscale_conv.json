@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 15,
+  "slot": 0,
+  "arch_name": "multiscale_conv",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.001,
+  "batch_size": 16,
+  "params": 75159889,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "2.0",
+  "metrics": {
+    "r2_median": "0.6686959869872691",
+    "r2_global": "0.6717802475165954",
+    "mae_median": "0.0917972326278686",
+    "mae_mean": "0.0815135997296734"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

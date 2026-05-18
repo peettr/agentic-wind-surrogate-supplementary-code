@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 3,
+  "slot": 7,
+  "arch_name": "uno",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 105601345,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "6.0",
+  "metrics": {
+    "r2_median": "0.3286895065260372",
+    "r2_global": "0.4550500300751632",
+    "mae_median": "0.1286125928163528",
+    "mae_mean": "0.1097815541381185"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

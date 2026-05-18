@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 7,
+  "slot": 6,
+  "arch_name": "dcn_unet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 135192475,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "7.0",
+  "metrics": {
+    "r2_median": "0.63227234310657",
+    "r2_global": "0.6192447608219463",
+    "mae_median": "0.0983945429325103",
+    "mae_mean": "0.0887638644230636"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

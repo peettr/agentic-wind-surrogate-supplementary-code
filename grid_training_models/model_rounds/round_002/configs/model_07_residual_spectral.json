@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 2,
+  "slot": 7,
+  "arch_name": "residual_spectral",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 104972257,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "3.0",
+  "metrics": {
+    "r2_median": "0.6289841728803703",
+    "r2_global": "0.6304602169877779",
+    "mae_median": "0.0936965942382812",
+    "mae_mean": "0.0862331834537061"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

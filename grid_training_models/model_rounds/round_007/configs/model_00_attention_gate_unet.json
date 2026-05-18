@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 7,
+  "slot": 0,
+  "arch_name": "attention_gate_unet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 31467765,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "3.0",
+  "metrics": {
+    "r2_median": "0.6696707232539612",
+    "r2_global": "0.6680940714437325",
+    "mae_median": "0.0952621102333068",
+    "mae_mean": "0.0828843793408437"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

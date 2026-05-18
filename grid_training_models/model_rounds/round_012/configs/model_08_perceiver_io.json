@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 12,
+  "slot": 8,
+  "arch_name": "perceiver_io",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 7082753,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "8.0",
+  "metrics": {
+    "r2_median": "-3.323431164343231",
+    "r2_global": "-2.768013659459832",
+    "mae_median": "0.3609486222267151",
+    "mae_mean": "0.373673617568883"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

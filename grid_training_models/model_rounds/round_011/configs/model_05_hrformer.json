@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 11,
+  "slot": 5,
+  "arch_name": "hrformer",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 215350593,
+  "final_status": "formal_param_cap_skipped",
+  "benchmark_rank": "",
+  "metrics": {
+    "r2_median": "",
+    "r2_global": "",
+    "mae_median": "",
+    "mae_mean": ""
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

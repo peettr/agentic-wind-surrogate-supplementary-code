@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 8,
+  "slot": 3,
+  "arch_name": "dilated_unet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 14780705,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "1.0",
+  "metrics": {
+    "r2_median": "0.6848944183185381",
+    "r2_global": "0.6795131431636533",
+    "mae_median": "0.0915033966302871",
+    "mae_mean": "0.0797938866202126"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

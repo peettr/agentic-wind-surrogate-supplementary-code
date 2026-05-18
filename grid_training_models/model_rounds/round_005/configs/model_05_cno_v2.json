@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 5,
+  "slot": 5,
+  "arch_name": "cno_v2",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 144933361,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "2.0",
+  "metrics": {
+    "r2_median": "0.6853252487281944",
+    "r2_global": "0.6732610291464647",
+    "mae_median": "0.0893997475504875",
+    "mae_mean": "0.0801316349851814"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 5,
+  "slot": 6,
+  "arch_name": "convnext_v2_unet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 7463841,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "7.0",
+  "metrics": {
+    "r2_median": "0.3342170626064824",
+    "r2_global": "0.4349572589503286",
+    "mae_median": "0.1263116300106048",
+    "mae_mean": "0.1154782675883986"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

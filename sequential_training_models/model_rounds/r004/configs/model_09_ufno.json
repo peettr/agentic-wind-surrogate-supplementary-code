@@ -1,0 +1,27 @@
+﻿{
+  "experiment_id": "r004_full_ufno_nc16_lr0.001_masked_l1_gradient",
+  "strategy": "sequential_full",
+  "arch_name": "ufno",
+  "arch_kwargs": {
+    "n_c": 16,
+    "depth": 6
+  },
+  "loss_name": "masked_l1_gradient",
+  "loss_kwargs": {},
+  "seed": 1,
+  "epochs": 200,
+  "lr": 0.001,
+  "batch_size": 16,
+  "checkpoint_interval": 50,
+  "input_features": "height",
+  "eval_splits": [
+    "val"
+  ],
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r004_full_ufno_nc16_lr0.001_masked_l1_gradient",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 10
+}
+
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 12,
+  "slot": 7,
+  "arch_name": "nafnet",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 2859313,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "7.0",
+  "metrics": {
+    "r2_median": "0.0094073088505159",
+    "r2_global": "0.1587519665207842",
+    "mae_median": "0.1604694575071334",
+    "mae_mean": "0.1601914497939023"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 16,
+  "slot": 7,
+  "arch_name": "ufno",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 242225153,
+  "final_status": "formal_param_cap_skipped",
+  "benchmark_rank": "",
+  "metrics": {
+    "r2_median": "",
+    "r2_global": "",
+    "mae_median": "",
+    "mae_mean": ""
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

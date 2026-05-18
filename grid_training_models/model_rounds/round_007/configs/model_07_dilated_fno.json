@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 7,
+  "slot": 7,
+  "arch_name": "dilated_fno",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.001,
+  "batch_size": 16,
+  "params": 60726001,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "4.0",
+  "metrics": {
+    "r2_median": "0.6594401836668035",
+    "r2_global": "0.649885317138424",
+    "mae_median": "0.0874792635440826",
+    "mae_mean": "0.0833653760565952"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

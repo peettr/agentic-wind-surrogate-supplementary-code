@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 17,
+  "slot": 4,
+  "arch_name": "umamba",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 72089137,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "3.0",
+  "metrics": {
+    "r2_median": "0.6655901413038844",
+    "r2_global": "0.6639376110189569",
+    "mae_median": "0.0945858135819435",
+    "mae_mean": "0.0819075934080915"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

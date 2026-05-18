@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 9,
+  "slot": 1,
+  "arch_name": "ffno",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 206337,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "6.0",
+  "metrics": {
+    "r2_median": "0.4505527580876108",
+    "r2_global": "0.5283645575190141",
+    "mae_median": "0.1188036724925041",
+    "mae_mean": "0.1063738320022821"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

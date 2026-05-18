@@ -1,0 +1,23 @@
+﻿{
+  "mode": "Grid",
+  "release_round": 2,
+  "slot": 9,
+  "arch_name": "swin_unetr",
+  "model_file": "model.py",
+  "loss_name": "masked_l1_gradient",
+  "lr": 0.0005,
+  "batch_size": 16,
+  "params": 6859867,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "6.0",
+  "metrics": {
+    "r2_median": "0.539313432262804",
+    "r2_global": "0.5726131849797653",
+    "mae_median": "0.1163538545370101",
+    "mae_mean": "0.0961185188794677"
+  },
+  "notes": "Grid candidate configuration reconstructed from the public 200-candidate ledger."
+}
+
+
+

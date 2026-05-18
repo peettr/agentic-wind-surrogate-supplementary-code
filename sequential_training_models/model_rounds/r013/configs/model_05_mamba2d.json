@@ -1,0 +1,27 @@
+﻿{
+  "experiment_id": "r013_full_mamba2d_nc32_lr0.00035_masked_huber",
+  "strategy": "sequential_full",
+  "arch_name": "mamba2d",
+  "arch_kwargs": {
+    "n_c": 32,
+    "depth": 7
+  },
+  "loss_name": "masked_huber",
+  "loss_kwargs": {},
+  "seed": 1,
+  "epochs": 200,
+  "lr": 0.00035,
+  "batch_size": 16,
+  "checkpoint_interval": 50,
+  "input_features": "height",
+  "eval_splits": [
+    "val"
+  ],
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r013_full_mamba2d_nc32_lr0.00035_masked_huber",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 10
+}
+
+
+
