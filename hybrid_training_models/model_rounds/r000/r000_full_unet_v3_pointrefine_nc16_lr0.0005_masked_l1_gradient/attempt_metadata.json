@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\unet_v3_pointrefine.py",
+  "model_source_kind": "generated",
+  "model_sha256": "868622b1b1416656b0f078600ae720e8a3c608e30452c45425d05c86dfd668bd",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r000_full_unet_v3_pointrefine_nc16_lr0.0005_masked_l1_gradient/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\hrnet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "cb050679f5c2d7235c262138da7b29b42697cb89d4072a0d0fd2d0f133f1f9f9",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r004_full_hrnet_nc24_lr0.0005_masked_l1/model.py"
+}

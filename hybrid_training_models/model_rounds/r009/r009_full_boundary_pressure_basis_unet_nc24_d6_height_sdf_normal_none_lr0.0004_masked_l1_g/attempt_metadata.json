@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_pressure_basis_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "158bc298dbecbdcf93eadc30fbc2d47b310c037d09fd1c64c2c4ff4cf3cf8cd8",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_boundary_pressure_basis_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_graph_surrogate_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "59df5c4ad913bfefa67a4d3c7c3bd3f2959710086ef04547cb859bbefea5415d",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r022_full_boundary_graph_surrogate_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_alltoall_surface_mixer_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "77543049e222596262bb9d638138d5f5bbd03ab40faef12453e2ac1cb5bd032e",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r010_full_boundary_alltoall_surface_mixer_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+}

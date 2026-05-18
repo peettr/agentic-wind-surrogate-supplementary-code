@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\multiscale_residual_fpn_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "c42eaff23551341ac10dff41973bc9458f112394c40c2c2ba6c3bfccced5aab4",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r022_full_multiscale_residual_fpn_unet_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_l1_gradient_retry1/model.py"
+}

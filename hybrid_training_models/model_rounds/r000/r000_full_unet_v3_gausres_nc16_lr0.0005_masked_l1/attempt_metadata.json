@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\unet_v3_gausres.py",
+  "model_source_kind": "generated",
+  "model_sha256": "2bf2783edb078f5222d40338a2deb15523bd1cec150fe55b618c29f8b973cc39",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r000_full_unet_v3_gausres_nc16_lr0.0005_masked_l1/model.py"
+}

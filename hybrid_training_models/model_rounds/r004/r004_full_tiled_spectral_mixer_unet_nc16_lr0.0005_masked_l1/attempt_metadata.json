@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\tiled_spectral_mixer_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "307ce1dc3baed3450e4f8cd7efee5af56cbd24b264d1c72e99d46144996939ab",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r004_full_tiled_spectral_mixer_unet_nc16_lr0.0005_masked_l1/model.py"
+}

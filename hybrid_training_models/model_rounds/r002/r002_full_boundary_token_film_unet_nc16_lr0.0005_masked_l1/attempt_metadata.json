@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_token_film_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "69578611e4302a27a6faddc3a300aac3f1abeda9870cafb2374315897342868a",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r002_full_boundary_token_film_unet_nc16_lr0.0005_masked_l1/model.py"
+}

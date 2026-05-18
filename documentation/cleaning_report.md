@@ -1,14 +1,17 @@
-﻿# Cleaning Report
+# Cleaning Report
 
-Clean package generated from `supplementary_code_draft`.
+Clean package generated from `supplementary_code_draft` and then reorganized for release.
 
-## Main cleaning actions
+## Main cleaning and organization actions
 
 - Removed checkpoint/model-weight files, compiled caches, logs, locks, backup files, and JSONL event streams.
 - Removed raw JSON/JSONL prompt streams.
 - Compacted prompts by keeping prompt-builder/source files, a prompt manifest, and representative full prompts only.
 - Removed private channel notification scripts.
 - Replaced local user paths, raw HPC project paths, SSH socket paths, and known private literals with placeholders.
+- Limited Grid to the final 20 rounds, with 10 candidates per round where available.
+- Added round-organized `model_rounds/` directories for Grid, Sequential, and Hybrid.
+- Expanded the Lu et al. (2025) baseline folder with a full reproduction pipeline covering data formatting, split construction, training, restoration, and evaluation.
 
 ## Remaining manual review
 

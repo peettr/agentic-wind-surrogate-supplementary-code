@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\fusion_basis_decoder_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "5c1e56493bd2ec4c6568af88feb6e7146a1517d6bd6e0e17f905dbc43203c847",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r015_full_fusion_basis_decoder_unet_nc20_d5_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+}

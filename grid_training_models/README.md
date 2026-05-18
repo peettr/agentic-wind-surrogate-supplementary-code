@@ -1,11 +1,7 @@
 # Grid Training and Models
 
-Training and model source for Grid mode.
+This folder contains the final Grid campaign subset only: the last 20 rounds, with 10 candidates per round where available. Earlier exploratory/codegen/test rounds are intentionally excluded.
 
-Included sources:
-
-- `shared/`, `scripts/`, `templates/`, `generated_models/` copied from the original Grid source root on CRC: `<GRID_HPC_SOURCE_ROOT>`.
-- `metadata/` and `reports/` copied from the local Grid report package.
-- Summary files copied from the local Grid report package.
-
-Before public release, sanitize remote paths and machine-specific scheduler details.
+- `generated_models/`: retained source directories `v5_controller_auto11_001` through `v5_controller_auto11_020`.
+- `model_rounds/`: same final Grid candidates reorganized by round.
+- `model_rounds_manifest.csv`: round-level inventory.

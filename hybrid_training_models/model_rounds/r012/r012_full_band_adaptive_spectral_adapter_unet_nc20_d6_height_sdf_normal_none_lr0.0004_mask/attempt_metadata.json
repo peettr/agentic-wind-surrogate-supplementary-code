@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\band_adaptive_spectral_adapter_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "c2385752da9d2ddd46000c4dbd3f3f736be9aa093d0f58ba5842c9e446e6bb5e",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r012_full_band_adaptive_spectral_adapter_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\hypernet_adapter_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "490ed3cae9343d32cb731c52b7a013f81db536e0dbad21b0b2e0664951b66402",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r002_full_hypernet_adapter_unet_nc16_lr0.0003_masked_l1/model.py"
+}

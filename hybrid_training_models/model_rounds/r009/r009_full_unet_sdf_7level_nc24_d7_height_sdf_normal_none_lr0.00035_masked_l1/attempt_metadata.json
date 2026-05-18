@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\unet_sdf_7level.py",
+  "model_source_kind": "generated",
+  "model_sha256": "6ce70a0025679c62cace4344c1be999049048f401189c311adffd6ee5709ad6a",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r009_full_unet_sdf_7level_nc24_d7_height_sdf_normal_none_lr0.00035_masked_l1/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\adaptive_afno_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "c8c40161c5a378d2bcb581f6d94b6f5c874b9a23c87ea59f62e6c1b5cb7bb9d2",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r002_full_adaptive_afno_unet_nc16_lr0.0005_masked_l1/model.py"
+}

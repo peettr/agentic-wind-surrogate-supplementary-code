@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\attn_ssm_skip_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "2eaa4991701158332c57204f4255fdc9a6d7afc7d64546cf3a1a3fce7a0c4c82",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r003_full_attn_ssm_skip_unet_nc16_lr0.0005_masked_l1/model.py"
+}

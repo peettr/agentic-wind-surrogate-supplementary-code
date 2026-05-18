@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\senseiver_pseudo_sensor_head.py",
+  "model_source_kind": "generated",
+  "model_sha256": "0d1ec8e129f6e72eca36b036da04284c1caac1de02c386c4d4477ea1f25ea90c",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r017_full_senseiver_pseudo_sensor_head_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber/model.py"
+}

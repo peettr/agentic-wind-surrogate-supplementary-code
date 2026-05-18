@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\fgmoe_decoder_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "3e81c3276e04a7f8bec7f34a8a546dd2176e2ad7c2782d9115c02c2d46426b33",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r001_full_fgmoe_decoder_unet_nc16_lr0.0005_masked_l1/model.py"
+}

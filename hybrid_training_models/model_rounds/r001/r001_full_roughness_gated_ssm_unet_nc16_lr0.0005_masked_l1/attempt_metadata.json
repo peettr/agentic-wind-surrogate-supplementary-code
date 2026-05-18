@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\roughness_gated_ssm_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "d4c5e41bd6018fd178b906f1afa0c8e7da8c7fd061dd42cb2a926fd68f5785e7",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r001_full_roughness_gated_ssm_unet_nc16_lr0.0005_masked_l1/model.py"
+}

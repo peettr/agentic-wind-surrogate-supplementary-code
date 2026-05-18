@@ -1,66 +1,55 @@
-# Code Inventory, Draft
+# Code Inventory
 
-Generated: 2026-05-18T14:27:48.864184
+## Baseline
 
-## Source mapping
+- `baseline_lu2025_unet/model.py`: reproduced Lu et al. (2025) U-Net baseline implementation.
+- `baseline_lu2025_unet/config.json`: representative baseline training configuration.
+- `baseline_lu2025_unet/baseline_matrix_exact_summary.*`: cleaned summary metrics.
+- `baseline_lu2025_unet/full_reproduction_pipeline/`: full baseline reproduction workflow, including original data formatting, split construction, training, restoration, and evaluation code.
 
-- Hybrid source: `<HYBRID_SOURCE_ROOT>`
+## Hybrid
 
-- Sequential source: `<LOCAL_WORKSPACE>\auto_v4`
+- `hybrid_workflow_full/`: complete workflow implementation for the primary Hybrid mode.
+- `hybrid_training_models/models/`: Hybrid model implementations.
+- `hybrid_training_models/shared/`: shared training, evaluation, losses, configs, and utility code.
+- `hybrid_training_models/model_rounds/`: Hybrid full-run candidates organized by round, with each experiment carrying its own `model.py`, `config.json`, and available attempt metadata.
+- `hybrid_training_models/model_rounds_manifest.csv`: round-level model inventory.
 
-- Grid local package source: `<LOCAL_WORKSPACE>\auto_v5_report_package`
+## Sequential
 
+- `sequential_training_models/models/`: Sequential model implementations.
+- `sequential_training_models/shared/`: Sequential shared training and evaluation code.
+- `sequential_training_models/selected_round_configs/`: full training configurations by round.
+- `sequential_training_models/model_rounds/`: Sequential candidates organized by round, with each experiment carrying its own `model.py` and `config.json`.
+- `sequential_training_models/model_rounds_manifest.csv`: round-level model inventory.
 
-## Copied items
+## Grid
 
-- `<LOCAL_WORKSPACE>\auto_v4\models\baselines\unet_v2_baseline.py` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\baseline_lu2025_unet\model.py`
-- `<LOCAL_WORKSPACE>\auto_v4\campaigns\phase9\artifacts\r002\full_configs\r002_full_unet_v2_baseline_nc16_lr0.001_masked_l1.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\baseline_lu2025_unet\config.json`
-- `<LOCAL_WORKSPACE>\auto_v4\reports\phase9_final_report_v3\baseline_lu_metrics\baseline_matrix_exact\baseline_matrix_exact_summary.csv` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\baseline_lu2025_unet\baseline_matrix_exact_summary.csv`
-- `<LOCAL_WORKSPACE>\auto_v4\reports\phase9_final_report_v3\baseline_lu_metrics\baseline_matrix_exact\baseline_matrix_exact_summary.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\baseline_lu2025_unet\baseline_matrix_exact_summary.json`
-- `<HYBRID_SOURCE_ROOT>\engine` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\engine`
-- `<HYBRID_SOURCE_ROOT>\workflow_engine` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\workflow_engine`
-- `<HYBRID_SOURCE_ROOT>\explorer` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\explorer`
-- `<HYBRID_SOURCE_ROOT>\configs` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\configs`
-- `<HYBRID_SOURCE_ROOT>\templates` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\templates`
-- `<HYBRID_SOURCE_ROOT>\scripts` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\scripts`
-- `<HYBRID_SOURCE_ROOT>\initial_knowledge` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\initial_knowledge`
-- `<HYBRID_SOURCE_ROOT>\tests` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\tests`
-- `<HYBRID_SOURCE_ROOT>\README.md` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\README.md`
-- `<HYBRID_SOURCE_ROOT>\HARD_CONSTRAINTS.md` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\HARD_CONSTRAINTS.md`
-- `<HYBRID_SOURCE_ROOT>\LOCKED_FILES.md` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\LOCKED_FILES.md`
-- `<HYBRID_SOURCE_ROOT>\INITIAL_KNOWLEDGE_PACKAGE_TEMPLATE.md` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\INITIAL_KNOWLEDGE_PACKAGE_TEMPLATE.md`
-- `<HYBRID_SOURCE_ROOT>\run_auto_v6_workflow_runner_with_notify.py` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\run_auto_v6_workflow_runner_with_notify.py`
-- `<HYBRID_SOURCE_ROOT>\run_auto_v6_workflow_runner.bat` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_workflow_full\run_auto_v6_workflow_runner.bat`
-- `<HYBRID_SOURCE_ROOT>\models` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_training_models\models`
-- `<HYBRID_SOURCE_ROOT>\shared` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_training_models\shared`
-- `<HYBRID_SOURCE_ROOT>\configs` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_training_models\configs`
-- `<HYBRID_SOURCE_ROOT>\scripts` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_training_models\scripts`
-- `<HYBRID_SOURCE_ROOT>\templates` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\hybrid_training_models\templates`
-- `<LOCAL_WORKSPACE>\auto_v4\models` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\sequential_training_models\models`
-- `<LOCAL_WORKSPACE>\auto_v4\shared` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\sequential_training_models\shared`
-- `<LOCAL_WORKSPACE>\auto_v4\scripts` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\sequential_training_models\scripts`
-- `<LOCAL_WORKSPACE>\auto_v4\templates` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\sequential_training_models\templates`
-- `<LOCAL_WORKSPACE>\auto_v4\campaigns\phase9\artifacts\r*\full_configs\*.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\sequential_training_models\selected_round_configs`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\metadata` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\metadata`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\reports` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\reports`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\README.md` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\README.md`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\PACKAGE_MANIFEST.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\PACKAGE_MANIFEST.json`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\auto_v5_all_metrics_summary.csv` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\auto_v5_all_metrics_summary.csv`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\auto_v5_top50_metrics_summary.csv` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\auto_v5_top50_metrics_summary.csv`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\grid18_seed1_forced51.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\grid18_seed1_forced51.json`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\grid18_split_sensitivity.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\grid18_split_sensitivity.json`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\grid18_200ep_baseline_holdout_eval.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\grid18_200ep_baseline_holdout_eval.json`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\holdout_results.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\grid_training_models\holdout_results.json`
-- `<HYBRID_SOURCE_ROOT>\campaigns\auto_v6\prompts` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\prompts_and_prompt_generators\prompts`
-- `<HYBRID_SOURCE_ROOT>\tmp_gemini_source_scout_test` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\prompts_and_prompt_generators\tmp_gemini_source_scout_test`
-- `<LOCAL_WORKSPACE>\auto_v6_report_package\auto_v6_final_report_work\final_corrected_val55_sweep_summary` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\hybrid_corrected_val55`
-- `<LOCAL_WORKSPACE>\auto_v4\reports\phase9_final_report_v3\phase9_final_report_v3.tex` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\sequential_summary\phase9_final_report_v3.tex`
-- `<LOCAL_WORKSPACE>\auto_v4\reports\phase9_final_report_v3\phase9_lu_metrics_summary.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\sequential_summary\phase9_lu_metrics_summary.json`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\auto_v5_all_metrics_summary.csv` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\grid_summary\auto_v5_all_metrics_summary.csv`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\auto_v5_top50_metrics_summary.csv` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\grid_summary\auto_v5_top50_metrics_summary.csv`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\holdout_results.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\grid_summary\holdout_results.json`
-- `<LOCAL_WORKSPACE>\auto_v5_report_package\PACKAGE_MANIFEST.json` -> `<LOCAL_WORKSPACE>\supplementary_code_draft\results_summary\grid_summary\PACKAGE_MANIFEST.json`
+- `grid_training_models/generated_models/`: final Grid generated model directories only, `v5_controller_auto11_001` through `v5_controller_auto11_020`.
+- `grid_training_models/model_rounds/`: the same final Grid candidates reorganized as 20 rounds, 10 candidate models per round where available.
+- `grid_training_models/model_rounds_manifest.csv`: round-level model inventory.
+- `grid_training_models/shared/`: Grid shared training/evaluation/config code.
+- `grid_training_models/scripts/`: Grid run/evaluation scripts.
+- `grid_training_models/metadata/`: Grid definitions and candidate metadata.
 
-## Missing or requires follow-up
+## Prompts
 
-- None recorded
+- `prompts_and_prompt_generators/prompt_templates_and_builders/`: source files from the Hybrid workflow that construct or contain prompts.
+- `prompts_and_prompt_generators/representative_full_prompts/`: representative full prompts from selected Hybrid rounds.
+- `prompts_and_prompt_generators/prompt_manifest.csv`: inventory of original prompt artifacts and retained representative files.
+
+## Results
+
+- `results_summary/hybrid_corrected_val55/`: Hybrid corrected validation selection summaries.
+- `results_summary/sequential_summary/`: Sequential reporting summaries.
+- `results_summary/grid_summary/`: Grid reporting summaries.
+
+## Excluded
+
+- Checkpoints and model weights.
+- Raw large campaign run directories.
+- Cache files, compiled files, logs, locks, backup files, and JSONL event streams.
+- Private channel notification scripts.
+- Raw model provider streams and transient JSON/JSONL prompt outputs.
+- Non-representative duplicated full prompt artifacts.
+- Earlier Grid exploratory/codegen/test rounds outside the final 20 Grid rounds.

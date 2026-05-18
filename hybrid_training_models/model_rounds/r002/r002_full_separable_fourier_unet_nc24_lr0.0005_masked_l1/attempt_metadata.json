@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\separable_fourier_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "dc5205c01f5f4e865e0d7394356cb4d4900b95bab900f7d5cadab3c2ef681d96",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r002_full_separable_fourier_unet_nc24_lr0.0005_masked_l1/model.py"
+}

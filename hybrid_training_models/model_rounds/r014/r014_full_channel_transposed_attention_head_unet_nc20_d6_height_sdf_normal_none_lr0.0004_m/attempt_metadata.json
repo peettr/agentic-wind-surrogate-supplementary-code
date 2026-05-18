@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\channel_transposed_attention_head_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "203374ebc6bd5caa6ca01da7d3ec7973c74ce55e40f44b39452b19179bba3be2",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r014_full_channel_transposed_attention_head_unet_nc20_d6_height_sdf_normal_none_lr0.0004_masked_huber/model.py"
+}

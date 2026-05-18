@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\overlap_add_spectral_adapter_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "852dd0ead6635a7b37d481e6018137b92d984ea26f3b865536136f2a1d10a8d6",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r014_full_overlap_add_spectral_adapter_unet_nc20_d6_height_sdf_normal_none_lr0.00035_masked_l1_gradient/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\hyperinr_residual_head_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "b79a03f1a1b40832c59f28a4bf29e50ffa09d91b6977c981d198a48126e98498",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r008_full_hyperinr_residual_head_unet_nc24_d6_height_sdf_normal_none_lr0.00035_masked_l1_gradient/model.py"
+}

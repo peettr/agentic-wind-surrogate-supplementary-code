@@ -1,0 +1,26 @@
+{
+  "experiment_id": "r032_full_dual_aggregate_detail_gate_unet_nc22_lr0.00025_masked_l1_gradient",
+  "strategy": "v4_full",
+  "arch_name": "dual_aggregate_detail_gate_unet",
+  "arch_kwargs": {
+    "n_c": 22,
+    "depth": 6
+  },
+  "loss_name": "masked_l1_gradient",
+  "loss_kwargs": {},
+  "seed": 1,
+  "epochs": 200,
+  "lr": 0.00025,
+  "batch_size": 16,
+  "checkpoint_interval": 50,
+  "input_features": "height",
+  "eval_splits": [
+    "val"
+  ],
+  "data_dir": "<BASELINE_HPC_SOURCE_ROOT>/shared/data",
+  "results_dir": "<SEQUENTIAL_HPC_SOURCE_ROOT>/campaigns/phase9/runs/r032_full_dual_aggregate_detail_gate_unet_nc22_lr0.00025_masked_l1_gradient",
+  "split_manifest_path": "<BASELINE_HPC_SOURCE_ROOT>/shared/data/split_manifest.json",
+  "heartbeat_interval_epochs": 10,
+  "script_path": "<LOCAL_WORKSPACE>\\auto_v4\\models\\generated\\dual_aggregate_detail_gate_unet.py",
+  "model_source_kind": "generated"
+}

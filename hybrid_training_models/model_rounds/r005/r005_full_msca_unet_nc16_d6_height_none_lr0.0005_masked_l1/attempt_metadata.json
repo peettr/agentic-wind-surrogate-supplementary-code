@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\msca_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "75c5730c4e2e743b6cdb80efd6e2bb0ddec7e2a28b7319224b8a6a2a93d2e6b3",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r005_full_msca_unet_nc16_d6_height_none_lr0.0005_masked_l1/model.py"
+}

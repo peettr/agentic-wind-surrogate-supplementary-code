@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\swin_unetr.py",
+  "model_source_kind": "generated",
+  "model_sha256": "f2ea870d967220e722d6e0072c074f8f68838d3931004111baad148c69918e2f",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r017_full_swin_unetr_nc20_d6_height_sdf_light_geometric_lr0.0004_masked_huber/model.py"
+}

@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\multi_scale_fourier_basis_head.py",
+  "model_source_kind": "generated",
+  "model_sha256": "71bb683f4e04843a845ee3eb2ef89ddbb3558ecaa10309eb40e8db4f17f89f48",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r018_full_multi_scale_fourier_basis_head_nc20_d6_height_sdf_normal_light_geometric_lr0.0004_masked_huber/model.py"
+}

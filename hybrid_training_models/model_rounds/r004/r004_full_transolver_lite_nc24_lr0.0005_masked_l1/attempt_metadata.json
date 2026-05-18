@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\transolver_lite.py",
+  "model_source_kind": "generated",
+  "model_sha256": "7d077de67fb19715f3784a2bd86155ead0f1b8136c43fe358e2a780da898ae0e",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r004_full_transolver_lite_nc24_lr0.0005_masked_l1/model.py"
+}

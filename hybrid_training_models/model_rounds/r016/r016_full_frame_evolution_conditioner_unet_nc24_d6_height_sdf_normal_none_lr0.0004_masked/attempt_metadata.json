@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\frame_evolution_conditioner_unet.py",
+  "model_source_kind": "generated",
+  "model_sha256": "076bd5d4819fefd410449a4f6e54d936fd2df76f00f6d5af91831c9052c226cc",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r016_full_frame_evolution_conditioner_unet_nc24_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+}

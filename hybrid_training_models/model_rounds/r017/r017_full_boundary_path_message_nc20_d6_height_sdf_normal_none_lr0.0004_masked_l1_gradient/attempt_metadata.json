@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\boundary_path_message.py",
+  "model_source_kind": "generated",
+  "model_sha256": "ed5c65d28912ea70df07fccec558fa6c3415d4ee3cb19fcd8103bd2e3c0a527a",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r017_full_boundary_path_message_nc20_d6_height_sdf_normal_none_lr0.0004_masked_l1_gradient/model.py"
+}

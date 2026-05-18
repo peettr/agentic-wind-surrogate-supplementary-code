@@ -1,0 +1,6 @@
+{
+  "model_source_local": "C:\\Users\\peett\\.openclaw\\workspace-auto-v6\\auto_v6\\models\\generated\\fourier_unet_wtconv.py",
+  "model_source_kind": "generated",
+  "model_sha256": "18f8ea6e1f7e3954e70ee5755d2ed72b20960536bee4fc30509b763e2dae9329",
+  "remote_model": "<HYBRID_HPC_SOURCE_ROOT>/campaigns/auto_v6/runs/r000_full_fourier_unet_wtconv_nc16_lr0.0005_masked_l1/model.py"
+}
