@@ -218,6 +218,7 @@ supplementary_code_release/
 |   |   |   |-- model_04_umamba/
 |   |   |   |-- model_05_unet_afno/
 |   |   |   |-- model_06_unet_sdf_7level/
+|   |   |   |-- model_07_unet_v2_reference/
 |   |   |   |-- model_08_unet_v3/
 |   |   |   `-- model_09_uno/
 |   |   |-- round_018/
@@ -227,6 +228,7 @@ supplementary_code_release/
 |   |   |   |-- model_02_umamba/
 |   |   |   |-- model_03_unet_afno/
 |   |   |   |-- model_04_unet_sdf_7level/
+|   |   |   |-- model_05_unet_v2_reference/
 |   |   |   |-- model_06_unet_v3/
 |   |   |   |-- model_07_uno/
 |   |   |   |-- model_08_umamba/
@@ -234,13 +236,27 @@ supplementary_code_release/
 |   |   |-- round_019/
 |   |   |   |-- configs/
 |   |   |   |-- model_00_unet_sdf_7level/
+|   |   |   |-- model_01_unet_v2_reference/
 |   |   |   |-- model_02_unet_v3/
 |   |   |   |-- model_03_uno/
-|   |   |   `-- model_04_unet_sdf_7level/
+|   |   |   |-- model_04_unet_sdf_7level/
+|   |   |   |-- model_05_unet_v2_reference/
+|   |   |   |-- model_06_unet_v2_reference/
+|   |   |   |-- model_07_unet_v2_reference/
+|   |   |   |-- model_08_unet_v2_reference/
+|   |   |   `-- model_09_unet_v2_reference/
 |   |   `-- round_020/
 |   |       |-- configs/
+|   |       |-- model_00_unet_v2_reference/
 |   |       |-- model_01_unet_v3/
-|   |       `-- model_02_uno/
+|   |       |-- model_02_uno/
+|   |       |-- model_03_unet_v2_reference/
+|   |       |-- model_04_unet_v2_reference/
+|   |       |-- model_05_unet_v2_reference/
+|   |       |-- model_06_unet_v2_reference/
+|   |       |-- model_07_unet_v2_reference/
+|   |       |-- model_08_unet_v2_reference/
+|   |       `-- model_09_unet_v2_reference/
 |   |-- scripts/
 |   |   |-- assign_smoke_tiers.py
 |   |   |-- campaign_orchestrator.py
