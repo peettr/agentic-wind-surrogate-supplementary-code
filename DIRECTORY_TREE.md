@@ -879,6 +879,7 @@ supplementary_code_release/
 |   |-- engine/
 |   |   |-- __init__.py
 |   |   |-- analyzer.py
+|   |   |-- executor.py
 |   |   |-- runner.py
 |   |   `-- state_manager.py
 |   |-- explorer/
@@ -918,6 +919,7 @@ supplementary_code_release/
 |   |   |-- workflow_codegen.py
 |   |   |-- workflow_common.py
 |   |   |-- workflow_controller.py
+|   |   |-- workflow_executor.py
 |   |   |-- workflow_knowledge.py
 |   |   |-- workflow_planner.py
 |   |   |-- workflow_reviewer.py
