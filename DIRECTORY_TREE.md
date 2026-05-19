@@ -218,7 +218,7 @@ supplementary_code_release/
 |   |   |   |-- model_04_umamba/
 |   |   |   |-- model_05_unet_afno/
 |   |   |   |-- model_06_unet_sdf_7level/
-|   |   |   |-- model_07_unet_v2_reference/
+|   |   |   |-- model_07_unet_v2_reference_gradient_lr1e3_ema_cosine/
 |   |   |   |-- model_08_unet_v3/
 |   |   |   `-- model_09_uno/
 |   |   |-- round_018/
@@ -228,7 +228,7 @@ supplementary_code_release/
 |   |   |   |-- model_02_umamba/
 |   |   |   |-- model_03_unet_afno/
 |   |   |   |-- model_04_unet_sdf_7level/
-|   |   |   |-- model_05_unet_v2_reference/
+|   |   |   |-- model_05_unet_v2_reference_gradient_lr1e3_ema_nosched/
 |   |   |   |-- model_06_unet_v3/
 |   |   |   |-- model_07_uno/
 |   |   |   |-- model_08_umamba/
@@ -236,27 +236,27 @@ supplementary_code_release/
 |   |   |-- round_019/
 |   |   |   |-- configs/
 |   |   |   |-- model_00_unet_sdf_7level/
-|   |   |   |-- model_01_unet_v2_reference/
+|   |   |   |-- model_01_unet_v2_reference_gradient_lr1e3_noema_cosine/
 |   |   |   |-- model_02_unet_v3/
 |   |   |   |-- model_03_uno/
 |   |   |   |-- model_04_unet_sdf_7level/
-|   |   |   |-- model_05_unet_v2_reference/
-|   |   |   |-- model_06_unet_v2_reference/
-|   |   |   |-- model_07_unet_v2_reference/
-|   |   |   |-- model_08_unet_v2_reference/
-|   |   |   `-- model_09_unet_v2_reference/
+|   |   |   |-- model_05_unet_v2_reference_gradient_lr1e3_noema_nosched/
+|   |   |   |-- model_06_unet_v2_reference_gradient_lr5e4_ema_cosine/
+|   |   |   |-- model_07_unet_v2_reference_gradient_lr5e4_ema_nosched/
+|   |   |   |-- model_08_unet_v2_reference_gradient_lr5e4_noema_cosine/
+|   |   |   `-- model_09_unet_v2_reference_gradient_lr5e4_noema_nosched/
 |   |   `-- round_020/
 |   |       |-- configs/
-|   |       |-- model_00_unet_v2_reference/
+|   |       |-- model_00_unet_v2_reference_l1_lr1e3_ema_cosine/
 |   |       |-- model_01_unet_v3/
 |   |       |-- model_02_uno/
-|   |       |-- model_03_unet_v2_reference/
-|   |       |-- model_04_unet_v2_reference/
-|   |       |-- model_05_unet_v2_reference/
-|   |       |-- model_06_unet_v2_reference/
-|   |       |-- model_07_unet_v2_reference/
-|   |       |-- model_08_unet_v2_reference/
-|   |       `-- model_09_unet_v2_reference/
+|   |       |-- model_03_unet_v2_reference_l1_lr1e3_ema_nosched/
+|   |       |-- model_04_unet_v2_reference_l1_lr1e3_noema_cosine/
+|   |       |-- model_05_unet_v2_reference_l1_lr1e3_noema_nosched/
+|   |       |-- model_06_unet_v2_reference_l1_lr5e4_ema_cosine/
+|   |       |-- model_07_unet_v2_reference_l1_lr5e4_ema_nosched/
+|   |       |-- model_08_unet_v2_reference_l1_lr5e4_noema_cosine/
+|   |       `-- model_09_unet_v2_reference_l1_lr5e4_noema_nosched/
 |   |-- scripts/
 |   |   |-- assign_smoke_tiers.py
 |   |   |-- campaign_orchestrator.py

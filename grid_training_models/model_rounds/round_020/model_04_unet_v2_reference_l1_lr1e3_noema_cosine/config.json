@@ -1,0 +1,25 @@
+{
+  "mode": "Grid",
+  "release_round": 20,
+  "slot": 4,
+  "arch_name": "unet_v2_reference",
+  "model_file": "model.py",
+  "loss_name": "masked_l1",
+  "lr": 0.001,
+  "batch_size": 16,
+  "params": 34610193,
+  "final_status": "benchmark200_ranked",
+  "benchmark_rank": "8.0",
+  "metrics": {
+    "r2_median": "0.6472325565829165",
+    "r2_global": "0.6687290111441466",
+    "mae_median": "0.0951470583677291",
+    "mae_mean": "0.0840556204149668"
+  },
+  "notes": "Grid U-Net v2 reference-family candidate reconstructed from the public 200-candidate ledger; directory name records the public hyperparameter variant.",
+  "variant_label": "l1_lr1e3_noema_cosine",
+  "loss_family": "masked_l1",
+  "learning_rate_family": "1e-3",
+  "ema_family": "no_ema",
+  "scheduler_family": "cosine"
+}
