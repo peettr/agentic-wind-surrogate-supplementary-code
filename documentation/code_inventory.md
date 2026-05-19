@@ -15,14 +15,13 @@
 ## Sequential
 
 - `sequential_training_models/model_rounds/`: Sequential candidates organized by round, with one subfolder per candidate containing `model.py` and `config.json`.
-- `sequential_training_models/shared/`: Sequential shared training and evaluation code.
+- `sequential_training_models/shared/`: Sequential shared training, evaluation, loss, and configuration code. Model artifacts are provided under `sequential_training_models/model_rounds/`.
 
 ## Grid
 
 - `grid_training_models/model_rounds/`: final 200 Grid candidates, organized as 20 rounds with 10 candidate subfolders per round. Each candidate contains `model.py` and `config.json`.
 - `grid_training_models/model_rounds_manifest.csv`: round-level model inventory.
-- `grid_training_models/shared/`: Grid shared training/evaluation/config code.
-- `grid_training_models/scripts/`: Grid run/evaluation scripts retained for reproducibility.
+- `grid_training_models/shared/`: Grid shared training, evaluation, loss, and configuration code. Model artifacts are provided under `grid_training_models/model_rounds/`.
 
 ## Prompts and results
 
@@ -37,6 +36,7 @@
 - Exploratory orthogonal-sweep artifacts.
 - Cache files, compiled files, logs, locks, backup files, and JSONL event streams.
 - Private channel notification scripts and provider streams.
+
 
 
 

@@ -6,3 +6,10 @@ The release source of truth for candidate files is `model_rounds/`. Each round c
 
 
 
+
+
+
+## Release organization note
+
+The canonical model artifacts for Sequential are in model_rounds/, with each candidate stored as an independent folder containing model.py and config.json. Internal controller/orchestration scripts and duplicate shared model registries are intentionally excluded from the public package; the remaining shared/ files provide common training, evaluation, loss, and configuration support.
+

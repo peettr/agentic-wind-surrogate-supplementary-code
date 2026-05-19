@@ -8,3 +8,10 @@ orthogonal exploratory sweep exploratory artifacts and earlier controller/source
 
 
 
+
+
+
+## Release organization note
+
+The canonical model artifacts for Grid are in model_rounds/, with each candidate stored as an independent folder containing model.py and config.json. Internal controller/orchestration scripts and duplicate shared model registries are intentionally excluded from the public package; the remaining shared/ files provide common training, evaluation, loss, and configuration support.
+

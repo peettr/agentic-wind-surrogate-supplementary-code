@@ -257,83 +257,12 @@ supplementary_code_release/
 |   |       |-- model_07_unet_v2_reference_l1_lr5e4_ema_nosched/
 |   |       |-- model_08_unet_v2_reference_l1_lr5e4_noema_cosine/
 |   |       `-- model_09_unet_v2_reference_l1_lr5e4_noema_nosched/
-|   |-- scripts/
-|   |   |-- assign_smoke_tiers.py
-|   |   |-- campaign_orchestrator.py
-|   |   |-- check_model_registry.py
-|   |   |-- classify_run_failure.py
-|   |   |-- condor_submit_safe.py
-|   |   |-- controller_clock.py
-|   |   |-- controller_driver.py
-|   |   |-- controller_monitor.py
-|   |   |-- controller_repair_executor.py
-|   |   |-- controller_retry_executor.py
-|   |   |-- controller_state_machine.py
-|   |   |-- crc_codegen_smoke_one.sh
-|   |   |-- final_validation.py
-|   |   |-- generate_model_metadata.py
-|   |   |-- generate_tiered_condor_submits.py
-|   |   |-- grid_controller.py
-|   |   |-- launch_smoke_from_control.py
-|   |   |-- materialize_grid_runs.py
-|   |   |-- preflight_check.sh
-|   |   |-- prepare_data.py
-|   |   |-- prepare_retry_run.py
-|   |   |-- repair_code_stage.py
-|   |   |-- run_campaign.py
-|   |   |-- run_controller_round.py
-|   |   |-- run_or_retry_smoke.py
-|   |   |-- validate_ai_hp_plan.py
-|   |   `-- validate_train_configs.py
 |   |-- shared/
 |   |   |-- configs/
 |   |   |   |-- __init__.py
 |   |   |   |-- problem_definition.yaml
 |   |   |   |-- schema.py
 |   |   |   `-- search_space.json
-|   |   |-- models/
-|   |   |   |-- __init__.py
-|   |   |   |-- afno.py
-|   |   |   |-- afno_block.py
-|   |   |   |-- attention_gate_unet.py
-|   |   |   |-- attention_mamba.py
-|   |   |   |-- base.py
-|   |   |   |-- cbam_unet.py
-|   |   |   |-- cnn_deeponet.py
-|   |   |   |-- cno.py
-|   |   |   |-- convnext_v2_unet.py
-|   |   |   |-- dcn_unet.py
-|   |   |   |-- dilated_fno.py
-|   |   |   |-- dilated_hrformer.py
-|   |   |   |-- dilated_unet.py
-|   |   |   |-- ffno.py
-|   |   |   |-- fno2d.py
-|   |   |   |-- fno_encoder_decoder.py
-|   |   |   |-- fno_v3.py
-|   |   |   |-- fourier_unet.py
-|   |   |   |-- hrdcn.py
-|   |   |   |-- hrformer.py
-|   |   |   |-- hrnet.py
-|   |   |   |-- kan_unet.py
-|   |   |   |-- mamba2d.py
-|   |   |   |-- mamba_attention.py
-|   |   |   |-- model_metadata.json
-|   |   |   |-- multiscale_conv.py
-|   |   |   |-- nafnet.py
-|   |   |   |-- perceiver.py
-|   |   |   |-- quadmamba.py
-|   |   |   |-- residual_spectral.py
-|   |   |   |-- sac_mamba.py
-|   |   |   |-- sac_unet.py
-|   |   |   |-- swin_unetr.py
-|   |   |   |-- transolver.py
-|   |   |   |-- transolver_lite.py
-|   |   |   |-- ufno.py
-|   |   |   |-- umamba.py
-|   |   |   |-- unet_afno.py
-|   |   |   |-- unet_sdf_7level.py
-|   |   |   |-- unet_v3.py
-|   |   |   `-- uno.py
 |   |   |-- eval_module.py
 |   |   |-- losses.py
 |   |   |-- preflight.py
@@ -1547,8 +1476,6 @@ supplementary_code_release/
 |   |   |   |-- residual_spectral.py
 |   |   |   `-- sac_mamba.py
 |   |   `-- __init__.py
-|   |-- scripts/
-|   |   `-- run_campaign.py
 |   |-- selected_round_configs/
 |   |   |-- r002/
 |   |   |   `-- full_configs/
@@ -1616,48 +1543,6 @@ supplementary_code_release/
 |   |   |   |-- problem_definition.yaml
 |   |   |   |-- schema.py
 |   |   |   `-- search_space.json
-|   |   |-- models/
-|   |   |   |-- __init__.py
-|   |   |   |-- afno.py
-|   |   |   |-- afno_block.py
-|   |   |   |-- attention_gate_unet.py
-|   |   |   |-- attention_mamba.py
-|   |   |   |-- base.py
-|   |   |   |-- cbam_unet.py
-|   |   |   |-- cnn_deeponet.py
-|   |   |   |-- cno.py
-|   |   |   |-- convnext_v2_unet.py
-|   |   |   |-- dcn_unet.py
-|   |   |   |-- dilated_fno.py
-|   |   |   |-- dilated_hrformer.py
-|   |   |   |-- dilated_unet.py
-|   |   |   |-- ffno.py
-|   |   |   |-- fno2d.py
-|   |   |   |-- fno_encoder_decoder.py
-|   |   |   |-- fno_v3.py
-|   |   |   |-- fourier_unet.py
-|   |   |   |-- hrdcn.py
-|   |   |   |-- hrformer.py
-|   |   |   |-- hrnet.py
-|   |   |   |-- kan_unet.py
-|   |   |   |-- mamba2d.py
-|   |   |   |-- mamba_attention.py
-|   |   |   |-- multiscale_conv.py
-|   |   |   |-- nafnet.py
-|   |   |   |-- perceiver.py
-|   |   |   |-- quadmamba.py
-|   |   |   |-- residual_spectral.py
-|   |   |   |-- sac_mamba.py
-|   |   |   |-- sac_unet.py
-|   |   |   |-- swin_unetr.py
-|   |   |   |-- transolver.py
-|   |   |   |-- transolver_lite.py
-|   |   |   |-- ufno.py
-|   |   |   |-- umamba.py
-|   |   |   |-- unet_afno.py
-|   |   |   |-- unet_sdf_7level.py
-|   |   |   |-- unet_v3.py
-|   |   |   `-- uno.py
 |   |   |-- eval_module.py
 |   |   |-- losses.py
 |   |   `-- train.py
