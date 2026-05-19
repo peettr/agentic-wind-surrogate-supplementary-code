@@ -299,7 +299,7 @@ def _id_token(value: object) -> str:
         return "none"
     text = str(value).strip().lower()
     # Keep common decimal learning-rate notation readable but remove chars that
-    # can confuse shell paths or Condor batch names.
+    # can confuse shell paths or external_scheduler batch names.
     text = re.sub(r"[^a-z0-9.]+", "_", text)
     text = re.sub(r"_+", "_", text).strip("_")
     return text or "none"
@@ -308,7 +308,7 @@ def _id_token(value: object) -> str:
 def experiment_id(cfg: dict) -> str:
     """Stable semantic ID from config dict.
 
-    The ID is used for smoke/full run directories and Condor batch names.
+    The ID is used for smoke/full run directories and external_scheduler batch names.
     Include all fields that commonly define ablations, otherwise configs such
     as nc24-d6 and nc24-d7 collapse to the same run_id and the second proposal
     is skipped as an apparent duplicate.
@@ -325,6 +325,8 @@ def experiment_id(cfg: dict) -> str:
 
 def history_path(campaign_dir: Path) -> Path:
     return campaign_dir / "history.jsonl"
+
+
 
 
 

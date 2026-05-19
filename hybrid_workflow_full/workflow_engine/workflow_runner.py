@@ -6,7 +6,7 @@ Phases:
     â†’ submit(200ep) â†’ monitor(180min) â†’ collect â†’ review â†’ next_round
 
 Runner calls:
-  - Executor directly for SSH/Condor operations (submit, monitor, collect)
+  - Executor directly for SSH/external_scheduler operations (submit, monitor, collect)
   - Worker subprocesses for AI operations (planner, codegen, reviewer)
 
 Triggered by Task Scheduler every 5min. Runner runs once, advances state, exits.
@@ -53,13 +53,11 @@ LOCK_PATH = WORKSPACE / "hybrid" / "workflow_runner.lock"
 LOG_MAX_BYTES = 512 * 1024
 H100_RETRY_WAIT_TIMEOUT_MIN = 180
 MONITOR_RETRY_MAX_PER_TICK = 2
-MEMORY_RETRY_CLASSES = {"CUDA_OOM", "HIGH_VRAM", "CONDOR_MEMORY_LIMIT", "CONDOR_EVICTED_GPU_DOWNGRADE"}
+MEMORY_RETRY_CLASSES = {"CUDA_OOM", "HIGH_VRAM", "external_scheduler_MEMORY_LIMIT", "external_scheduler_EVICTED_GPU_DOWNGRADE"}
 LOCKED_WORKFLOW_FILES = [
     PROJECT_ROOT / "shared" / "train.py",
     PROJECT_ROOT / "shared" / "losses.py",
     PROJECT_ROOT / "shared" / "eval_module.py",
-    PROJECT_ROOT / "templates" / "condor_submit.template",
-    PROJECT_ROOT / "templates" / "condor_wrapper.sh",
 ]
 
 # â”€â”€ Phase definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -335,7 +333,7 @@ def _mark_fix_plan_unrepairable(camp: Path, state: dict, reason: str) -> int:
 # â”€â”€ Generic handlers (executor calls, no AI) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
-    """Submit batch of experiments via Condor (GPU training)."""
+    """Submit batch of experiments via external_scheduler (GPU training)."""
     tag = "smoke" if epochs == SMOKE_EPOCHS else "full"
     append_log(f"Phase: SUBMIT ({tag}, {epochs}ep)")
 
@@ -366,9 +364,9 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
         retry_gpu_requirements = 'regexp("qa-h100-", Machine) || regexp("qa-a100-", Machine)'
         # CUDA OOM is GPU VRAM pressure, not host RAM pressure. Keep host
         # RequestMemory at the normal 16GB default to avoid over-constraining
-        # H100/A100 matching. Only true Condor cgroup memory-limit failures
+        # H100/A100 matching. Only true external_scheduler cgroup memory-limit failures
         # get a modest host-RAM bump.
-        retry_request_memory_gb = 32 if any(str(v).upper() == "CONDOR_MEMORY_LIMIT" for v in retry_reasons.values()) else 16
+        retry_request_memory_gb = 32 if any(str(v).upper() == "external_scheduler_MEMORY_LIMIT" for v in retry_reasons.values()) else 16
         append_log(f"retry-mode: memory failure detected, escalating to H100/A100 resources and request_memory={retry_request_memory_gb}GB")
     retry_manifest = load_manifest(camp) if retry_mode else {"runs": {}}
 
@@ -565,15 +563,15 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
             report_path.write_text(json.dumps({
                 "timestamp": now_iso(),
                 "tag": tag,
-                "policy": "Hard fail before Condor submit. Use canonical shared.losses LIBRARY names only; aliases such as masked_l1_grad are rejected, not normalized.",
+                "policy": "Hard fail before external_scheduler submit. Use canonical shared.losses LIBRARY names only; aliases such as masked_l1_grad are rejected, not normalized.",
                 "failed_count": len(schema_failed),
                 "failed": schema_failed,
             }, indent=2, ensure_ascii=False), encoding="utf-8")
-            append_log(f"submit schema guard: rejected {len(schema_failed)} {tag} candidates before Condor; wrote {report_path.name}")
+            append_log(f"submit schema guard: rejected {len(schema_failed)} {tag} candidates before external_scheduler; wrote {report_path.name}")
             proposals = schema_allowed
             if not proposals:
                 state["phase"] = "blocked"
-                state["status_note"] = f"Submit schema guard blocked all {tag} candidates before Condor; see {report_path.name}"
+                state["status_note"] = f"Submit schema guard blocked all {tag} candidates before external_scheduler; see {report_path.name}"
                 return state
 
     if not retry_mode:
@@ -695,8 +693,8 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
         (config_dir / f"{exp_id}.json").write_text(
             json.dumps(train_cfg, indent=2), encoding="utf-8")
 
-        # Submit via Condor
-        append_log(f"  {exp_id}: submitting via Condor")
+        # Submit via external_scheduler
+        append_log(f"  {exp_id}: submitting via external_scheduler")
         if retry_gpu_requirements:
             handle = exc.submit_gpu_train(
                 exp_id, train_cfg,
@@ -722,7 +720,7 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
         # CRC/submit-layer failures are not model evidence.  Do not let them
         # silently enter the retry/controller loop as if the experiment ran.
         # Pause and ask for human intervention so the human researcher can restore CRC auth,
-        # inspect the login/Condor/file-system issue, then resume explicitly.
+        # inspect the login/external_scheduler/file-system issue, then resume explicitly.
         if handle.status == "failed" and not handle.cluster_id:
             state[f"{tag}_handles"] = handles_data
             state["phase"] = "blocked"
@@ -733,7 +731,7 @@ def handle_submit(state: dict, camp: Path, epochs: int, prefix: str) -> dict:
             save_state(state, camp)
             return state
 
-        # Persist after every submitted job. If a long Condor/H100 submit or
+        # Persist after every submitted job. If a long external_scheduler/H100 submit or
         # external timeout kills the runner mid-batch, the next tick can resume
         # without duplicating completed submissions.
         state[f"{tag}_handles"] = handles_data
@@ -865,7 +863,7 @@ def _result_from_terminal_handle(exc: Executor, hd: dict, h: JobHandle) -> dict:
             failed_payload = ""
     if not log_tail:
         try:
-            log_tail = exc.tail_condor_logs(h, 80)
+            log_tail = exc.tail_external_scheduler_logs(h, 80)
         except Exception:
             log_tail = ""
     combined = "\n".join(x for x in [failed_payload, log_tail] if x)
@@ -900,7 +898,7 @@ def _maybe_submit_monitor_retries(
     attempt manifest: the terminal source attempt is recorded, budget is checked,
     then the submitted retry attempt is recorded immediately.
     """
-    terminal_retryable = {"CUDA_OOM", "HIGH_VRAM", "CONDOR_MEMORY_LIMIT", "CONDOR_EVICTED_GPU_DOWNGRADE", "CONDOR_EVICTED", "CONDOR_INTERRUPTED", "CONDOR_HELD", "TRANSIENT_ENV", "MISSING_EVIDENCE_FAIL", "UNKNOWN_TERMINAL_FAIL"}
+    terminal_retryable = {"CUDA_OOM", "HIGH_VRAM", "external_scheduler_MEMORY_LIMIT", "external_scheduler_EVICTED_GPU_DOWNGRADE", "external_scheduler_EVICTED", "external_scheduler_INTERRUPTED", "external_scheduler_HELD", "TRANSIENT_ENV", "MISSING_EVIDENCE_FAIL", "UNKNOWN_TERMINAL_FAIL"}
     terminal_states = {"failed", "evicted", "held", "submit_failed", "missing_metrics"}
     active_retry_bases = {
         base_run_id(hd.get("exp_id", "")) for hd in handles_data
@@ -1006,9 +1004,9 @@ def _maybe_submit_monitor_retries(
         if high_vram:
             # CUDA OOM/HIGH_VRAM retries need larger GPU VRAM, not larger host
             # RAM. Keep the default 16GB host memory unless the classifier saw
-            # an actual Condor memory-limit failure.
+            # an actual external_scheduler memory-limit failure.
             cls_name = str(cls.get("classification") or "").upper()
-            request_memory_gb = 32 if cls_name == "CONDOR_MEMORY_LIMIT" else 16
+            request_memory_gb = 32 if cls_name == "external_scheduler_MEMORY_LIMIT" else 16
             handle = exc.submit_gpu_train(
                 retry_exp_id,
                 train_cfg,
@@ -1055,10 +1053,10 @@ def _maybe_submit_monitor_retries(
 
 
 def handle_monitor(state: dict, camp: Path) -> dict:
-    """Wait for all jobs to finish (Condor + sentinel polling)."""
+    """Wait for all jobs to finish (external_scheduler + sentinel polling)."""
     tag = state.get("submit_tag", "smoke")
     handles_data = state.get(f"{tag}_handles", [])
-    timeout_min = 45 if tag == "smoke" else 240  # extra buffer for Condor idle queue
+    timeout_min = 45 if tag == "smoke" else 240  # extra buffer for external_scheduler idle queue
 
     if not handles_data:
         state["phase"] = "failed"
@@ -1084,7 +1082,7 @@ def handle_monitor(state: dict, camp: Path) -> dict:
         handles.append(JobHandle(
             experiment_id=h["exp_id"],
             cluster_id=h.get("cluster_id"),
-            scheduler=h.get("scheduler", "condor"),
+            scheduler=h.get("scheduler", "external_scheduler"),
             results_dir=h.get("results_dir", ""),
             remote_results_dir=h.get("remote_results_dir", ""),
             status=h.get("status", "submitted"),
@@ -1111,19 +1109,19 @@ def handle_monitor(state: dict, camp: Path) -> dict:
             retry_wait_timed_out.append(h)
     if retry_wait_timed_out:
         try:
-            exc.cancel_condor(retry_wait_timed_out)
+            exc.cancel_external_scheduler(retry_wait_timed_out)
             append_log(f"H100 retry wait timeout: cancelled {len(retry_wait_timed_out)} queued jobs")
         except Exception as e:
             append_log(f"H100 retry wait timeout cancel failed: {e}")
 
-    # Condor held jobs are terminal infrastructure evidence, not active work.
+    # external_scheduler held jobs are terminal infrastructure evidence, not active work.
     # Leave the held status intact so failure_classifier routes it to RETRY,
     # but remove the scheduler job now to avoid waiting for the full timeout
     # or accumulating stale held jobs in the queue.
     held_jobs = [h for h in handles if h.status == "held"]
     if held_jobs:
         try:
-            exc.cancel_condor(held_jobs)
+            exc.cancel_external_scheduler(held_jobs)
             append_log(f"held jobs: cancelled {len(held_jobs)} and marked terminal for controller retry")
         except Exception as e:
             append_log(f"held cancel failed: {e}")
@@ -1150,7 +1148,7 @@ def handle_monitor(state: dict, camp: Path) -> dict:
             handles.append(JobHandle(
                 experiment_id=h["exp_id"],
                 cluster_id=h.get("cluster_id"),
-                scheduler=h.get("scheduler", "condor"),
+                scheduler=h.get("scheduler", "external_scheduler"),
                 results_dir=h.get("results_dir", ""),
                 remote_results_dir=h.get("remote_results_dir", ""),
                 status=h.get("status", "submitted"),
@@ -1183,7 +1181,7 @@ def handle_monitor(state: dict, camp: Path) -> dict:
                                      if h.status not in ("completed", "failed", "evicted", "submit_failed")]
                     if still_running:
                         try:
-                            exc.cancel_condor(still_running)
+                            exc.cancel_external_scheduler(still_running)
                             append_log(f"cancelled {len(still_running)} zombie jobs")
                         except Exception as e:
                             append_log(f"cancel failed: {e}")
@@ -1212,7 +1210,7 @@ def handle_collect(state: dict, camp: Path) -> dict:
             log_tail = h.get("log_tail", "")
             if not log_tail:
                 try:
-                    log_tail = exc.tail_condor_logs(jh, 80)
+                    log_tail = exc.tail_external_scheduler_logs(jh, 80)
                 except Exception:
                     log_tail = ""
             failed_payload = ""
@@ -1268,13 +1266,13 @@ def handle_collect(state: dict, camp: Path) -> dict:
             if train_losses and any(v != v or abs(v) > 1e6 for v in train_losses[-5:]):
                 result["status"] = "loss_nan"
         else:
-            # A Condor job may disappear/terminate without writing metrics.
+            # A external_scheduler job may disappear/terminate without writing metrics.
             # Preserve logs for the controller so it can classify as RETRY
-            # (evicted/condor_rm/OOM) or REPAIR instead of treating a missing
+            # (evicted/scheduler_remove/OOM) or REPAIR instead of treating a missing
             # metrics file as a vague completed run.
             result["status"] = "missing_metrics"
             try:
-                result["log_tail"] = exc.tail_condor_logs(jh, 60)
+                result["log_tail"] = exc.tail_external_scheduler_logs(jh, 60)
             except Exception:
                 result["log_tail"] = h.get("log_tail", "")
         results.append(result)
@@ -1384,7 +1382,7 @@ def _record_codegen_failures(camp: Path, state: dict, manifest_data: dict) -> li
     for rid in failed_run_ids:
         cfg = cfg_by_run.get(rid, {})
         detail = detail_by_run.get(rid, {})
-        # Codegen repair attempts do not have Condor repair run ids yet, so
+        # Codegen repair attempts do not have external_scheduler repair run ids yet, so
         # synthesize a semantic repair attempt id for accounting. base_run_id()
         # strips the suffix, keeping the budget attached to the original config.
         existing = mf.get("runs", {}).get(base_run_id(rid), {})
@@ -1492,7 +1490,7 @@ def handle_codegen(state: dict, camp: Path) -> dict:
 
         # Codegen can fail for only a subset of proposed experiments. Count
         # those failures in the per-run attempt manifest, including first-pass
-        # codegen failures that happen before any Condor submission. Retry up
+        # codegen failures that happen before any external_scheduler submission. Retry up
         # to SMOKE_MAX_FIX_ROUNDS. After attempts are exhausted, mark failed
         # semantic runs terminal in the manifest and continue with the validated
         # subset instead of silently dropping them or blocking the entire round.
@@ -1602,7 +1600,7 @@ def handle_post_codegen_review(state: dict, camp: Path) -> dict:
     state["phase"] = "blocked"
     state["status_note"] = (
         f"Post-codegen review failed after repair budget "
-        f"({validated_n} validated, {failed_n} failed); no Condor submit until review is clean. "
+        f"({validated_n} validated, {failed_n} failed); no external_scheduler submit until review is clean. "
         f"Failures: {review.get('failed')}"
     )
     return state
@@ -1898,6 +1896,9 @@ if __name__ == "__main__":
     except Exception:
         pass
     main()
+
+
+
 
 
 

@@ -22,3 +22,4 @@ Large checkpoints, raw run directories, duplicate source dumps, exploratory orth
 Round model layout note: each search mode stores models as model_rounds/<round>/model_XX_<architecture>/ with model.py and config.json. A duplicate round-level configs/ directory is also provided under each round for quick side-by-side configuration review.
 
 
+

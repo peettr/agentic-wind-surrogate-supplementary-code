@@ -146,7 +146,7 @@ def test_h100_resume_l40s_oom_classified_gpu_downgrade_retry() -> None:
         ]),
     }
     cls = classify_result(result)
-    _assert(cls["classification"] == "CONDOR_EVICTED_GPU_DOWNGRADE", f"unexpected downgrade classification: {cls}")
+    _assert(cls["classification"] == "external_scheduler_EVICTED_GPU_DOWNGRADE", f"unexpected downgrade classification: {cls}")
     _assert(cls["next_action"] == "RETRY", f"GPU downgrade OOM should retry: {cls}")
 
 
@@ -182,6 +182,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

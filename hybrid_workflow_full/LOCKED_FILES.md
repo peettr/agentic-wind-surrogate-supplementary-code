@@ -11,8 +11,6 @@
 | `shared/eval_module.py` | è¯„ä¼°é€»è¾‘ + hash æ ¡éªŒ | åŒä¸Š |
 | `shared/data/split_manifest.json` | 20 seed çš„ train/val/holdout åˆ’åˆ† | åŒä¸Š |
 | `shared/data/all_data.pt` | 4.1GBï¼Œ993 patchesï¼ˆCRC onlyï¼‰ | åŒä¸Š |
-| `templates/condor_submit.template` | Condor æäº¤æ¨¡æ¿ | åŒä¸Š |
-| `templates/condor_wrapper.sh` | Conda æ¿€æ´»è„šæœ¬ | åŒä¸Š |
 
 ## å‚è€ƒæ–‡ä»¶ï¼ˆå¯ä¿®æ”¹ï¼‰
 
@@ -60,9 +58,11 @@ train.py çš„è¾“å‡ºï¼š
 - **æäº¤ CRC å·¥ä½œå‰å¿…é¡»è¯» `CRC-WORKFLOW.md`**
 - ä¸åˆ  ControlMaster socketï¼Œä¸å°è¯• reconnect
 - SSH è¶…æ—¶ â‰¥ 30 ç§’
-- GPU è®­ç»ƒç”¨ Condorï¼ŒCPU ä»»åŠ¡ç”¨ SGE qsub
+- GPU è®­ç»ƒç”¨ external schedulerï¼ŒCPU ä»»åŠ¡ç”¨ SGE qsub
 - wrapper è„šæœ¬å¿…é¡»å…ˆ `module load conda` + `conda activate graphwind`
 - `initialdir` å¿…é¡»æ˜¯é¡¹ç›®æ ¹ç›®å½•ï¼ˆ`train.py` çš„ import éœ€è¦ `shared/` åœ¨ Python è·¯å¾„ä¸Šï¼‰
+
+
 
 
 

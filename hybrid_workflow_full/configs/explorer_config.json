@@ -10,12 +10,10 @@
         "results_dir": "results",
         "scripts_dir": "scripts"
     },
-    "condor": {
+    "external scheduler": {
         "requirements": "(regexp(\"qa-h100-\", Machine) || regexp(\"qa-a100-\", Machine) || regexp(\"qa-l40s-\", Machine))",
         "request_gpus": 1,
         "request_memory": "16 GB",
-        "wrapper_script": "templates/condor_wrapper.sh",
-        "submit_template": "templates/condor_submit.template"
     },
     "training": {
         "default_epochs": 200,
@@ -33,6 +31,8 @@
         "max_tokens": 4096
     }
 }
+
+
 
 
 

@@ -8,7 +8,7 @@ loss in :data:`LIBRARY`. Mirrors the locked training contract (Appendix A.2):
     * Checkpoint every 50 epochs to ``checkpoint.pt``
     * ``model_best.pt`` on val-loss improvement; ``model_final.pt`` at end
     * Writes ``metrics.json`` (canonical schema) on completion
-    * Condor sentinels: STARTED, HEARTBEAT.json, FINISHED / FAILED
+    * external_scheduler sentinels: STARTED, HEARTBEAT.json, FINISHED / FAILED
     * Eviction recovery: resume from ``checkpoint.pt`` on restart
 """
 from __future__ import annotations
@@ -33,7 +33,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-# Allow sibling imports when run as a standalone script (Condor).
+# Allow sibling imports when run as a standalone script (external_scheduler).
 _HERE = Path(__file__).resolve().parent
 if str(_HERE.parent) not in sys.path:
     sys.path.insert(0, str(_HERE.parent))
@@ -970,6 +970,8 @@ if __name__ == "__main__":
         )
     else:
         train(_cfg)
+
+
 
 
 

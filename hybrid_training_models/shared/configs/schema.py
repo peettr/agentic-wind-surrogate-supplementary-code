@@ -306,10 +306,10 @@ class CampaignState(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Job handles (Condor)
+# Job handles (external_scheduler)
 # ---------------------------------------------------------------------------
 class JobHandle(BaseModel):
-    """Tracks a submitted Condor job through its lifecycle."""
+    """Tracks a submitted external_scheduler job through its lifecycle."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -426,6 +426,8 @@ def dump_json(model: BaseModel, path: str | Path) -> None:
 def load_json(cls: type[BaseModel], path: str | Path) -> BaseModel:
     """Load a Pydantic model from its JSON serialization."""
     return cls.model_validate_json(Path(path).read_text())
+
+
 
 
 

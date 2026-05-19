@@ -655,7 +655,7 @@ def _is_code_repair_error(message: str) -> bool:
     )
     non_code_terms = (
         "oom", "out of memory", "cuda error", "time limit", "timeout",
-        "condor", "held", "preempt", "disk quota", "no space", "permission denied",
+        "external_scheduler", "held", "preempt", "disk quota", "no space", "permission denied",
     )
     return any(t in msg for t in code_bug_terms) and not any(t in msg for t in non_code_terms)
 
@@ -1213,6 +1213,8 @@ def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(name)s %(levelname)s: %(message)s")
     main()
+
+
 
 
 

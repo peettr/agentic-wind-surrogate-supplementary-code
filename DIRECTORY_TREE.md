@@ -816,7 +816,6 @@ supplementary_code_release/
 |   |   |   `-- sac_mamba.py
 |   |   `-- __init__.py
 |   |-- scripts/
-|   |   `-- run_campaign.py
 |   |-- shared/
 |   |   |-- configs/
 |   |   |   |-- __init__.py
@@ -868,9 +867,6 @@ supplementary_code_release/
 |   |   |-- eval_module.py
 |   |   |-- losses.py
 |   |   `-- train.py
-|   |-- templates/
-|   |   |-- condor_submit.template
-|   |   `-- condor_wrapper.sh
 |   |-- model_rounds_manifest.csv
 |   `-- README.md
 |-- hybrid_workflow_full/
@@ -883,7 +879,6 @@ supplementary_code_release/
 |   |-- engine/
 |   |   |-- __init__.py
 |   |   |-- analyzer.py
-|   |   |-- executor.py
 |   |   |-- runner.py
 |   |   `-- state_manager.py
 |   |-- explorer/
@@ -903,10 +898,6 @@ supplementary_code_release/
 |   |   |-- INITIAL_KNOWLEDGE.md
 |   |   `-- model_results.csv
 |   |-- scripts/
-|   |   `-- run_campaign.py
-|   |-- templates/
-|   |   |-- condor_submit.template
-|   |   `-- condor_wrapper.sh
 |   |-- tests/
 |   |   `-- test_r13_planner_synthesis_gate.py
 |   |-- workflow_engine/
@@ -927,7 +918,6 @@ supplementary_code_release/
 |   |   |-- workflow_codegen.py
 |   |   |-- workflow_common.py
 |   |   |-- workflow_controller.py
-|   |   |-- workflow_executor.py
 |   |   |-- workflow_knowledge.py
 |   |   |-- workflow_planner.py
 |   |   |-- workflow_reviewer.py

@@ -10,7 +10,7 @@ This script:
 4. Writes a dry-run report by default. Use --apply to actually modify the manifest.
 
 Does NOT touch:
-- CRC/Condor or remote jobs
+- CRC/external_scheduler or remote jobs
 - round artifacts (controller_decision.json, results files)
 - knowledge/history files
 
@@ -179,6 +179,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

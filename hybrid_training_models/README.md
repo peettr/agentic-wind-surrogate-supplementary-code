@@ -6,3 +6,7 @@ The release source of truth for candidate files is `model_rounds/`. Each round c
 
 
 
+
+
+Release note: scheduler-specific submission details are intentionally excluded from the public package. Hybrid retains the workflow organization and training/evaluation code, while site-specific job submission should be adapted by users to their own compute environment.
+
